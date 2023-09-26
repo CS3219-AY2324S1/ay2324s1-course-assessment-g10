@@ -44,7 +44,7 @@
   opacity: 0.8;
   background-image: url('../public/leetcode logo.png'); 
   background-size: auto; 
-  animation: scrollBackground 100s linear infinite;
+  animation: scrollBackground 200s linear infinite;
   z-index: -999;
 }
 
