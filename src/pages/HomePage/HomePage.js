@@ -51,7 +51,9 @@ function HomePage() {
           className="search-bar"
           placeholder="Search Question Here"
         />
-        <button className="add-question-button" onClick={openModal}>Add Question</button>
+        <Link to="/create" className="add-question-button">
+          Add Question
+        </Link>
       </div>
 
       <table className="question-table">
