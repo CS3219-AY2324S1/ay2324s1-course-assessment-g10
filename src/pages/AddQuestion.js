@@ -31,7 +31,7 @@ function Add(){
         category: category,
         complexity: complexity,
       };
-  
+   
       // Add the new question to the QuestionData array
       QuestionData.push(newQuestion);
   
@@ -45,20 +45,24 @@ function Add(){
     return (
     <div>
         <Form className="d-grid gap-2" style={{margin:"15rem"}}>
+
             <Form.Group className="mb-3" controlId="formName">
                 <Form.Control type="text" placeholder = "Enter Question Title" required onChange= {(e) => setTitle(e.target.value)}>
                 </Form.Control>
             </Form.Group>
+
             <Form.Group className="mb-3" controlId="formName">
-                <Form.Control type="text" placeholder = "Enter Question Description" required onChange= {(e) => setDescription(e.target.value)}>
+                <Form.Control type="text" placeholder = "Enter Question Complexity" required onChange= {(e) => setComplexity(e.target.value)}>
                 </Form.Control>
             </Form.Group>
+
             <Form.Group className="mb-3" controlId="formName">
                 <Form.Control type="text" placeholder = "Enter Question Category" required onChange= {(e) => setCategory(e.target.value)}>
                 </Form.Control>
             </Form.Group>
+
             <Form.Group className="mb-3" controlId="formName">
-                <Form.Control type="text" placeholder = "Enter Question Complexity" required onChange= {(e) => setComplexity(e.target.value)}>
+                <Form.Control type="text" placeholder = "Enter Question Description" style={{ height: '200px' }} required onChange= {(e) => setDescription(e.target.value)}>
                 </Form.Control>
             </Form.Group>
 

@@ -36,6 +36,29 @@ function HomePage() {
     history('/');
   }
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredData, setFilteredData] = useState(QuestionData);
+
+  const handleSearchInputChange = (event) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+
+    // Filter the tableData based on the search query
+    const filtered = QuestionData.filter((item) =>
+      Object.values(item).some((value) => {
+        // Check if the value is a string before converting to lowercase
+        if (typeof value === 'string') {
+          return value.toLowerCase().includes(query.toLowerCase());
+        }
+
+        // If it's not a string, convert it to a string and then check for inclusion
+        return String(value).toLowerCase().includes(query.toLowerCase());
+      })
+    );
+
+    // Set the new filtered data
+    setFilteredData(filtered);
+  };
   
   return (
     <div className="homepage">
@@ -50,10 +73,14 @@ function HomePage() {
           type="text"
           className="search-bar"
           placeholder="Search Question Here"
+          value={searchQuery}
+          onChange={handleSearchInputChange}
         />
-        <Link to="/create" className="add-question-button">
-          Add Question
-        </Link>
+        <div className="add-question-button">
+          <Link to="/create" className='add-question-text'>
+            Add Question
+          </Link>
+        </div>
       </div>
 
       <table className="question-table">
@@ -68,21 +95,20 @@ function HomePage() {
           </tr>
         </thead>
         <tbody>
-        {QuestionData.map((item) => (
-          <tr key={item.id}>
-          <td>{item.id}</td>
-          <td>{item.title}</td>
-          <td>{item.description}</td>
-          <td>{item.category}</td>
-           <td>{item.complexity}</td>
-        <td>
-      {/* Add a delete button with an onClick handler */}
-      <button className="delete-button" onClick={() => handleDelete(item.id)}>
-        <i className="trash-icon"  ></i>
-      </button>
-    </td>
-  </tr>
-))}
+          {filteredData.map((item) => (
+            <tr key={item.id}>
+              <td>{item.id}</td>
+              <td>{item.title}</td>
+              <td>{item.description}</td>
+              <td>{item.category}</td>
+              <td>{item.complexity}</td>
+              <td>
+                <button className="delete-button" onClick={() => handleDelete(item.id)}>
+                  <i className="trash-icon"  ></i>
+                </button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
 

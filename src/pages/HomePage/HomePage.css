@@ -14,9 +14,8 @@
     background-color: #78c737; 
     border-radius: 0 0 20px 20px; 
     position: absolute; 
-    align-items: center;
-    justify-content: center;
     top: 0; 
+    align-items: center;
 }
 
 .title {
@@ -49,7 +48,6 @@
     height: 50px;
     width: 150px;
     padding-right: 20px;
-    align-items: center;
     font-family:'Lucida Sans Unicode';
     font-weight: bold;
     border-width: 3px;
@@ -58,6 +56,8 @@
     background-color: rgb(81, 176, 240);
     transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out; 
     cursor: pointer; 
+    text-align: end;
+    padding-top: 10px;
   }
   
   .add-question-button:hover {
@@ -69,6 +69,10 @@
     background-color: rgb(136, 78, 161); 
   }
 
+  .add-question-text {
+    text-decoration: none;
+    color: #ffffff;
+  }
   .question-table {
     width: 80%;
     margin: 20px auto; 
