@@ -1,7 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import './HomePage.css'; 
+import "bootstrap/dist/css/bootstrap.min.css"
+import {Button, Table} from 'react-bootstrap';
+import {Link, useNavigate} from 'react-router-dom';
+import QuestionData from '../QuestionData.js';
+
+
 
 function HomePage() {
+
+  let history = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -14,58 +22,20 @@ function HomePage() {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+  
 
   const categories = ['Category A', 'Category B', 'Category C'];
   const complexities = ['Easy', 'Medium', 'Hard'];
 
-  const tableData = [
-    {
-      id: 123,
-      title: 'Sample Question 1',
-      description: 'BingBong.',
-      category: 'Category A',
-      complexity: 'Intermediate',
-    },
-    {
-      id: 124,
-      title: 'Sample Question 2',
-      description: 'Quak Quack.',
-      category: 'Category B',
-      complexity: 'Medium',
-    },
-    {
-      id: 124,
-      title: 'Sample Question 2',
-      description: 'Moooo.',
-      category: 'Category C',
-      complexity: 'Hard',
-    }
-    
-  ];
-  
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredData, setFilteredData] = useState(tableData);
+  const handleDelete = (id) => {
+    var index = QuestionData.map(function(e) {
+      return e.id
+    }).indexOf(id);
 
-  const handleSearchInputChange = (event) => {
-    const query = event.target.value;
-    setSearchQuery(query);
-  
-    // Filter the tableData based on the search query
-    const filtered = tableData.filter((item) =>
-      Object.values(item).some((value) => {
-        // Check if the value is a string before converting to lowercase
-        if (typeof value === 'string') {
-          return value.toLowerCase().includes(query.toLowerCase());
-        }
-  
-        // If it's not a string, convert it to a string and then check for inclusion
-        return String(value).toLowerCase().includes(query.toLowerCase());
-      })
-    );
-  
-    // Set the new filtered data, clearing any previous search results
-    setFilteredData(filtered);
-  };
+    QuestionData.splice(index,1);
+    history('/');
+  }
+
   
   return (
     <div className="homepage">
@@ -80,8 +50,6 @@ function HomePage() {
           type="text"
           className="search-bar"
           placeholder="Search Question Here"
-          value={searchQuery}
-          onChange={handleSearchInputChange}
         />
         <button className="add-question-button" onClick={openModal}>Add Question</button>
       </div>
@@ -98,22 +66,25 @@ function HomePage() {
           </tr>
         </thead>
         <tbody>
-          {filteredData.map((item) => (
-            <tr key={item.id}>
-              <td>{item.id}</td>
-              <td>{item.title}</td>
-              <td>{item.description}</td>
-              <td>{item.category}</td>
-              <td>{item.complexity}</td>
-              <td>
-                <button className="delete-button">
-                  <i className="trash-icon"></i>
-                </button>
-              </td>
-            </tr>
-          ))}
+        {QuestionData.map((item) => (
+          <tr key={item.id}>
+          <td>{item.id}</td>
+          <td>{item.title}</td>
+          <td>{item.description}</td>
+          <td>{item.category}</td>
+           <td>{item.complexity}</td>
+        <td>
+      {/* Add a delete button with an onClick handler */}
+      <button className="delete-button" onClick={() => handleDelete(item.id)}>
+        <i className="trash-icon"  ></i>
+      </button>
+    </td>
+  </tr>
+))}
         </tbody>
       </table>
+
+
 
       {isModalOpen && (
         <div className="modal-background">
