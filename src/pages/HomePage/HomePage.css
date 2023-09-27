@@ -205,10 +205,16 @@
     height: 20px;
     background-image: url('../../../public/trash logo.png'); 
     background-repeat: no-repeat;
-    background-size: contain; 
-    display: flex;
+    background-size: contain;
+    display: inline-block;
     vertical-align: middle;
     margin-right: 5px;
+    transition: transform 0.2s ease-in-out; /* Add a transition for smooth scaling */
+  }
+  
+  /* Scale up the trash icon on hover */
+  .trash-icon:hover {
+    transform: scale(1.2);
   }
 
   .delete-button {
