@@ -1,13 +1,12 @@
 import React, {useState} from 'react';
 import {Button, Form} from 'react-bootstrap'
 import "bootstrap/dist/css/bootstrap.min.css"
-import {v4 as uuid} from "uuid";
-import {Link, useNavigate} from 'react-router-dom';
-import QuestionData from './QuestionData.js';
-import './HomePage/HomePage.css'; 
-import '../App.css'
+import {useNavigate} from 'react-router-dom';
+import QuestionData from './QuestionData';
+// import './HomePage/HomePage.css'; 
+// import '../App.css'
 
-function Add(){
+function Add() {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -16,7 +15,7 @@ function Add(){
 
     let history = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: any) => {
         e.preventDefault();
 
         // Find the maximum ID in the existing QuestionData
@@ -42,7 +41,7 @@ function Add(){
   
     }
 
-    const handleCancel = (e) => {
+    const handleCancel = (e: any) => {
         e.preventDefault();
 
         history("/");

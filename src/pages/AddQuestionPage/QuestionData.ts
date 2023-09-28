@@ -1,6 +1,3 @@
-
-
-
 const QuestionData = [
     {
       id: 1,
@@ -21,3 +18,4 @@ const QuestionData = [
 
 
   export default QuestionData;
+  
