@@ -3,6 +3,7 @@ import './App.css';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import Add from "./pages/AddQuestionPage/AddQuestion";
+import React from 'react';
 
 
 function App() {
