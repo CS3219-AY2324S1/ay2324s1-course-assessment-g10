@@ -4,6 +4,8 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import {v4 as uuid} from "uuid";
 import {Link, useNavigate} from 'react-router-dom';
 import QuestionData from './QuestionData.js';
+import './HomePage/HomePage.css'; 
+import '../App.css'
 
 function Add(){
 
@@ -40,37 +42,52 @@ function Add(){
   
     }
 
+    const handleCancel = (e) => {
+        e.preventDefault();
+
+        history("/");
+  
+    }
 
 
     return (
-    <div>
-        <Form className="d-grid gap-2" style={{margin:"15rem"}}>
+        <div >
+            <div className="background" />
 
-            <Form.Group className="mb-3" controlId="formName">
-                <Form.Control type="text" placeholder = "Enter Question Title" required onChange= {(e) => setTitle(e.target.value)}>
-                </Form.Control>
-            </Form.Group>
+            <div className='navbar'>
+                <div className="title">Question Bank</div>
+            </div>
 
-            <Form.Group className="mb-3" controlId="formName">
-                <Form.Control type="text" placeholder = "Enter Question Complexity" required onChange= {(e) => setComplexity(e.target.value)}>
-                </Form.Control>
-            </Form.Group>
+            <Form className="d-grid gap-2" style={{margin:"15rem", width: "80%", alignItems: "center"}}>
 
-            <Form.Group className="mb-3" controlId="formName">
-                <Form.Control type="text" placeholder = "Enter Question Category" required onChange= {(e) => setCategory(e.target.value)}>
-                </Form.Control>
-            </Form.Group>
+                <Form.Group className="mb-3" controlId="formName">
+                    <Form.Control type="text" placeholder = "Enter Question Title" required onChange= {(e) => setTitle(e.target.value)}>
+                    </Form.Control>
+                </Form.Group>
 
-            <Form.Group className="mb-3" controlId="formName">
-                <Form.Control type="text" placeholder = "Enter Question Description" style={{ height: '200px' }} required onChange= {(e) => setDescription(e.target.value)}>
-                </Form.Control>
-            </Form.Group>
+                <Form.Group className="mb-3" controlId="formName">
+                    <Form.Control type="text" placeholder = "Enter Question Complexity" required onChange= {(e) => setComplexity(e.target.value)}>
+                    </Form.Control>
+                </Form.Group>
 
-            <Button onClick={(e) => handleSubmit(e)} type ="submit"> Submit</Button>
-        </Form>
-    </div>
+                <Form.Group className="mb-3" controlId="formName">
+                    <Form.Control type="text" placeholder = "Enter Question Category" required onChange= {(e) => setCategory(e.target.value)}>
+                    </Form.Control>
+                </Form.Group>
 
-);
+                <Form.Group className="mb-3" controlId="formName">
+                    <Form.Control type="text" placeholder = "Enter Question Description" style={{ height: '200px' }} required onChange= {(e) => setDescription(e.target.value)}>
+                    </Form.Control>
+                </Form.Group>
+
+                <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                    <Button onClick={(e) => handleCancel(e)} type ="submit" style={{width: "30%"}}> Cancel </Button>
+                    <Button onClick={(e) => handleSubmit(e)} type ="submit" style={{width: "30%"}}> Submit</Button> 
+                </div>
+            </Form>
+        </div>
+
+    );
 }
 
 export default Add;
