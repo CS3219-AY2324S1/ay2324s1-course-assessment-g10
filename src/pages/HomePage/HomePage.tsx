@@ -25,7 +25,7 @@ function HomePage() {
   const categories = ['Category A', 'Category B', 'Category C'];
   const complexities = ['Easy', 'Medium', 'Hard'];
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: number) => {
     var index = QuestionData.map(function(e) {
       return e.id
     }).indexOf(id);
@@ -37,7 +37,7 @@ function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredData, setFilteredData] = useState(QuestionData);
 
-  const handleSearchInputChange = (event) => {
+  const handleSearchInputChange = (event: any) => {
     const query = event.target.value;
     setSearchQuery(query);
 
@@ -160,7 +160,7 @@ function HomePage() {
                   <label htmlFor="questionDescription" className='input-title'>Description: </label>
                   <textarea
                     id="questionDescription"
-                    rows="4" 
+                    rows={4} 
                     className="large-input-box"
                   ></textarea>
                 </div>
