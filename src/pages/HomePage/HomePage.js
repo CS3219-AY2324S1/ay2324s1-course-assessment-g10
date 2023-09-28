@@ -3,7 +3,7 @@ import './HomePage.css';
 import "bootstrap/dist/css/bootstrap.min.css"
 import {Button, Table} from 'react-bootstrap';
 import {Link, useNavigate} from 'react-router-dom';
-import QuestionData from '../QuestionData.js';
+import QuestionData from '../AddQuestionPage/QuestionData.js';
 
 
 
