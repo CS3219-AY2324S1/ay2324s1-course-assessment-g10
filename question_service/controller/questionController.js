@@ -35,9 +35,10 @@ const fetchQuestion = async (req, res) => {
 //@route    POST /api/questions
 //@access   admin only
 const addQuestion = async (req, res) => {
-    const { title, description, category, complexity } = req.body
+    const { title, description, category, complexity } = req.body;
 
     if (!title || !description || !category || !complexity) {
+        console.log(req.body)
         return res.status(400).json({ message: 'Please enter all fields' })
     }
 
