@@ -5,5 +5,3 @@
 2. Ensure MongoDB service is running on your localhost
 3. Start the server
    - Run `npm run dev`
-
-
