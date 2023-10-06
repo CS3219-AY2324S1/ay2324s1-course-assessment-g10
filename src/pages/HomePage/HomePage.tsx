@@ -2,35 +2,35 @@ import React, { useState, useEffect } from 'react';
 import './HomePage.css'; 
 import "bootstrap/dist/css/bootstrap.min.css"
 import {Link, useNavigate} from 'react-router-dom';
-import QuestionData from '../AddQuestionPage/QuestionData';
-
+import { Question, initializeData, QuestionData }  from '../AddQuestionPage/QuestionData';
 
 function HomePage() {
 
   let history = useNavigate();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  useEffect(() => {}, [isModalOpen]);
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-  
-
-  const categories = ['Category A', 'Category B', 'Category C'];
-  const complexities = ['Easy', 'Medium', 'Hard'];
+  const [QuestionData, setQuestionData] = useState(initializeData());
 
   const handleDelete = (id: number) => {
-    var index = QuestionData.map(function(e) {
-      return e.id
-    }).indexOf(id);
-
-    QuestionData.splice(index,1);
+    // Find the index of the question to delete in the QuestionData array
+    const dataIndex = QuestionData.findIndex((item: Question) => item.id === id);
+  
+    // Find the index of the question to delete in the filteredData array
+    const filteredIndex = filteredData.findIndex((item: Question) => item.id === id);
+  
+    if (dataIndex !== -1) {
+      // Remove the question from the QuestionData array
+      QuestionData.splice(dataIndex, 1);
+    }
+  
+    if (filteredIndex !== -1) {
+      // Remove the question from the filteredData array
+      filteredData.splice(filteredIndex, 1);
+    }
+  
+    // Update local storage with the modified QuestionData
+    localStorage.setItem('QuestionData', JSON.stringify(QuestionData));
+  
+    // Navigate back to the homepage
     history('/');
   }
 
@@ -41,8 +41,14 @@ function HomePage() {
     const query = event.target.value;
     setSearchQuery(query);
 
+    if (query === '') {
+      // If the search query is empty, revert to showing the original data
+      setFilteredData(QuestionData);
+      return;
+    }
+
     // Filter the tableData based on the search query
-    const filtered = QuestionData.filter((item) =>
+    const filtered = QuestionData.filter((item: Question) =>
       Object.values(item).some((value) => {
         // Check if the value is a string before converting to lowercase
         if (typeof value === 'string') {
@@ -93,7 +99,7 @@ function HomePage() {
           </tr>
         </thead>
         <tbody>
-          {filteredData.map((item) => (
+          {filteredData.map((item: Question) => (
             <tr key={item.id}>
               <td>{item.id}</td>
               <td>{item.title}</td>
@@ -109,70 +115,6 @@ function HomePage() {
           ))}
         </tbody>
       </table>
-
-
-
-      {isModalOpen && (
-        <div className="modal-background">
-          <div className="modal" id="dynamic-modal">
-            <button className="close-button" onClick={closeModal}>
-              X
-            </button>
-            <div className="modal-content">
-              <h2>Add Question</h2>
-              {/* First Row: Inputs */}
-              <div className="modal-row">
-                <div className="input-wrapper">
-                  <label htmlFor="questionId" className='input-title'>ID: </label>
-                  <input type="number" className="input-box" id="questionId" />
-                </div>
-                <div className="input-wrapper">
-                  <label htmlFor="questionTitle" className='input-title'>Title: </label>
-                  <input type="text" className="input-box" id="questionTitle" />
-                </div>
-              </div>
-              {/* Second Row: Dropdowns */}
-              <div className="modal-row">
-                <div className="input-wrapper">
-                  <label htmlFor="category" className='input-title'>Category: </label>
-                  <select id="category" className="dropdown">
-                    {categories.map((category) => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="input-wrapper">
-                  <label htmlFor="complexity" className='input-title'>Complexity: </label>
-                  <select id="complexity" className="dropdown">
-                    {complexities.map((complexity) => (
-                      <option key={complexity} value={complexity}>
-                        {complexity}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              {/* Third Row: Resizable Textarea */}
-              <div className="modal-row">
-                <div className="desc-wrapper">
-                  <label htmlFor="questionDescription" className='input-title'>Description: </label>
-                  <textarea
-                    id="questionDescription"
-                    rows={4} 
-                    className="large-input-box"
-                  ></textarea>
-                </div>
-              </div>
-              {/* Fourth Row: Resizable Textarea */}
-              <div className="modal-row">
-                <button className="add-question-button" >Add Question</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

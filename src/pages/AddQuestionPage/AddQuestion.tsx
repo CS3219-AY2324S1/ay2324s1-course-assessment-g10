@@ -2,8 +2,8 @@ import React, {useState} from 'react';
 import {Button, Form} from 'react-bootstrap'
 import "bootstrap/dist/css/bootstrap.min.css"
 import {useNavigate} from 'react-router-dom';
-import QuestionData from './QuestionData';
-// import './HomePage/HomePage.css'; 
+import { Question, initializeData, QuestionData } from './QuestionData';
+import '../HomePage/HomePage.css'; 
 // import '../App.css'
 
 function Add() {
@@ -12,14 +12,15 @@ function Add() {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [complexity, setComplexity] = useState('');
+  const [QuestionData, setQuestionData] = useState(initializeData());
 
     let history = useNavigate();
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
 
-        // Find the maximum ID in the existing QuestionData
-    const maxId = Math.max(...QuestionData.map((question) => question.id), 0);
+    // Find the maximum ID in the existing QuestionData
+    const maxId = Math.max(...QuestionData.map((item: Question) => item.id), 0);
 
     // Increment the maximum ID to generate a new ID
     const newId = maxId + 1;
@@ -33,11 +34,15 @@ function Add() {
         complexity: complexity,
       };
    
-      // Add the new question to the QuestionData array
-      QuestionData.push(newQuestion);
-  
-      // Navigate back to the homepage
-      history("/");
+    // Add the new question to the QuestionData array
+    const updatedData = [...QuestionData, newQuestion];
+    setQuestionData(updatedData);
+
+    // Store the updated data in local storage
+    localStorage.setItem('QuestionData', JSON.stringify(updatedData));
+
+    // Navigate back to the homepage
+    history("/");
   
     }
 
@@ -48,15 +53,14 @@ function Add() {
   
     }
 
-
     return (
-        <div >
-            <div className="background" />
-
-            <div className='navbar'>
-                <div className="title">Question Bank</div>
-            </div>
-
+        <div className="homepage">
+          <div className="background" />
+    
+          <div className="navbar">
+            <div className="title">Question Bank</div>
+          </div>
+    
             <Form className="d-grid gap-2" style={{margin:"15rem", width: "80%", alignItems: "center"}}>
 
                 <Form.Group className="mb-3" controlId="formName">
@@ -85,8 +89,7 @@ function Add() {
                 </div>
             </Form>
         </div>
-
-    );
+      );
 }
 
 export default Add;
