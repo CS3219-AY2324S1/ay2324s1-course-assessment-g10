@@ -1,3 +1,19 @@
+export type Question = {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  complexity: string;
+};
+
+function initializeData() {
+  const storedData = localStorage.getItem('QuestionData');
+  if (storedData) {
+    return JSON.parse(storedData);
+  }
+  return [];
+}
+
 const QuestionData = [
     {
       id: 1,
@@ -17,5 +33,5 @@ const QuestionData = [
   ];
 
 
-  export default QuestionData;
+export { initializeData, QuestionData };
   

@@ -44,19 +44,20 @@
   }
   
   .add-question-button {
+    display: flex;
     height: 50px;
     width: 150px;
     padding-right: 20px;
     font-family:'Lucida Sans Unicode';
     font-weight: bold;
     border-width: 3px;
-    border-color: rgb(255, 255, 255);
+    border-color: #0d6efd;
     border-radius: 20px;
-    background-color: rgb(81, 176, 240);
+    background-color: #0d6efd;
     transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out; 
     cursor: pointer; 
-    text-align: end;
-    padding-top: 10px;
+    align-items: center;
+    justify-content: end;
   }
   
   .add-question-button:hover {
@@ -72,6 +73,7 @@
     text-decoration: none;
     color: #ffffff;
   }
+
   .question-table {
     width: 80%;
     margin: 20px auto; 
