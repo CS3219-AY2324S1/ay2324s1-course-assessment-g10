@@ -3,6 +3,7 @@ import {Button, Form} from 'react-bootstrap'
 import "bootstrap/dist/css/bootstrap.min.css"
 import {useNavigate} from 'react-router-dom';
 import { Question, initializeData, QuestionData } from './QuestionData';
+import './AddQuestion.css'; 
 import '../HomePage/HomePage.css'; 
 // import '../App.css'
 
@@ -59,10 +60,10 @@ function Add() {
           <div className="background" />
     
           <div className="navbar">
-            <div className="title">Question Bank</div>
+            <div className="title">Peer Prep</div>
           </div>
     
-            <Form className="d-grid gap-2" style={{margin:"15rem", width: "80%", alignItems: "center"}}>
+            <Form className="d-grid gap-2" style={{margin:"8rem auto", width: "80%", alignItems: "center"}}>
 
                 <Form.Group className="mb-3" controlId="formName">
                     <Form.Control type="text" placeholder = "Enter Question Title" required onChange= {(e) => setTitle(e.target.value)}>
@@ -84,8 +85,13 @@ function Add() {
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formName">
-                    <Form.Control type="text" placeholder = "Enter Question Description" style={{ height: '200px' }} required onChange= {(e) => setDescription(e.target.value)}>
-                    </Form.Control>
+                <Form.Control
+                    as="textarea"  
+                    style={{ height: '200px' }}  
+                    placeholder="Enter Question Description"
+                    required
+                    onChange={(e) => setDescription(e.target.value)}
+                        />
                 </Form.Group>
 
                 <div style={{ display: 'flex', justifyContent: 'space-around' }}>
