@@ -69,14 +69,14 @@ function HomePage() {
       <div className="background" />
 
       <div className="navbar">
-        <div className="title">Question Bank</div>
+        <div className="title">Peer Prep</div>
       </div>
 
       <div className="content-container">
         <input
           type="text"
           className="search-bar"
-          placeholder="Search Question Here"
+          placeholder="Search questions"
           value={searchQuery}
           onChange={handleSearchInputChange}
         />
@@ -86,6 +86,7 @@ function HomePage() {
           </Link>
         </div>
       </div>
+
 
       <table className="question-table">
         <thead>

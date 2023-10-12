@@ -53,6 +53,7 @@ function Add() {
   
     }
 
+
     return (
         <div className="homepage">
           <div className="background" />
@@ -68,10 +69,15 @@ function Add() {
                     </Form.Control>
                 </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formName">
-                    <Form.Control type="text" placeholder = "Enter Question Complexity" required onChange= {(e) => setComplexity(e.target.value)}>
+                <Form.Group className="mb-3" controlId="formComplexity">
+                    <Form.Label>Question Complexity</Form.Label>
+                    <Form.Control as="select" value={complexity} onChange={(e) => setComplexity(e.target.value)}>
+                    <option value="">Select Complexity</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
                     </Form.Control>
-                </Form.Group>
+                    </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formName">
                     <Form.Control type="text" placeholder = "Enter Question Category" required onChange= {(e) => setCategory(e.target.value)}>
