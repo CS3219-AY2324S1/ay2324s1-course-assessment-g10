@@ -11,6 +11,11 @@ function HomePage() {
   const [QuestionData, setQuestionData] = useState(initializeData());
 
   const handleDelete = (id: number) => {
+
+    const confirmed = window.confirm('Are you sure you want to delete this question?');
+
+  if (confirmed) {
+
     // Find the index of the question to delete in the QuestionData array
     const dataIndex = QuestionData.findIndex((item: Question) => item.id === id);
   
@@ -32,6 +37,9 @@ function HomePage() {
   
     // Navigate back to the homepage
     history('/');
+  } else {
+    // User canceled, do nothing
+  }
   }
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -106,7 +114,27 @@ function HomePage() {
               <td>{item.title}</td>
               <td>{item.description}</td>
               <td>{item.category}</td>
-              <td>{item.complexity}</td>
+              <td>
+              <div style={{
+                display: 'flex',
+                  justifyContent: 'center', // Horizontally center the box
+                  alignItems: 'center', // Vertically center the box
+                    }}>
+                  <div style={{
+                  backgroundColor: item.complexity === '1' ? 'rgba(0, 255, 0, 0.3)' :
+                        item.complexity === '2' ? 'rgba(255, 255, 0, 0.3)' :
+                        'rgba(255, 0, 0, 0.3)',
+                      padding: '4px',
+                  borderRadius: '5px',
+                  width: '30px', // Set the width here
+                  textAlign: 'center',
+                fontWeight: 'bold',
+                color: 'white'
+              }}>
+          {item.complexity}
+        </div>
+      </div>
+              </td>
               <td>
                 <button className="delete-button" onClick={() => handleDelete(item.id)}>
                   <i className="trash-icon"  ></i>
