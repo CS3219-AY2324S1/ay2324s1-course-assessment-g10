@@ -70,7 +70,6 @@ function Add() {
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formComplexity">
-                    <Form.Label>Question Complexity</Form.Label>
                     <Form.Control as="select" value={complexity} onChange={(e) => setComplexity(e.target.value)}>
                     <option value="">Select Complexity</option>
                     <option value="1">1</option>
