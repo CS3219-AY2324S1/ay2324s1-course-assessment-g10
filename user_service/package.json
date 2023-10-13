@@ -4,7 +4,8 @@
   "description": "Backend for managing user profiles",
   "main": "index.ts",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "migrate": "npx prisma db push",
+    "start": "npm run migrate && ts-node src/index.ts",
     "build": "tsc",
     "serve": "node dist/index.js"
   },

@@ -5,7 +5,8 @@ services:
     build: 
       context: ./
     environment:
-      - PORT=8081
+      PORT: 8081
+      DATABASE_URL: ${DATABASE_URL}
     ports:
       - "8081:8081"
     depends_on:
