@@ -1,6 +1,7 @@
 .homepage {
+  background-color: rgba(6, 4, 4, 0.813);
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   align-items: center;
   height: 100vh;
   overflow: auto;
@@ -8,221 +9,222 @@
 }
 
 .navbar {
-    display: flex;
-    width: 100%;
-    height: 100px; 
-    background-color: #78c737; 
-    border-radius: 0 0 20px 20px; 
-    position: absolute; 
-    top: 0; 
+  display: flex;
+  width: 100%;
+  height: 100px;
+  background-color: rgba(110, 102, 102, 0.7);
+  border-radius: 0 0 20px 20px;
+  position: absolute;
+  top: 0;
 }
 
 .title {
-    color: rgb(0, 0, 0); 
-    font-family:'Lucida Sans Unicode';
-    font-weight: bolder;
-    margin-left: 20px;
-    font-size:x-large;
-    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
-    transform: perspective(100px) rotateX(20deg); 
+  color: rgb(255, 253, 250);
+  font-weight: bolder;
+  margin: 0 auto; /* Center the text horizontally */
+  font-size: 3rem;
+  text-shadow: 3px 3px 5px rgba(218, 210, 210, 0.5);
+
+  text-align: center; /* Center the text vertically */
 }
 
 .content-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 80%;
-    height: 200px;
-    margin-top: 60px;
-  }
-  
-  .search-bar {
-    height: 50px;
-    width: 300px;
-    padding-left: 20px; 
-    border-radius: 20px 20px 20px 20px; 
-  }
-  
-  .add-question-button {
-    display: flex;
-    height: 50px;
-    width: 150px;
-    padding-right: 20px;
-    font-family:'Lucida Sans Unicode';
-    font-weight: bold;
-    border-width: 3px;
-    border-color: #0d6efd;
-    border-radius: 20px;
-    background-color: #0d6efd;
-    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out; 
-    cursor: pointer; 
-    align-items: center;
-    justify-content: end;
-  }
-  
-  .add-question-button:hover {
-    transform: translateY(2px);
-  }
-  
-  .add-question-button:active {
-    transform: translateY(3px); 
-    background-color: rgb(136, 78, 161); 
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+  height: 200px;
+  margin-top: 60px;
+}
 
-  .add-question-text {
-    text-decoration: none;
-    color: #ffffff;
-  }
+.search-bar {
+  height: 50px;
+  width: 300px;
+  padding-left: 20px;
+  border-radius: 20px 20px 20px 20px;
+}
 
-  .question-table {
-    width: 80%;
-    margin: 20px auto; 
-    border-collapse: collapse; 
-    border: 1px solid #ccc; 
-  }
-  
-  .question-table th,
-  .question-table td {
-    padding: 10px;
-    border: 1px solid #ccc; 
-    text-align: center;
-  }
-  
-  .question-table th {
-    background-color: #78c737; 
-    color: white; 
-  }
-  
-  .question-table tbody tr {
-    background-color: #ffffff; 
-  }
+.add-question-button {
+  display: flex;
+  height: 50px;
+  width: 150px;
+  padding-right: 20px;
+  font-weight: bold;
+  border-width: 3px;
+  border-color: #0d6efd;
+  border-radius: 20px;
+  background-color: #0d6efd;
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  cursor: pointer;
+  align-items: center;
+  justify-content: end;
+}
 
-  .modal-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-  }
-  
-  /* Modal container */
-  .modal {
-    background-color:#78c737;
-    width: 80%;
-    height: 80%;
-    border-radius: 10px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3); /* Box shadow for the modal */
-  }
-  
-  /* Modal content */
-  .modal-content {
-    padding: 20px;
-    text-align: center;
-  }
-  
-  /* Close button for the modal (you can add this in the modal content) */
-  .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    font-weight: bolder;
-  }
+.add-question-button:hover {
+  transform: translateY(2px);
+}
 
-  .close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-  }
-  
-  .close-button:hover {
-    color: red; /* Change color on hover (optional) */
-  }
+.add-question-button:active {
+  transform: translateY(3px);
+  background-color: rgb(136, 78, 161);
+}
 
-  .modal-row {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin-bottom: 0px;
-    height: auto;
-  }
-  
-  .input-wrapper {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
-  }
+.add-question-text {
+  text-decoration: none;
+  color: #ffffff;
+}
 
-  .input-title {
-    order: 1;
-    text-align: left;
-    font-family:'Lucida Sans Unicode';
-    margin-bottom: 5px;
-  }
+.question-table {
+  width: 80%;
+  margin: 20px auto;
+  border-collapse: collapse; /* Remove the borders between table cells */
+  background-color: transparent;
+  border-top: 1px solid #ffffff;
+}
 
-  .input-box {
-    height: 30px;
-    padding-left: 20px; 
-    border-radius: 20px 20px 20px 20px; 
-    order: 2;
-  }
+.question-table th,
+.question-table td {
+  padding: 10px;
+  border-bottom: 1px solid #ffffff;
+  text-align: center;
+  color: #ffffff;
+}
 
-  .dropdown {
-    height: 35px;
-    width: 200px;
-    padding-left: 20px; 
-    border-radius: 20px 20px 20px 20px; 
-    order: 2;
-  }
+.question-table th {
+  background-color: transparent;
+  color: white;
+}
 
-  .large-input-box {
-    width: 80%;
-    min-height: 380px; /* Set a minimum height */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    font-size: 14px;
-    line-height: 1.5;
-    order: 2;
-  }
+.question-table tbody tr {
+  background-color: transparent;
+}
 
-  .desc-wrapper {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
-    width: 100%;
-    align-items: center;
-  }
+.modal-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
 
-  .trash-icon {
-    width: 20px;
-    height: 20px;
-    background-image: url('../../../public/trash logo.png'); 
-    background-repeat: no-repeat;
-    background-size: contain;
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 5px;
-    transition: transform 0.2s ease-in-out; /* Add a transition for smooth scaling */
-  }
-  
-  /* Scale up the trash icon on hover */
-  .trash-icon:hover {
-    transform: scale(1.2);
-  }
+/* Modal container */
+.modal {
+  background-color: rgba(110, 102, 102, 0.7);
+  width: 80%;
+  height: 80%;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3); /* Box shadow for the modal */
+}
 
-  .delete-button {
-    border: none;
-    background-color: white;
-  }
+/* Modal content */
+.modal-content {
+  padding: 20px;
+  text-align: center;
+}
+
+/* Close button for the modal (you can add this in the modal content) */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-weight: bolder;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  color: red; /* Change color on hover (optional) */
+}
+
+.modal-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 0px;
+  height: auto;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.input-title {
+  order: 1;
+  text-align: left;
+  font-family: "Lucida Sans Unicode";
+  margin-bottom: 5px;
+}
+
+.input-box {
+  height: 30px;
+  padding-left: 20px;
+  border-radius: 20px 20px 20px 20px;
+  order: 2;
+}
+
+.dropdown {
+  height: 35px;
+  width: 200px;
+  padding-left: 20px;
+  border-radius: 20px 20px 20px 20px;
+  order: 2;
+}
+
+.large-input-box {
+  width: 80%;
+  min-height: 380px; /* Set a minimum height */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 14px;
+  line-height: 1.5;
+  order: 2;
+}
+
+.desc-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  width: 100%;
+  align-items: center;
+}
+
+.trash-icon {
+  width: 20px;
+  height: 20px;
+  background-image: url("../../../public/trash logo.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+  transition: transform 0.2s ease-in-out; /* Add a transition for smooth scaling */
+}
+
+/* Scale up the trash icon on hover */
+.trash-icon:hover {
+  transform: scale(1.2);
+}
+
+.delete-button {
+  border: none;
+  background-color: transparent;
+}
