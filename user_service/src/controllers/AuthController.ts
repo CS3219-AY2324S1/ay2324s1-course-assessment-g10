@@ -23,6 +23,10 @@ async function authenticate(loginName: string, password: string) {
             username: loginName
         }
     });
+    
+    if (user === null) {
+        return {isCorrectPassword: false , user: null};
+    }
     const isCorrectPassword = await bcrypt.compare(password, user?.hashedPassword!);
     
     return {isCorrectPassword , user}
