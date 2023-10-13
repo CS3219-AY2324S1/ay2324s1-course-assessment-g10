@@ -1,10 +1,5 @@
 import mongoose from "mongoose";
 
-enum Role {
-    ADMIN,
-    USER
-}
-
 const userSchema = new mongoose.Schema({
     loginName : {
         type: String,
@@ -18,7 +13,9 @@ const userSchema = new mongoose.Schema({
     },
 
     role: {
-        type: Role
+        type: String,
+        enum: ['ADMIN', 'USER'],
+        default: 'USER'
     }
 });
 
