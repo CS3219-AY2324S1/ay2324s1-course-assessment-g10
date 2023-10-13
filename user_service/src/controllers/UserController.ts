@@ -14,6 +14,6 @@ export const getUserProfile = async (req: any, res: any) => {
             role: user?.role
         })
     } catch (error) {
-        res.status(400).json({message: 'Invalid ID. Question not found in database.'})
+        res.status(400).json({message: 'Invalid ID. User not found in database.'})
     }
 }

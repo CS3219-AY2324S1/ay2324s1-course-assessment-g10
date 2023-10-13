@@ -1,0 +1,25 @@
+version: '3'
+services:
+  user-service:
+    container_name: user-service
+    build: 
+      context: ./
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/user_service
+      - PORT=8081
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongo
+    volumes:
+      - ./:/usr/src/app
+  
+  mongo:
+    container_name: mongo-user-service
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-dev-data:/data/db
+volumes:
+  mongo-dev-data:
