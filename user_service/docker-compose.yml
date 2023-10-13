@@ -5,21 +5,25 @@ services:
     build: 
       context: ./
     environment:
-      - MONGODB_URI=mongodb://mongo:27017/user_service
       - PORT=8081
     ports:
       - "8081:8081"
     depends_on:
-      - mongo
+      - postgres
     volumes:
       - ./:/usr/src/app
   
-  mongo:
-    container_name: mongo-user-service
-    image: mongo:6.0
+  postgres:
+    container_name: postgres-user-service
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PG_PORT: ${PG_PORT}
     ports:
-      - "27017:27017"
+      - "${PG_PORT}:5432"
     volumes:
-      - mongo-dev-data:/data/db
+      - postgres_data:/var/lib/postgresql/data/
 volumes:
-  mongo-dev-data:
+  postgres_data:

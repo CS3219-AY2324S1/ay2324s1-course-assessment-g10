@@ -1,16 +1,31 @@
-import User from '../model/UserModel'
+import prisma from '../config/db';
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs'
 
-async function isRegistered(username: String) {
-    const user = await User.findOne({ loginName: username });
+async function isRegistered(username: string) {
+    const user = await prisma.user.findUnique({
+        where: { username: username }
+    });
 
-    return user !== undefined;
+    return user !== null;
 }
 
-async function isAuthenticated(username: String, password: String) {
-    const user = await User.findOne({ loginName: username, password: password});
-
-    return user !== undefined;
+/**
+ * Checks if the provided username and password matches a user in the db
+ * 
+ * @param username Username
+ * @param password Unhashed password
+ * @returns 
+ */
+async function authenticate(loginName: string, password: string) {
+    const user = await prisma.user.findUnique({
+        where: {
+            username: loginName
+        }
+    });
+    const isCorrectPassword = await bcrypt.compare(password, user?.hashedPassword!);
+    
+    return {isCorrectPassword , user}
 }
 
 function createToken(payload: any) {
@@ -33,13 +48,23 @@ export const register = async (req: any, res: any) => {
     }
 
     try {
-        const user = await User.create({ loginName: username, password: password, role: "USER" })
-        const access_token = createToken({ username, password });
+        const hPassword = await bcrypt.hash(password, 10);
 
+        const user = await prisma.user.create({ data: { 
+            username: username, 
+            hashedPassword: hPassword, 
+            role: "USER" 
+        }});
+
+        const {hashedPassword, ...payload} = user
+        const access_token = createToken(payload);
 
         res.status(201).json({ access_token });
     } catch (error) {
-        res.status(400).json({ message: 'Failed to register user!' })
+        res.status(400).json({ 
+            error: error,
+            message: 'Failed to register user!' 
+        })
     }
 };
 
@@ -48,14 +73,17 @@ export const register = async (req: any, res: any) => {
 //@access   all users
 export const login = async (req: any, res: any) => {
     const { username, password } = req.body;
+    const { isCorrectPassword, user } = await authenticate(username, password)
 
-    if (await isAuthenticated(username, password) === false) {
+    if ( isCorrectPassword === false) {
         const status = 401;
         const message = 'Incorrect username or password';
         res.status(status).json({ status, message });
         return;
     }
-    const access_token = createToken({ username, password });
+
+    const { hashedPassword, ...payload} = user!;
+    const access_token = createToken(payload);
     res.status(200).json({ access_token });
 };
 
