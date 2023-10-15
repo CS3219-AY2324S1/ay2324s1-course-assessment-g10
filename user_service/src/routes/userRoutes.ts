@@ -1,9 +1,9 @@
 import express from 'express';
-import { getUserProfile } from '../controllers/UserController';
+import { getUserProfile, delUserProfile } from '../controllers/UserController';
 
 const router = express.Router()
 
-router.get('/:id', getUserProfile)
-router.put('')
+router.get('/:id', getUserProfile);
+router.delete('/:id', delUserProfile);
 
 export default router;
