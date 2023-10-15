@@ -1,23 +1,40 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Navigate } from 'react-router-dom';
 import './App.css';
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import  HomePage  from "./pages/HomePage/HomePage";
+import { Route, Routes } from "react-router-dom";
+import HomePage from "./pages/HomePage/HomePage";
 import Add from "./pages/AddQuestionPage/AddQuestion";
-import { Provider } from 'react-redux';
-
-
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated, selectUser } from './reducers/authSlice'
+import LoginPage from './pages/LoginPage';
 
 
 function App() {
+
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const user = useSelector(selectUser)
+
+  console.log(user)
+  console.log(isAuthenticated)
+
   return (
     <div className="app">
-      <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path = "/create" element={<Add />} />
-        </Routes>
-      </Router>
+      <BrowserRouter>
+        {isAuthenticated ?
+          (
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/create" element={<Add />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          ) :
+          (<Routes>
+            <Route path="/login" element={<LoginPage />} />
+            {/* <Route path="/register" element={<RegistrationPage />} /> */}
+            <Route path="*" element={<Navigate to="/login" />} />
+          </Routes>)
+        }
+      </BrowserRouter>
     </div>
   );
 }
