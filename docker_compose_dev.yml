@@ -13,6 +13,20 @@ services:
       - mongo
     volumes:
       - ./question_service:/usr/src/app
+  
+  user-service:
+    container_name: user-service
+    build: 
+      context: ./user_service
+    environment:
+      - PORT=8081
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    volumes:
+      - ./user_service:/usr/src/app
+  
   mongo:
     container_name: mongo
     image: mongo:6.0
@@ -20,6 +34,19 @@ services:
       - "27017:27017"
     volumes:
       - mongo-dev-data:/data/db
-volumes:
-  mongo-dev-data:
 
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PG_PORT: ${PG_PORT}
+    ports:
+      - "${PG_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+volumes:
+  postgres_data:
+  mongo-dev-data:
