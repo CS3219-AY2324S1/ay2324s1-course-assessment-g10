@@ -7,6 +7,7 @@ import Add from "./pages/AddQuestionPage/AddQuestion";
 import { useSelector } from 'react-redux';
 import { selectIsAuthenticated, selectUser } from './reducers/authSlice'
 import LoginPage from './pages/LoginPage';
+import RegistrationPage from './pages/RegistrationPage';
 
 
 function App() {
@@ -30,7 +31,7 @@ function App() {
           ) :
           (<Routes>
             <Route path="/login" element={<LoginPage />} />
-            {/* <Route path="/register" element={<RegistrationPage />} /> */}
+            <Route path="/register" element={<RegistrationPage />} />
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>)
         }
