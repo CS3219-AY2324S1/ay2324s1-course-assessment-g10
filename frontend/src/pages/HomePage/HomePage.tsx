@@ -5,77 +5,59 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   Question,
   initializeData,
-  QuestionData,
 } from "../AddQuestionPage/QuestionData";
 
 function HomePage() {
   let history = useNavigate();
 
-  const [QuestionData, setQuestionData] = useState(initializeData());
+  const [questionData, setQuestionData] = useState(initializeData());
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredData, setFilteredData] = useState(questionData);
+  const viewQuestion = useNavigate();
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (event: React.MouseEvent<HTMLButtonElement>, id: number) => {
+    event.stopPropagation();
     const confirmed = window.confirm(
       "Are you sure you want to delete this question?"
     );
 
     if (confirmed) {
-      // Find the index of the question to delete in the QuestionData array
-      const dataIndex = QuestionData.findIndex(
-        (item: Question) => item.id === id
+      const updatedQuestionData = questionData.filter(
+        (item: Question) => item.id !== id
       );
+      setQuestionData(updatedQuestionData);
 
-      // Find the index of the question to delete in the filteredData array
-      const filteredIndex = filteredData.findIndex(
-        (item: Question) => item.id === id
+      const updatedFilteredData = filteredData.filter(
+        (item: Question) => item.id !== id
       );
+      setFilteredData(updatedFilteredData);
 
-      if (dataIndex !== -1) {
-        // Remove the question from the QuestionData array
-        QuestionData.splice(dataIndex, 1);
-      }
+      localStorage.setItem("QuestionData", JSON.stringify(updatedQuestionData));
 
-      if (filteredIndex !== -1) {
-        // Remove the question from the filteredData array
-        filteredData.splice(filteredIndex, 1);
-      }
-
-      // Update local storage with the modified QuestionData
-      localStorage.setItem("QuestionData", JSON.stringify(QuestionData));
-
-      // Navigate back to the homepage
       history("/");
     } else {
       // User canceled, do nothing
     }
   };
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredData, setFilteredData] = useState(QuestionData);
-
   const handleSearchInputChange = (event: any) => {
     const query = event.target.value;
     setSearchQuery(query);
 
     if (query === "") {
-      // If the search query is empty, revert to showing the original data
-      setFilteredData(QuestionData);
+      setFilteredData(questionData);
       return;
     }
 
-    // Filter the tableData based on the search query
-    const filtered = QuestionData.filter((item: Question) =>
+    const filtered = questionData.filter((item: Question) =>
       Object.values(item).some((value) => {
-        // Check if the value is a string before converting to lowercase
         if (typeof value === "string") {
           return value.toLowerCase().includes(query.toLowerCase());
         }
-
-        // If it's not a string, convert it to a string and then check for inclusion
         return String(value).toLowerCase().includes(query.toLowerCase());
       })
     );
 
-    // Set the new filtered data
     setFilteredData(filtered);
   };
 
@@ -115,7 +97,7 @@ function HomePage() {
         </thead>
         <tbody>
           {filteredData.map((item: Question) => (
-            <tr key={item.id}>
+            <tr key={item.id} onClick={() => viewQuestion(`/question/${item.id}`)} className="table-row">
               <td>{item.id}</td>
               <td>{item.title}</td>
               <td>{item.description}</td>
@@ -124,8 +106,8 @@ function HomePage() {
                 <div
                   style={{
                     display: "flex",
-                    justifyContent: "center", // Horizontally center the box
-                    alignItems: "center", // Vertically center the box
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
                   <div
@@ -138,7 +120,7 @@ function HomePage() {
                           : "rgba(255, 0, 0, 0.3)",
                       padding: "4px",
                       borderRadius: "5px",
-                      width: "30px", // Set the width here
+                      width: "30px",
                       textAlign: "center",
                       fontWeight: "bold",
                       color: "white",
@@ -151,7 +133,7 @@ function HomePage() {
               <td>
                 <button
                   className="delete-button"
-                  onClick={() => handleDelete(item.id)}
+                  onClick={(event) => handleDelete(event, item.id)}
                 >
                   <i className="trash-icon"></i>
                 </button>

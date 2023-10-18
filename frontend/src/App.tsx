@@ -4,6 +4,7 @@ import './App.css';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import  HomePage  from "./pages/HomePage/HomePage";
 import Add from "./pages/AddQuestionPage/AddQuestion";
+import ViewQuestion from "./pages/ViewQuestionPage/ViewQuestion";
 import { Provider } from 'react-redux';
 
 
@@ -16,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path = "/create" element={<Add />} />
+          <Route path="/question/:id" element={<ViewQuestion />} />
         </Routes>
       </Router>
     </div>

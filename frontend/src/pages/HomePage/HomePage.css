@@ -80,14 +80,20 @@
   border-collapse: collapse; /* Remove the borders between table cells */
   background-color: transparent;
   border-top: 1px solid #ffffff;
+  table-layout: fixed;
 }
 
 .question-table th,
 .question-table td {
+  max-width: 200px;
   padding: 10px;
   border-bottom: 1px solid #ffffff;
   text-align: center;
   color: #ffffff;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis; /* Truncate text with an ellipsis */
+  vertical-align: top;
 }
 
 .question-table th {
@@ -97,6 +103,10 @@
 
 .question-table tbody tr {
   background-color: transparent;
+}
+
+.table-row:hover {
+  cursor: pointer;
 }
 
 .modal-background {
