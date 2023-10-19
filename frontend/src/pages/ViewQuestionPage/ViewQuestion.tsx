@@ -73,7 +73,7 @@ function ViewQuestion() {
                 <label>Question Description:</label>
                 <div
                     className="description-content"
-                    contentEditable="true"
+                    contentEditable="false"
                 >
                     {question.description}
                 </div>

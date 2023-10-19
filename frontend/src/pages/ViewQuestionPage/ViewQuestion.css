@@ -27,6 +27,9 @@
   background-color: transparent;
   border: none;
   outline: none; /* Remove the default focus outline */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .back-button {
