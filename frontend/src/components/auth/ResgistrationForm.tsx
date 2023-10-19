@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { User, setUser } from '../../reducers/authSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { register } from '../../api/auth';
 
 export default function RegistrationForm() {
   const [username, setUsername] = useState('');
@@ -22,13 +23,21 @@ export default function RegistrationForm() {
   //TODO: require integration with backend API
   const onSubmit = (e: any) => {
     e.preventDefault();
-    const user: User = {
-      id: '12345',
-      username: username,
-      role: 'User'
-    }
-
-    dispatch(setUser(user));
+    register(username, password).then(response => {
+      const user = response.data.user;
+      //TODO: do something w access token?
+      const access_token = response.data.token;
+      dispatch(setUser(user));
+      navigate('/');
+    }).catch((err) => {
+      console.log(err);
+      toast({
+        title: 'Failed to Login',
+        description: 'Incorrect username or password',
+        status: 'error',
+        isClosable: true,
+      });
+    })
   }
 
   return (
@@ -69,4 +78,8 @@ export default function RegistrationForm() {
       </form>
     </Box >
   )
+}
+
+function toast(arg0: { title: string; description: string; status: string; isClosable: boolean; }) {
+  throw new Error('Function not implemented.');
 }
