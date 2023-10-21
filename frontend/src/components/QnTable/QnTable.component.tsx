@@ -12,12 +12,14 @@ import {
   Tag,
   Center,
   IconButton,
+  Text,
 } from "@chakra-ui/react";
 import { Paginator } from "../Paginator/Paginator.component";
 import { Question } from "../../models/Quesiton.model";
 import { diffToScheme, isAdmin } from "../../helper/UIHelper";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { deleteDummyQn } from "../../data/sampleqn";
+import { Link } from "react-router-dom";
 
 export type TableProp = {
   filteredQn: Question[];
@@ -27,7 +29,11 @@ export type TableProp = {
 const QnEntry = (qn: Question) => {
   return (
     <Tr>
-      <Td>{qn.displayedQuestion}</Td>
+      <Td>
+        <Link to={`/view/${qn.id}`}>
+          <Text>{qn.displayedQuestion}</Text>
+        </Link>
+      </Td>
       <Td>
         <HStack spacing={1}>
           {qn.categories.map((qntype) => (
