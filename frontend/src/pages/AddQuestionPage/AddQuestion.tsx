@@ -78,9 +78,9 @@ function Add() {
             onChange={(e) => setComplexity(e.target.value)}
           >
             <option value="">Select Complexity</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
+            <option value="1">Easy</option>
+            <option value="2">Medium</option>
+            <option value="3">Hard</option>
           </Form.Control>
         </Form.Group>
 

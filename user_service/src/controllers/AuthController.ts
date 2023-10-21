@@ -70,7 +70,9 @@ export const register = async (req: any, res: any) => {
             maxAge: 3600000
         });
 
-        res.status(201).json({ access_token });
+        res.status(201).json({ 
+            user: payload,            
+            access_token: access_token });
     } catch (error) {
         res.status(400).json({
             error: error,
@@ -100,7 +102,9 @@ export const login = async (req: any, res: any) => {
         httpOnly: true,
         maxAge: 3600000
     });
-    res.status(200).json({ access_token });
+    res.status(200).json({ 
+        user: payload,
+        access_token: access_token });
 };
 
 //@desc         get the session user stored in the auth header
