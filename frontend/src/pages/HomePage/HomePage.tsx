@@ -1,12 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./HomePage.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  Question,
-  initializeData,
-  QuestionData,
-} from "../AddQuestionPage/QuestionData";
+import { useNavigate } from "react-router-dom";
+import { Question, initializeData } from "../AddQuestionPage/QuestionData";
 
 function HomePage() {
   let history = useNavigate();
@@ -79,89 +75,7 @@ function HomePage() {
     setFilteredData(filtered);
   };
 
-  return (
-    <div className="homepage">
-      <div className="background" />
-
-      <div className="navbar">
-        <div className="title">Peer Prep</div>
-      </div>
-
-      <div className="content-container">
-        <input
-          type="text"
-          className="search-bar"
-          placeholder="Search questions"
-          value={searchQuery}
-          onChange={handleSearchInputChange}
-        />
-        <div className="add-question-button">
-          <Link to="/create" className="add-question-text">
-            Add Question
-          </Link>
-        </div>
-      </div>
-
-      <table className="question-table">
-        <thead>
-          <tr>
-            <th>Question Id</th>
-            <th>Question Title</th>
-            <th>Question Description</th>
-            <th>Question Category</th>
-            <th>Question Complexity</th>
-            <th>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredData.map((item: Question) => (
-            <tr key={item.id}>
-              <td>{item.id}</td>
-              <td>{item.title}</td>
-              <td>{item.description}</td>
-              <td>{item.category}</td>
-              <td>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center", // Horizontally center the box
-                    alignItems: "center", // Vertically center the box
-                  }}
-                >
-                  <div
-                    style={{
-                      backgroundColor:
-                        item.complexity === "1"
-                          ? "rgba(0, 255, 0, 0.3)"
-                          : item.complexity === "2"
-                          ? "rgba(255, 255, 0, 0.3)"
-                          : "rgba(255, 0, 0, 0.3)",
-                      padding: "4px",
-                      borderRadius: "5px",
-                      width: "30px", // Set the width here
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      color: "white",
-                    }}
-                  >
-                    {item.complexity}
-                  </div>
-                </div>
-              </td>
-              <td>
-                <button
-                  className="delete-button"
-                  onClick={() => handleDelete(item.id)}
-                >
-                  <i className="trash-icon"></i>
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+  return <></>;
 }
 
 export default HomePage;
