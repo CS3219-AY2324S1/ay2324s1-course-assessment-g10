@@ -7,6 +7,7 @@ import {
   initializeData,
   QuestionData,
 } from "../AddQuestionPage/QuestionData";
+import NavigationBar from "../../components/NavigationBar";
 
 function HomePage() {
   let history = useNavigate();
@@ -83,10 +84,7 @@ function HomePage() {
     <div className="homepage">
       <div className="background" />
 
-      <div className="navbar">
-        <div className="title">Peer Prep</div>
-      </div>
-
+      <NavigationBar />
       <div className="content-container">
         <input
           type="text"
