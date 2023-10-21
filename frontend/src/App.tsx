@@ -1,28 +1,46 @@
-import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import './App.css';
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import  HomePage  from "./pages/HomePage/HomePage";
+import React from "react";
+// import "./App.css";
+import { RouterProvider, createBrowserRouter, Outlet } from "react-router-dom";
+import HomePage from "./pages/HomePage/HomePage";
 import Add from "./pages/AddQuestionPage/AddQuestion";
-import { Provider } from 'react-redux';
-import {
-  Navbar
-} from "./components/Navbar/Navbar.component";
+import { Navbar } from "./components/Navbar/Navbar.component";
+import BankPage from "./pages/BankPage/Bank.page";
+import ViewQuestion, {
+  qnLoader,
+} from "./pages/ViewQuestionPage/ViewQuestion.page";
+import { Box, Center, Heading } from "@chakra-ui/react";
 
+const NavbarWrapper = () => (
+  <div>
+    <Navbar />
+    <Box width="100%" height="90vh">
+      <Outlet />
+    </Box>
+  </div>
+);
 
+const PageNotFound = () => (
+  <Center>
+    <Heading>404 Page does not exist!</Heading>
+  </Center>
+);
 
-function App() {
-  return (
-    <div className="app">
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path = "/create" element={<Add />} />
-        </Routes>
-      </Router>
-    </div>
-  );
-}
+const router = createBrowserRouter([
+  {
+    path: "/",
+    Component: NavbarWrapper,
+    children: [
+      { path: "/", Component: HomePage },
+      { path: "/create", Component: Add },
+      { path: "/bank", Component: BankPage },
+      { path: "/view/:id", Component: ViewQuestion, loader: qnLoader },
+    ],
+  },
+  { path: "*", Component: PageNotFound },
+]);
+
+const App = () => {
+  return <RouterProvider router={router} />;
+};
 
 export default App;
