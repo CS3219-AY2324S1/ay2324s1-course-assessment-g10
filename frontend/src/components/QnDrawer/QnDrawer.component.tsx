@@ -17,7 +17,6 @@ import {
 } from "@chakra-ui/react";
 import { Question } from "../../models/Quesiton.model";
 import { ArrowRightIcon } from "@chakra-ui/icons";
-import { qnLoader } from "../../pages/ViewQuestionPage/ViewQuestion.page";
 import { diffToScheme } from "../../helper/UIHelper";
 
 interface qnProp {
@@ -27,7 +26,7 @@ interface qnProp {
 
 export const QnDrawer = (prop: qnProp) => {
   const { question, size } = prop;
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure({ defaultIsOpen: true });
 
   return (
     <>
