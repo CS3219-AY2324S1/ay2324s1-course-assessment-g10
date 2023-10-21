@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
-import { Question, initializeData, QuestionData } from "./QuestionData";
+import { Question, initializeData } from "./QuestionData";
 import "./AddQuestion.css";
 import "../HomePage/HomePage.css";
 // import '../App.css'
@@ -54,11 +54,6 @@ function Add() {
   return (
     <div className="homepage">
       <div className="background" />
-
-      <div className="navbar">
-        <div className="title">Peer Prep</div>
-      </div>
-
       <Form
         className="d-grid gap-2"
         style={{ margin: "8rem auto", width: "80%", alignItems: "center" }}
