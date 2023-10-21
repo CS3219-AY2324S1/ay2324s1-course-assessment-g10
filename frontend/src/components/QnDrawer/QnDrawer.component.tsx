@@ -5,19 +5,17 @@ import {
   DrawerOverlay,
   IconButton,
   useDisclosure,
-  Text,
   DrawerContent,
   HStack,
   Tag,
   Divider,
-  Center,
-  VStack,
   Box,
   DrawerCloseButton,
 } from "@chakra-ui/react";
 import { Question } from "../../models/Quesiton.model";
 import { ArrowRightIcon } from "@chakra-ui/icons";
 import { diffToScheme } from "../../helper/UIHelper";
+import { MarkdownViewer } from "../MarkdownVIewer/MarkdownViewer";
 
 interface qnProp {
   question: Question;
@@ -60,9 +58,7 @@ export const QnDrawer = (prop: qnProp) => {
           </DrawerHeader>
           <DrawerBody>
             <Box>
-              {question.descMd.split("\n").map((txt) => (
-                <Text>{txt}</Text>
-              ))}
+              <MarkdownViewer markdown={question.descMd} />
             </Box>
           </DrawerBody>
         </DrawerContent>

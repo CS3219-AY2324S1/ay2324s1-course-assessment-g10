@@ -3,6 +3,7 @@ import "./HomePage.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 import { Question, initializeData } from "../AddQuestionPage/QuestionData";
+import { MarkdownEditor } from "../../components/MarkdownEditor/MarkdownEditor.component";
 
 function HomePage() {
   let history = useNavigate();
@@ -75,7 +76,7 @@ function HomePage() {
     setFilteredData(filtered);
   };
 
-  return <></>;
+  return <MarkdownEditor></MarkdownEditor>;
 }
 
 export default HomePage;
