@@ -115,7 +115,11 @@ export const getSessionUser = async (req: any, res: any) => {
     const id = req.auth?.id;
     if (id === undefined) {
         console.log(`result of parsing token: ${req.auth}`);
-
+        
+        res.cookie('AUTH_SESSION', '', {
+            expires: new Date(0), // Set the expiration time to 01 January 1970 00:00:00 UTC
+            httpOnly: true,
+        })
         res.status(200).json({
             user: null
         });
@@ -138,6 +142,10 @@ export const getSessionUser = async (req: any, res: any) => {
             }
         })
     } catch (error) {
+        res.cookie('AUTH_SESSION', '', {
+            expires: new Date(0), // Set the expiration time to 01 January 1970 00:00:00 UTC
+            httpOnly: true,
+        })
         res.status(400).json({
             error: error,
             message: 'Invalid ID. User not found in database.'
