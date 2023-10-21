@@ -28,8 +28,7 @@ export default function RegistrationForm() {
     e.preventDefault();
     register(username, password).then(response => {
       const user = response.data.user;
-      //TODO: do something w access token?
-      const access_token = response.data.token;
+
       dispatch(setUser(user));
       navigate('/');
     }).catch((err) => {
