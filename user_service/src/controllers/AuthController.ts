@@ -23,13 +23,13 @@ async function authenticate(loginName: string, password: string) {
             username: loginName
         }
     });
-    
+
     if (user === null) {
-        return {isCorrectPassword: false , user: null};
+        return { isCorrectPassword: false, user: null };
     }
     const isCorrectPassword = await bcrypt.compare(password, user?.hashedPassword!);
-    
-    return {isCorrectPassword , user}
+
+    return { isCorrectPassword, user }
 }
 
 function createToken(payload: any) {
@@ -54,20 +54,22 @@ export const register = async (req: any, res: any) => {
     try {
         const hPassword = await bcrypt.hash(password, 10);
 
-        const user = await prisma.user.create({ data: { 
-            username: username, 
-            hashedPassword: hPassword, 
-            role: "USER" 
-        }});
+        const user = await prisma.user.create({
+            data: {
+                username: username,
+                hashedPassword: hPassword,
+                role: "USER"
+            }
+        });
 
-        const {hashedPassword, ...payload} = user
+        const { hashedPassword, ...payload } = user
         const access_token = createToken(payload);
 
         res.status(201).json({ access_token });
     } catch (error) {
-        res.status(400).json({ 
+        res.status(400).json({
             error: error,
-            message: 'Failed to register user!' 
+            message: 'Failed to register user!'
         })
     }
 };
@@ -79,15 +81,51 @@ export const login = async (req: any, res: any) => {
     const { username, password } = req.body;
     const { isCorrectPassword, user } = await authenticate(username, password)
 
-    if ( isCorrectPassword === false) {
+    if (isCorrectPassword === false) {
         const status = 401;
         const message = 'Incorrect username or password';
         res.status(status).json({ status, message });
         return;
     }
 
-    const { hashedPassword, ...payload} = user!;
+    const { hashedPassword, ...payload } = user!;
     const access_token = createToken(payload);
     res.status(200).json({ access_token });
 };
 
+//@desc         get the session user stored in the auth header
+//@middleware   jwtCheckNoCredentials
+//@route        GET /login
+//@access       all users
+export const getSessionUser = async (req: any, res: any) => {
+    const id = req.auth.id;
+    if (id === null) {
+        res.status(200).json({
+            user: null
+        });
+        
+        return;
+    }
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: id
+            }
+        });
+
+        res.status(200).json({
+            user: {
+                _id: user?.id,
+                loginName: user?.username,
+                role: user?.role
+            }
+        })
+    } catch (error) {
+    res.status(400).json({
+        error: error,
+        message: 'Invalid ID. User not found in database.'
+    })
+}
+
+}
