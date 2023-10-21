@@ -45,7 +45,7 @@ export const register = async (req: any, res: any) => {
     const { username, password } = req.body;
 
     if (await isRegistered(username) === true) {
-        const status = 401;
+        const status = 409;
         const message = 'Credentials already exist';
         res.status(status).json({ status, message });
         return;
@@ -64,6 +64,11 @@ export const register = async (req: any, res: any) => {
 
         const { hashedPassword, ...payload } = user
         const access_token = createToken(payload);
+
+        res.cookie('AUTH_SESSION', access_token, {
+            httpOnly: true,
+            maxAge: 3600000
+        });
 
         res.status(201).json({ access_token });
     } catch (error) {
@@ -90,6 +95,11 @@ export const login = async (req: any, res: any) => {
 
     const { hashedPassword, ...payload } = user!;
     const access_token = createToken(payload);
+
+    res.cookie('AUTH_SESSION', access_token, {
+        httpOnly: true,
+        maxAge: 3600000
+    });
     res.status(200).json({ access_token });
 };
 
@@ -98,12 +108,12 @@ export const login = async (req: any, res: any) => {
 //@route        GET /login
 //@access       all users
 export const getSessionUser = async (req: any, res: any) => {
-    const id = req.auth.id;
-    if (id === null) {
+    const id = req.auth?.id;
+    if (id === undefined) {
         res.status(200).json({
             user: null
         });
-        
+
         return;
     }
 
@@ -122,10 +132,10 @@ export const getSessionUser = async (req: any, res: any) => {
             }
         })
     } catch (error) {
-    res.status(400).json({
-        error: error,
-        message: 'Invalid ID. User not found in database.'
-    })
-}
+        res.status(400).json({
+            error: error,
+            message: 'Invalid ID. User not found in database.'
+        })
+    }
 
 }
