@@ -6,7 +6,8 @@ import {
   Input,
   Button,
   Heading,
-  HStack
+  HStack,
+  useToast
 } from '@chakra-ui/react'
 import { useState } from 'react';
 import { User, setUser } from '../../reducers/authSlice';
@@ -19,6 +20,8 @@ export default function RegistrationForm() {
   const [password, setPassword] = useState('');
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const toast = useToast();
+
 
   //TODO: require integration with backend API
   const onSubmit = (e: any) => {
