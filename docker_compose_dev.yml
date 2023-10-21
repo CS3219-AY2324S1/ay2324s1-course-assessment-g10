@@ -19,7 +19,9 @@ services:
     build: 
       context: ./user_service
     environment:
-      - PORT=8081
+      PORT: 8081
+      SECRET_KEY: ${SECRET_KEY}
+
     ports:
       - "8081:8081"
     depends_on:

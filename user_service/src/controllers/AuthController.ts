@@ -34,7 +34,7 @@ async function authenticate(loginName: string, password: string) {
 
 function createToken(payload: any) {
     const expiresIn = '1h'
-    return jwt.sign(payload, process.env.SECRET_KEY || 'testingKey', { expiresIn });
+    return jwt.sign(payload, process.env.SECRET_KEY || 'YOUR_SECRET_KEY', { expiresIn });
 }
 
 
@@ -114,6 +114,8 @@ export const login = async (req: any, res: any) => {
 export const getSessionUser = async (req: any, res: any) => {
     const id = req.auth?.id;
     if (id === undefined) {
+        console.log(`result of parsing token: ${req.auth}`);
+
         res.status(200).json({
             user: null
         });
