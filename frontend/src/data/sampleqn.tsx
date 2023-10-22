@@ -1,4 +1,4 @@
-import { Question } from "../models/Quesiton.model";
+import { Question } from "../models/Question.model";
 
 const dummy = [
   [1, "Reverse a string", ["t2", "t3"], 0.1, "dummy 1"],

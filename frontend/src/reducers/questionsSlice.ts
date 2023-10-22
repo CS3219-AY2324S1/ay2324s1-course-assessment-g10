@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from './store';
-import { QnFilter, Question } from '../models/Quesiton.model';
+import { QnFilter, Question } from '../models/Question.model';
 
 
 const questionsSlice = createSlice({
@@ -26,7 +26,7 @@ export const selectFilteredQuestions = (state: RootState, filter: QnFilter) => {
         }
     
         if (filter.tagFilter && filter.tagFilter.size) {
-          if (qn.categories.every((tag) => !filter.tagFilter?.has(tag))) {
+          if (qn.topics.every((tag) => !filter.tagFilter?.has(tag))) {
             return false;
           }
         }

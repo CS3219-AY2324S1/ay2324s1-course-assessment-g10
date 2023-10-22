@@ -15,7 +15,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Paginator } from "../Paginator/Paginator.component";
-import { Question } from "../../models/Quesiton.model";
+import { Question } from "../../models/Question.model";
 import { diffToScheme, isAdmin } from "../../helper/UIHelper";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { deleteDummyQn } from "../../data/sampleqn";
@@ -36,7 +36,7 @@ const QnEntry = (qn: Question) => {
       </Td>
       <Td>
         <HStack spacing={1}>
-          {qn.categories.map((qntype) => (
+          {qn.topics.map((qntype) => (
             <Tag colorScheme="blue">{qntype}</Tag>
           ))}
         </HStack>

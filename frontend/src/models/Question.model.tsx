@@ -2,7 +2,7 @@ export class Question {
   title: string;
   descMd: string;
   displayedQuestion: string;
-  categories: string[];
+  topics: string[];
   difficulty: number;
   id: number;
 
@@ -15,7 +15,7 @@ export class Question {
   ) {
     this.title = title;
     this.descMd = descMd;
-    this.categories = categories;
+    this.topics = categories;
     this.difficulty = difficulty;
     this.id = id;
     this.displayedQuestion = `${id}.  ${title}`;

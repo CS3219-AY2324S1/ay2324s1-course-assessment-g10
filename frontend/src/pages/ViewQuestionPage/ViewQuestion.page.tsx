@@ -1,7 +1,7 @@
 import { redirect, LoaderFunction, useLoaderData } from "react-router-dom";
 import { HStack, VStack, Box, Heading, Center } from "@chakra-ui/react";
 import { dummyQnLookup } from "../../data/sampleqn";
-import { Question } from "../../models/Quesiton.model";
+import { Question } from "../../models/Question.model";
 import { QnDrawer } from "../../components/QnDrawer/QnDrawer.component";
 
 import "./ViewQuestion.page.css";

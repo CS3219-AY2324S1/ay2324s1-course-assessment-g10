@@ -12,7 +12,7 @@ import {
   Box,
   DrawerCloseButton,
 } from "@chakra-ui/react";
-import { Question } from "../../models/Quesiton.model";
+import { Question } from "../../models/Question.model";
 import { ArrowRightIcon } from "@chakra-ui/icons";
 import { diffToScheme } from "../../helper/UIHelper";
 import { MarkdownViewer } from "../MarkdownVIewer/MarkdownViewer";
@@ -51,7 +51,7 @@ export const QnDrawer = (prop: qnProp) => {
                 Difficulty: {question.difficulty}
               </Tag>
               <Divider orientation="vertical" padding="2"></Divider>
-              {question.categories.map((qnTag) => (
+              {question.topics.map((qnTag) => (
                 <Tag>{qnTag}</Tag>
               ))}
             </HStack>

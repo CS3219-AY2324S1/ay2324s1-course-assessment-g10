@@ -1,5 +1,5 @@
 import { Flex, HStack, Input } from "@chakra-ui/react";
-import { QnFilter } from "../../models/Quesiton.model";
+import { QnFilter } from "../../models/Question.model";
 import React, { useState } from "react";
 
 export interface FilterBarProps extends QnFilter {
