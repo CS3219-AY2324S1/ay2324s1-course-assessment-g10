@@ -2,8 +2,8 @@ import { Flex, HStack, Input } from "@chakra-ui/react";
 import { QnFilter } from "../../models/Quesiton.model";
 import React, { useState } from "react";
 
-export interface filterprop extends QnFilter {
-  onFilterChange?: (filter: QnFilter) => void; // refilters original db
+export interface FilterBarProps extends QnFilter {
+  setFilter : (filter: QnFilter) => void; // refilters original db
 }
 
 export const FilterBar = ({
@@ -11,9 +11,10 @@ export const FilterBar = ({
   tagFilter = new Set(),
   difficultyFilter = [0, 100],
   titleAscd = true,
-  onFilterChange,
-}: filterprop) => {
+  setFilter,
+}: FilterBarProps) => {
   const [txtFilter, setTextFilter] = useState(qnFilter);
+
   const filterChange = (event: React.FormEvent<HTMLInputElement>) => {
     setTextFilter((event.target as HTMLInputElement).value);
     const newFilter: QnFilter = {
@@ -23,8 +24,9 @@ export const FilterBar = ({
       titleAscd: titleAscd,
     };
 
-    if (onFilterChange) onFilterChange(newFilter);
+    if (setFilter) setFilter(newFilter);
   };
+
   return (
     <Flex w="80%" px="6" py="4" align={"center"} justify={"space-between"}>
       <HStack spacing="1">
@@ -32,7 +34,7 @@ export const FilterBar = ({
           variant="outline"
           placeholder={qnFilter || "Find Questions"}
           borderRadius="15"
-          onChange={(ev) => filterChange(ev)}
+          onChange={filterChange}
           value={txtFilter}
         ></Input>
       </HStack>
