@@ -54,7 +54,6 @@ function App() {
 
   const router = createBrowserRouter([
     {
-      path: "/",
       Component: NavbarWrapper,
       children: isAuthenticated ? loggedInRoutes : publicRoutes
     },
