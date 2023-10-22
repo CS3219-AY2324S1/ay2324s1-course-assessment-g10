@@ -1,6 +1,6 @@
 import React from "react";
 // import "./App.css";
-import { RouterProvider, createBrowserRouter, Outlet } from "react-router-dom";
+import { RouterProvider, createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import HomePage from "./pages/HomePage/HomePage";
 import Add from "./pages/AddQuestionPage/AddQuestion";
 import { Navbar } from "./components/Navbar/Navbar.component";
@@ -9,6 +9,11 @@ import ViewQuestion, {
   qnLoader,
 } from "./pages/ViewQuestionPage/ViewQuestion.page";
 import { Box, Center, Heading } from "@chakra-ui/react";
+import LoginPage from "./pages/LoginPage";
+import ResgistrationPage from "./pages/RegistrationPage";
+import './App.css';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated, selectUser } from './reducers/authSlice'
 
 const NavbarWrapper = () => (
   <div>
@@ -25,22 +30,40 @@ const PageNotFound = () => (
   </Center>
 );
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    Component: NavbarWrapper,
-    children: [
-      { path: "/", Component: HomePage },
-      { path: "/create", Component: Add },
-      { path: "/bank", Component: BankPage },
-      { path: "/view/:id", Component: ViewQuestion, loader: qnLoader },
-    ],
-  },
-  { path: "*", Component: PageNotFound },
-]);
+const publicRoutes = [
+  {path: "/login", Component: LoginPage},
+  {path: "/register", Component: ResgistrationPage},
+  {path: "*", element: (<Navigate to="/login" />)} //redirect all other routes to /login
+]
 
-const App = () => {
-  return <RouterProvider router={router} />;
-};
+const loggedInRoutes = [
+  { path: "/", Component: HomePage },
+  { path: "/create", Component: Add },
+  { path: "/bank", Component: BankPage },
+  { path: "/view/:id", Component: ViewQuestion, loader: qnLoader },
+]
+
+
+function App() {
+
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const user = useSelector(selectUser)
+
+  console.log(user)
+  console.log(isAuthenticated)
+
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      Component: NavbarWrapper,
+      children: isAuthenticated ? loggedInRoutes : publicRoutes
+    },
+    { path: "*", Component: PageNotFound },
+  ]);
+
+  return (
+    <RouterProvider router={router} />
+  );
+}
 
 export default App;

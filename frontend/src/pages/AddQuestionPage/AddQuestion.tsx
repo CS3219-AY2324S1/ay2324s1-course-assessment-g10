@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Question, initializeData } from "./QuestionData";
 import "./AddQuestion.css";
 import "../HomePage/HomePage.css";
+import NavigationBar from "../../components/NavigationBar";
 // import '../App.css'
 
 function Add() {
