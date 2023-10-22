@@ -14,6 +14,7 @@ export const FilterBar = ({
   setFilter,
 }: FilterBarProps) => {
   const [txtFilter, setTextFilter] = useState(qnFilter);
+
   const filterChange = (event: React.FormEvent<HTMLInputElement>) => {
     setTextFilter((event.target as HTMLInputElement).value);
     const newFilter: QnFilter = {
@@ -23,8 +24,9 @@ export const FilterBar = ({
       titleAscd: titleAscd,
     };
 
-    if (onFilterChange) onFilterChange(newFilter);
+    if (setFilter) setFilter(newFilter);
   };
+
   return (
     <Flex w="80%" px="6" py="4" align={"center"} justify={"space-between"}>
       <HStack spacing="1">
@@ -32,7 +34,7 @@ export const FilterBar = ({
           variant="outline"
           placeholder={qnFilter || "Find Questions"}
           borderRadius="15"
-          onChange={(ev) => filterChange(ev)}
+          onChange={filterChange}
           value={txtFilter}
         ></Input>
       </HStack>

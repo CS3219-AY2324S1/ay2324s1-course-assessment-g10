@@ -1,52 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { QnTable } from "../../components/QnTable/QnTable.component";
 import { FilterBar } from "../../components/QnFilter/QnFilter.component";
 import { VStack } from "@chakra-ui/react";
 import { QnFilter } from "../../models/Quesiton.model";
 import { Question } from "../../models/Quesiton.model";
 import { dummyQn } from "../../data/sampleqn";
+import { useDispatch, useSelector } from "react-redux";
+import { selectFilteredQuestions, setQuestions } from "../../reducers/questionsSlice";
+import { RootState } from "../../reducers/store";
 
-const filterQn = (questions: Question[], filter: QnFilter) => {
-  return questions.filter((qn) => {
-    if (filter.difficultyFilter) {
-      if (
-        qn.difficulty > filter.difficultyFilter[1] ||
-        qn.difficulty < filter.difficultyFilter[0]
-      )
-        return false;
-    }
-
-    if (filter.tagFilter && filter.tagFilter.size) {
-      if (qn.categories.every((tag) => !filter.tagFilter?.has(tag))) {
-        return false;
-      }
-    }
-
-    if (filter.qnFilter) {
-      if (qn.displayedQuestion.toLowerCase().indexOf(filter.qnFilter) === -1) {
-        return false;
-      }
-    }
-
-    return true;
-  });
-};
 
 const BankPage = () => {
-  const allQuestion = dummyQn;
-  const [filter, changeFilter] = useState<QnFilter>({});
-  const [filteredQn, setFilteredQn] = useState<Question[]>(
-    filterQn(allQuestion, filter)
-  );
-  const onFilterChange = (newFilter: QnFilter) => {
-    changeFilter(newFilter);
-    setFilteredQn(filterQn(allQuestion, newFilter));
-  };
+  const [filter, setFilter] = useState<QnFilter>({});
+  const filteredQns = useSelector((state : RootState) => selectFilteredQuestions(state, filter))
+  const dispatch = useDispatch();
+  
+  useEffect(() => {
+    console.log('dispatching...')
+    setTimeout(() => dispatch(setQuestions(dummyQn)), 3000) //simulating network fetch
+  }, [])
+
   return (
     <VStack spacing="3">
-      <FilterBar onFilterChange={onFilterChange} />
+      <FilterBar setFilter={setFilter} />
 
-      <QnTable filteredQn={filteredQn} pageSize={7}></QnTable>
+      <QnTable filteredQn={filteredQns} pageSize={7}></QnTable>
     </VStack>
   );
 };
