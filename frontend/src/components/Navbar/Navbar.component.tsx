@@ -2,8 +2,14 @@ import React from "react";
 import { Flex, Button, HStack, chakra } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { isLoggedin } from "../../helper/UIHelper";
+import { useSelector } from "react-redux";
+import { selectIsAuthenticated } from "../../reducers/authSlice";
+import LogoutButton from "../auth/LogoutButton";
 
 export const Navbar = () => {
+
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
   return (
     <chakra.header boxShadow={"md"} minH="10vh" zIndex="999">
       <Flex w="100%" px="6" py="2vh" align={"center"} justify={"space-between"}>
@@ -34,15 +40,19 @@ export const Navbar = () => {
         </HStack>
 
         <HStack>
-          {isLoggedin ? (
+          {isAuthenticated ? (
             <>
-              <Button variant="ghost">Sign out</Button>
+              <LogoutButton />
               <Button colorScheme="blue">View Account</Button>
             </>
           ) : (
             <>
-              <Button variant="ghost">Sign in</Button>
-              <Button>Sign up</Button>
+              <Link to="/login">
+                <Button variant="ghost" >Log in</Button>
+              </Link>
+              <Link to="/register">
+                <Button>Sign up</Button>
+              </Link>
             </>
           )}
         </HStack>
