@@ -1,5 +1,5 @@
 import { Button } from "@chakra-ui/react"
-import { User, clearUser } from '../../reducers/authSlice';
+import { clearUser } from '../../reducers/authSlice';
 import { useDispatch } from 'react-redux';
 
 export default function LogoutButton() {
@@ -10,7 +10,7 @@ export default function LogoutButton() {
     }
 
     return (
-        <Button onClick={handleLogout}>
+        <Button variant="ghost" onClick={handleLogout}>
             Log out
         </Button>
     )

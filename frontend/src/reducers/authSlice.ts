@@ -4,16 +4,27 @@ import { RootState } from './store';
 interface User {
     id: String;
     username: String;
-    role: String;
+    role: 'ADMIN' | 'USER';
 };
 
 interface AuthState {
     user: User | null;
 };
 
+const dummyUser: User = {
+    id: '1',
+    username: 'Harro_world',
+    role: 'USER'
+}
+
+const dummyAdmin: User = {
+    id: '21',
+    username: 'admin',
+    role: 'ADMIN'
+}
 
 const initialState: AuthState = {
-    user: null
+    user: dummyUser // null
 }
 
 const userSlice = createSlice({

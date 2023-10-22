@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
-import { Question, initializeData, QuestionData } from "./QuestionData";
+import { Question, initializeData } from "./QuestionData";
 import "./AddQuestion.css";
 import "../HomePage/HomePage.css";
-import NavigationBar from "../../components/NavigationBar";
 // import '../App.css'
 
 function Add() {
@@ -55,9 +54,6 @@ function Add() {
   return (
     <div className="homepage">
       <div className="background" />
-
-      <NavigationBar />
-
       <Form
         className="d-grid gap-2"
         style={{ margin: "8rem auto", width: "80%", alignItems: "center" }}
