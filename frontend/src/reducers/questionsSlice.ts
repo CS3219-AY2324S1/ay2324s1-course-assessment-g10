@@ -11,6 +11,10 @@ const questionsSlice = createSlice({
     reducers: {
         setQuestions: (state, action) => {
             state.originalQuestions = action.payload;
+        },
+        removeQuestion: (state, action) => {
+          const { id } = action.payload;
+          state.originalQuestions = state.originalQuestions.filter(qn => qn.id !== id)
         }
     },
 });
@@ -41,5 +45,5 @@ export const selectFilteredQuestions = (state: RootState, filter: QnFilter) => {
       });
 }
 
-export const { setQuestions } = questionsSlice.actions;
+export const { setQuestions, removeQuestion } = questionsSlice.actions;
 export default questionsSlice.reducer;

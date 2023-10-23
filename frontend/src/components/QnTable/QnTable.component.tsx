@@ -13,22 +13,51 @@ import {
   Center,
   IconButton,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 import { Paginator } from "../Paginator/Paginator.component";
-import { Question } from "../../models/Quesiton.model";
+import { Question } from "../../models/Question.model";
 import { diffToScheme } from "../../helper/UIHelper";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { deleteDummyQn } from "../../data/sampleqn";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectIsAdmin } from "../../reducers/authSlice";
+import { delQuestion } from "../../api/questions";
+import { removeQuestion } from "../../reducers/questionsSlice";
+import { useDispatch } from "react-redux";
 
 export type TableProp = {
   filteredQn: Question[];
   pageSize?: number;
 };
 
-const QnEntry = (qn: Question, isAdmin: boolean) => {
+
+const QnEntry = (props : {
+  qn: Question, 
+}) => {
+  
+  const qn = props.qn;
+  const toast = useToast();
+  const dispatch = useDispatch();
+  const isAdmin = useSelector(selectIsAdmin);
+
+  function onDelete(id: number) {
+  
+    if (isAdmin) {
+      delQuestion(id.toString()).then((res) => {
+        dispatch(removeQuestion(id));
+      }).catch((err) => {
+        toast({
+          title: 'Unable to delete',
+          description: err.msg,
+          status: 'error',
+          isClosable: true,
+        })
+      })
+    }
+  }
+
   return (
     <Tr>
       <Td>
@@ -52,7 +81,7 @@ const QnEntry = (qn: Question, isAdmin: boolean) => {
             aria-label="Delete Qn"
             colorScheme="red"
             icon={<DeleteIcon />}
-            onClick={() => deleteDummyQn(qn.id)}
+            onClick={() => onDelete(qn.id)}
           />
         </Td>
       ) : (
@@ -112,7 +141,7 @@ export const QnTable = (pp: TableProp) => {
                 {isAdmin ? <Th>Modify/Delete</Th> : <></>}
               </Tr>
             </Thead>
-            <Tbody>{getCurrentPage(pageNumber).map((qn) => QnEntry(qn, isAdmin))}</Tbody>
+            <Tbody>{getCurrentPage(pageNumber).map((qn) => QnEntry({qn: qn}))}</Tbody>
           </Table>
         </Center>
       </TableContainer>
