@@ -15,18 +15,20 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Paginator } from "../Paginator/Paginator.component";
-import { Question } from "../../models/Question.model";
-import { diffToScheme, isAdmin } from "../../helper/UIHelper";
+import { Question } from "../../models/Quesiton.model";
+import { diffToScheme } from "../../helper/UIHelper";
 import { DeleteIcon } from "@chakra-ui/icons";
 import { deleteDummyQn } from "../../data/sampleqn";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectIsAdmin } from "../../reducers/authSlice";
 
 export type TableProp = {
   filteredQn: Question[];
   pageSize?: number;
 };
 
-const QnEntry = (qn: Question) => {
+const QnEntry = (qn: Question, isAdmin: boolean) => {
   return (
     <Tr>
       <Td>
@@ -63,6 +65,7 @@ const QnEntry = (qn: Question) => {
 export const QnTable = (pp: TableProp) => {
   const { filteredQn, pageSize = 10 } = pp;
   const [pageNumber, changePage] = useState(1);
+  const isAdmin = useSelector(selectIsAdmin);
 
   const getCurrentPage = (x: number) => {
     return filteredQn.slice(
@@ -109,7 +112,7 @@ export const QnTable = (pp: TableProp) => {
                 {isAdmin ? <Th>Modify/Delete</Th> : <></>}
               </Tr>
             </Thead>
-            <Tbody>{getCurrentPage(pageNumber).map((qn) => QnEntry(qn))}</Tbody>
+            <Tbody>{getCurrentPage(pageNumber).map((qn) => QnEntry(qn, isAdmin))}</Tbody>
           </Table>
         </Center>
       </TableContainer>

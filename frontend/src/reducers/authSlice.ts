@@ -44,6 +44,7 @@ const userSlice = createSlice({
 // in the slice file. For example: `useSelector((state) => state.user)`
 export const selectUser = (state: RootState) => state.user.user
 export const selectIsAuthenticated = (state: RootState) => state.user.user !== null;
+export const selectIsAdmin = (state: RootState) => state.user.user?.role === 'ADMIN';
 export const { setUser, clearUser } = userSlice.actions;
 export default userSlice.reducer;
 export type { User };
