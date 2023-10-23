@@ -13,7 +13,7 @@ import LoginPage from "./pages/LoginPage";
 import ResgistrationPage from "./pages/RegistrationPage";
 import './App.css';
 import { useSelector } from 'react-redux';
-import { selectIsAuthenticated, selectUser, setUser } from './reducers/authSlice'
+import { clearUser, selectIsAuthenticated, selectUser, setUser } from './reducers/authSlice'
 import { useDispatch } from 'react-redux';
 import { getSessionUser } from './api/auth';
 import { useToast } from '@chakra-ui/toast';
@@ -44,6 +44,7 @@ const loggedInRoutes = [
   { path: "/create", Component: Add },
   { path: "/bank", Component: BankPage },
   { path: "/view/:id", Component: ViewQuestion, loader: qnLoader },
+  { path: "*", element: (<Navigate to="/" />) } //redirect all other routes to /
 ]
 
 let firstLoad = true;
@@ -69,6 +70,7 @@ function App() {
 
           if (!fetchedUser) {
             console.log('no user fetched!');
+            dispatch(clearUser()); //clear authSlice user if somehow still exists
           } else {
             dispatch(setUser(fetchedUser));
           }
