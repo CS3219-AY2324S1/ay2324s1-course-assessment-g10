@@ -1,9 +1,10 @@
 import prisma from '../config/db';
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
+import { User } from '@prisma/client';
 
 async function isRegistered(username: string) {
-    const user = await prisma.user.findUnique({
+    const user : User | null = await prisma.user.findUnique({
         where: { username: username }
     });
 
@@ -18,7 +19,7 @@ async function isRegistered(username: string) {
  * @returns 
  */
 async function authenticate(loginName: string, password: string) {
-    const user = await prisma.user.findUnique({
+    const user : User | null = await prisma.user.findUnique({
         where: {
             username: loginName
         }
@@ -54,7 +55,7 @@ export const register = async (req: any, res: any) => {
     try {
         const hPassword = await bcrypt.hash(password, 10);
 
-        const user = await prisma.user.create({
+        const user : User = await prisma.user.create({
             data: {
                 username: username,
                 hashedPassword: hPassword,
@@ -128,18 +129,16 @@ export const getSessionUser = async (req: any, res: any) => {
     }
 
     try {
-        const user = await prisma.user.findUnique({
+        const user : User | null = await prisma.user.findUnique({
             where: {
                 id: id
             }
         });
 
+        const { hashedPassword, ...payload } = user!;
+
         res.status(200).json({
-            user: {
-                _id: user?.id,
-                loginName: user?.username,
-                role: user?.role
-            }
+            user: payload
         })
     } catch (error) {
         res.cookie('AUTH_SESSION', '', {
