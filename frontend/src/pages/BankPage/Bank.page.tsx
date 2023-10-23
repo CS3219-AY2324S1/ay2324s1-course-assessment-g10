@@ -3,11 +3,10 @@ import { QnTable } from "../../components/QnTable/QnTable.component";
 import { FilterBar } from "../../components/QnFilter/QnFilter.component";
 import { VStack } from "@chakra-ui/react";
 import { QnFilter } from "../../models/Question.model";
-import { Question } from "../../models/Question.model";
-import { dummyQn } from "../../data/sampleqn";
 import { useDispatch, useSelector } from "react-redux";
 import { selectFilteredQuestions, setQuestions } from "../../reducers/questionsSlice";
 import { RootState } from "../../reducers/store";
+import { fetchAllQuestions } from "../../api/questions";
 
 
 const BankPage = () => {
@@ -17,7 +16,14 @@ const BankPage = () => {
   
   useEffect(() => {
     console.log('dispatching...')
-    setTimeout(() => dispatch(setQuestions(dummyQn)), 3000) //simulating network fetch
+    fetchAllQuestions().then((res) => {
+      const questions = res.data.questions;
+      dispatch(setQuestions(questions));
+    }).catch((err) => {
+      console.log(err.msg);
+    })
+
+    // setTimeout(() => dispatch(setQuestions(dummyQn)), 3000) //simulating network fetch
   }, [])
 
   return (
