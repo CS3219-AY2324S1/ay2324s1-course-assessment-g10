@@ -47,3 +47,11 @@ export async function getSessionUser() {
         return response
     }
 }
+
+/**
+ * Logs the user out and server sets the token to expire
+ */
+export async function logOut() {
+    const response = await userServiceClient.get('/logout');
+    return response;
+}
