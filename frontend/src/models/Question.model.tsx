@@ -20,6 +20,11 @@ export class Question {
     this.id = id;
     this.displayedQuestion = `${id}.  ${title}`;
   }
+
+  setId(id: number) {
+    this.id = id;
+    this.displayedQuestion = `${id}.  ${this.title}`;
+  }
 }
 
 export type QnFilter = {
