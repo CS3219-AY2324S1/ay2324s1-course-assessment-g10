@@ -153,6 +153,9 @@ export const getSessionUser = async (req: any, res: any) => {
 
 }
 
+///@desc        logs the user out by clearing their session token
+//@route        GET /logout
+//@access       all users
 export const logOut = async (req: any, res: any) => {
     res.clearCookie('AUTH_SESSION')
     res.status(200).send('Logged out successfully');
