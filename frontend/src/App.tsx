@@ -13,7 +13,7 @@ import LoginPage from "./pages/LoginPage";
 import ResgistrationPage from "./pages/RegistrationPage";
 import './App.css';
 import { useSelector } from 'react-redux';
-import { selectIsAuthenticated, selectUser } from './reducers/authSlice'
+import { selectIsAdmin, selectIsAuthenticated, selectUser } from './reducers/authSlice'
 
 const NavbarWrapper = () => (
   <div>
@@ -38,21 +38,28 @@ const publicRoutes = [
 
 const loggedInRoutes = [
   { path: "/", Component: HomePage },
-  { path: "/create", Component: Add },
   { path: "/bank", Component: BankPage },
   { path: "/view/:id", Component: ViewQuestion, loader: qnLoader },
+  {path: "*", element: (<Navigate to="/" />)}
+]
+
+const adminOnlyRoutes = [
+  { path: "/create", Component: Add },
 ]
 
 
 function App() {
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const user = useSelector(selectUser)
+  const isAdmin = useSelector(selectIsAdmin)
 
-  console.log(user)
   console.log(isAuthenticated)
 
   const router = createBrowserRouter([
+    {
+      Component: NavbarWrapper,
+      children: isAuthenticated && isAdmin ? adminOnlyRoutes : []
+    },
     {
       Component: NavbarWrapper,
       children: isAuthenticated ? loggedInRoutes : publicRoutes
