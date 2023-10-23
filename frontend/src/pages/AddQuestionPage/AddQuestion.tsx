@@ -3,9 +3,7 @@ import { Button, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 import { Question, initializeData } from "./QuestionData";
-import "./AddQuestion.css";
 import "../HomePage/HomePage.css";
-// import '../App.css'
 
 function Add() {
   const [title, setTitle] = useState("");
