@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.post('/login', login);
 router.post('/register', register);
-router.post('/logout', logOut);
+router.get('/logout', logOut);
 router.get('/getSessionUser', jwtCheckNoCredentials, getSessionUser);
 router.use(handleAuthFailure);
 
