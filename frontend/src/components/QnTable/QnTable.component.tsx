@@ -11,15 +11,16 @@ import {
   HStack,
   Tag,
   Center,
-  IconButton,
   Text,
+  ButtonGroup,
+  IconButton,
 } from "@chakra-ui/react";
 import { Paginator } from "../Paginator/Paginator.component";
 import { Question } from "../../models/Question.model";
 import { diffToScheme, isAdmin } from "../../helper/UIHelper";
-import { DeleteIcon } from "@chakra-ui/icons";
-import { deleteDummyQn } from "../../data/sampleqn";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
+import { DeleteQnBtn } from "../DeleteQnBtn/DeleteQnBtn.component";
 
 export type TableProp = {
   filteredQn: Question[];
@@ -41,17 +42,20 @@ const QnEntry = (qn: Question) => {
           ))}
         </HStack>
       </Td>
-      <Td isNumeric>
+      <Td>
         <Tag colorScheme={diffToScheme(qn.difficulty)}>{qn.difficulty}</Tag>
       </Td>
       {isAdmin ? (
         <Td>
-          <IconButton
-            aria-label="Delete Qn"
-            colorScheme="red"
-            icon={<DeleteIcon />}
-            onClick={() => deleteDummyQn(qn.id)}
-          />
+          <ButtonGroup>
+            <Link to={`/edit/${qn.id}`}>
+              <IconButton
+                aria-label="Edit question"
+                icon={<EditIcon />}
+              ></IconButton>
+            </Link>
+            <DeleteQnBtn qn={qn}></DeleteQnBtn>
+          </ButtonGroup>
         </Td>
       ) : (
         <></>
@@ -105,7 +109,7 @@ export const QnTable = (pp: TableProp) => {
               <Tr boxShadow="base">
                 <Th>Questions</Th>
                 <Th>Type</Th>
-                <Th isNumeric>Difficulty</Th>
+                <Th>Difficulty</Th>
                 {isAdmin ? <Th>Modify/Delete</Th> : <></>}
               </Tr>
             </Thead>

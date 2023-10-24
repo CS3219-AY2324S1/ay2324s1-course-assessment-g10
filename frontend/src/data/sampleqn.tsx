@@ -1,4 +1,6 @@
 import { Question } from "../models/Question.model";
+import { setQuestions } from "../reducers/questionsSlice";
+import store from "../reducers/store";
 
 const dummy = [
   [1, "Reverse a string", ["t2", "t3"], 0.1, "dummy 1"],
@@ -46,23 +48,20 @@ export const dummyQn = dummy.map(
   (x) => new Question(x[0], x[1], x[4], x[2], x[3])
 );
 
-export const dummyQnLookup = new Map<string, Question>(
-  dummyQn.map((x) => [x.id.toString(), x])
-);
+let hasLoadedBefore = false;
 
-export const deleteDummyQn = (id: number) => {
-  dummyQnLookup.delete(id.toString());
-  const res = dummyQn.findIndex((qn) => qn.id === id);
-  if (res != -1) dummyQn.splice(res, 1);
+export const loadQuestions = async () => {
+  if (hasLoadedBefore) return store.getState().questions.originalQuestions;
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  store.dispatch(setQuestions(dummyQn));
+  hasLoadedBefore = true;
 };
 
-export const createDummyQn = (qn: Question) => {
-  let newid = -1;
-  for (let qn of dummyQn) {
-    newid = Math.max(newid, qn.id);
-  }
-  newid += 1;
-  qn.id = newid;
-  dummyQn.push(qn);
-  dummyQnLookup.set(newid.toString(), qn);
+export const getUnusedId = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  return (
+    Math.max(
+      ...store.getState().questions.originalQuestions.map((qn) => qn.id)
+    ) + 1
+  );
 };
