@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./HomePage.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 import { Question, initializeData } from "../AddQuestionPage/QuestionData";
