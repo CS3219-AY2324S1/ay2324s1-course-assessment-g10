@@ -66,3 +66,12 @@ export const createDummyQn = (qn: Question) => {
   dummyQn.push(qn);
   dummyQnLookup.set(newid.toString(), qn);
 };
+
+export const sampleSolvedQuestions = [
+  new Question(1, "Reverse a string", "Dummy description 1", ["t2", "t3"], 0.1, true, "2023-10-10"),
+  new Question(2, "Linked List Cycle Detection", "Dummy description 2", ["t", "t2", "t3"], 0.51, true, "2023-10-11"),
+  new Question(3, "Roman to Integer", "Dummy description 3", ["t", "t2"], 0.92, true, "2023-10-12"),
+  // Add more solved questions here
+];
+
+
