@@ -20,10 +20,7 @@ export const jwtCheckRequireCredentials = expressjwt({
 
 export function handleAuthFailure(err: any, req: any, res: any, next: any) {
     if (err.name === 'UnauthorizedError') {
-        res.cookie('AUTH_SESSION', '', {
-            expires: new Date(0), // Set the expiration time to 01 January 1970 00:00:00 UTC
-            httpOnly: true,
-        })
+        res.clearCookie('AUTH_SESSION');
         res.status(401).send({ message: err.message });
         return;
     }

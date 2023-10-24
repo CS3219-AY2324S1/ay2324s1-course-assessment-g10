@@ -117,10 +117,7 @@ export const getSessionUser = async (req: any, res: any) => {
     if (id === undefined) {
         console.log(`result of parsing token: ${req.auth}`);
         
-        res.cookie('AUTH_SESSION', '', {
-            expires: new Date(0), // Set the expiration time to 01 January 1970 00:00:00 UTC
-            httpOnly: true,
-        })
+        res.clearCookie('AUTH_SESSION')
         res.status(200).json({
             user: null
         });
@@ -141,10 +138,7 @@ export const getSessionUser = async (req: any, res: any) => {
             user: payload
         })
     } catch (error) {
-        res.cookie('AUTH_SESSION', '', {
-            expires: new Date(0), // Set the expiration time to 01 January 1970 00:00:00 UTC
-            httpOnly: true,
-        })
+        res.clearCookie('AUTH_SESSION')
         res.status(400).json({
             error: error,
             message: 'Invalid ID. User not found in database.'
@@ -153,7 +147,7 @@ export const getSessionUser = async (req: any, res: any) => {
 
 }
 
-///@desc        logs the user out by clearing their session token
+//@desc        logs the user out by clearing their session token
 //@route        GET /logout
 //@access       all users
 export const logOut = async (req: any, res: any) => {
