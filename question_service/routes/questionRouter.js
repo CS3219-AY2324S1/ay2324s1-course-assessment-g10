@@ -7,7 +7,7 @@ router.route('/').get(fetchAllQuestions)
 router.route('/').post(addQuestion)
 router.route('/:id').get(fetchQuestion)
 router.route('/:id').put(updateQuestion)
-router.route('/:id').delete(updateQuestion)
+router.route('/:id').delete(deleteQuestion)
 
 
 module.exports = router

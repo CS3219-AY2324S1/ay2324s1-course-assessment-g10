@@ -7,12 +7,11 @@ const connectDB = require('./config/db')
 connectDB()
 const app = express()
 
-app.options('*', cors({
+app.use(cors({
     origin: 'http://localhost:3000',
     optionsSuccessStatus: 200,
+    credentials: true,            //access-control-allow-credentials:true
 }))
-
-app.use(cors());
 
 //allows JSON data in request body to be parsed
 app.use(express.json())
