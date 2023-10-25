@@ -41,7 +41,6 @@ const publicRoutes = [
 
 const loggedInRoutes = [
   { path: "/", Component: HomePage },
-  { path: "/create", Component: CreateQuestion },
   { path: "/bank", Component: BankPage },
   { path: "/view/:id", Component: ViewQuestion, loader: qnLoader },
   { path: "*", element: (<Navigate to="/" />) } //redirect all other routes to /
@@ -66,10 +65,11 @@ function App() {
   /**
    * Attempt to load the previously logged in user if their cookie still exists
    */
+  
   useEffect(() => {
     console.log(`first load: ${firstLoad}`);
 
-    if (firstLoad) {
+    if (firstLoad && process.env.ENV_TYPE === 'prod') {
       firstLoad = false;
       getSessionUser()
         .then((fetchedUser) => {
