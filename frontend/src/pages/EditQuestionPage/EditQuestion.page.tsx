@@ -13,7 +13,6 @@ const EditQuestion = () => {
     await new Promise((resolve) => setTimeout(resolve, 1000)); // simulate network api call
     dispatch(modifyQuestion(qn));
     nav(-1);
-    return 1;
   };
 
   return (
