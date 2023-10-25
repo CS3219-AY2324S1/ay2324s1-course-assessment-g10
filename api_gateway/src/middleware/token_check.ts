@@ -11,8 +11,8 @@ export const jwtCheck = expressjwt({
 
 
 export const onCredentialFailure = (err: any, req: any, res: any, next: any) => {
-    console.log(err);
     if (err.name === "UnauthorizedError") {
+        console.log(`error name: ${err.name}, error code: ${err.code}`);
         res.status(401).send("invalid token...");
     } else {
         next(err, req, res);
