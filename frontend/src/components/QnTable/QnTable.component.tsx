@@ -11,21 +11,22 @@ import {
   HStack,
   Tag,
   Center,
-  IconButton,
   Text,
   useToast,
+  ButtonGroup,
+  IconButton,
 } from "@chakra-ui/react";
 import { Paginator } from "../Paginator/Paginator.component";
 import { Question } from "../../models/Question.model";
 import { diffToScheme } from "../../helper/UIHelper";
-import { DeleteIcon } from "@chakra-ui/icons";
-import { deleteDummyQn } from "../../data/sampleqn";
+import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectIsAdmin } from "../../reducers/authSlice";
 import { delQuestion } from "../../api/questions";
-import { removeQuestion } from "../../reducers/questionsSlice";
+import { deleteQuestion } from "../../reducers/questionsSlice";
 import { useDispatch } from "react-redux";
+import { DeleteQnBtn } from "../DeleteQnBtn/DeleteQnBtn.component";
 
 export type TableProp = {
   filteredQn: Question[];
@@ -46,7 +47,7 @@ const QnEntry = (props : {
   
     if (isAdmin) {
       delQuestion(id.toString()).then((res) => {
-        dispatch(removeQuestion(id));
+        dispatch(deleteQuestion(id));
       }).catch((err) => {
         toast({
           title: 'Unable to delete',
@@ -72,17 +73,20 @@ const QnEntry = (props : {
           ))}
         </HStack>
       </Td>
-      <Td isNumeric>
+      <Td>
         <Tag colorScheme={diffToScheme(qn.difficulty)}>{qn.difficulty}</Tag>
       </Td>
       {isAdmin ? (
         <Td>
-          <IconButton
-            aria-label="Delete Qn"
-            colorScheme="red"
-            icon={<DeleteIcon />}
-            onClick={() => onDelete(qn.id)}
-          />
+          <ButtonGroup>
+            <Link to={`/edit/${qn.id}`}>
+              <IconButton
+                aria-label="Edit question"
+                icon={<EditIcon />}
+              ></IconButton>
+            </Link>
+            <DeleteQnBtn qn={qn}></DeleteQnBtn>
+          </ButtonGroup>
         </Td>
       ) : (
         <></>
@@ -137,7 +141,7 @@ export const QnTable = (pp: TableProp) => {
               <Tr boxShadow="base">
                 <Th>Questions</Th>
                 <Th>Type</Th>
-                <Th isNumeric>Difficulty</Th>
+                <Th>Difficulty</Th>
                 {isAdmin ? <Th>Modify/Delete</Th> : <></>}
               </Tr>
             </Thead>

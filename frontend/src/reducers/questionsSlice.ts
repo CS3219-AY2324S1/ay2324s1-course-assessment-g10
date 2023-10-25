@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { RootState } from './store';
+import store,{ RootState } from './store';
 import { QnFilter, Question } from '../models/Question.model';
-
 
 const questionsSlice = createSlice({
     name: 'questions',
@@ -12,9 +11,19 @@ const questionsSlice = createSlice({
         setQuestions: (state, action) => {
             state.originalQuestions = action.payload;
         },
-        removeQuestion: (state, action) => {
-          const { id } = action.payload;
-          state.originalQuestions = state.originalQuestions.filter(qn => qn.id !== id)
+        addQuestions: (state, action) => {
+            state.originalQuestions = [...state.originalQuestions, ...action.payload];
+        },
+        modifyQuestion: (state, action) => {
+            state.originalQuestions = state.originalQuestions.map((qn) => {
+              if (qn.id === action.payload.id) {
+                return action.payload;
+              }
+              return qn;
+            });
+        },
+        deleteQuestion: (state, action) => {
+          state.originalQuestions = state.originalQuestions.filter((qn) => qn.id !== action.payload);
         }
     },
 });
@@ -45,5 +54,5 @@ export const selectFilteredQuestions = (state: RootState, filter: QnFilter) => {
       });
 }
 
-export const { setQuestions, removeQuestion } = questionsSlice.actions;
+export const { setQuestions, addQuestions, modifyQuestion, deleteQuestion } = questionsSlice.actions;
 export default questionsSlice.reducer;
