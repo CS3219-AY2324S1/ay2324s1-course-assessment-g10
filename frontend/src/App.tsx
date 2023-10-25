@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import './App.css';
 import { RouterProvider, createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import HomePage from "./pages/HomePage/HomePage";
-import Add from "./pages/AddQuestionPage/AddQuestion";
 import { Navbar } from "./components/Navbar/Navbar.component";
 import BankPage from "./pages/BankPage/Bank.page";
 import ViewQuestion, {
@@ -17,6 +16,8 @@ import { clearUser, selectIsAuthenticated, selectUser, setUser } from './reducer
 import { useDispatch } from 'react-redux';
 import { getSessionUser } from './api/auth';
 import { useToast } from '@chakra-ui/toast';
+import CreateQuestion from "./pages/CreateQuestionPage/CreateQuestion.page";
+import EditQuestion from "./pages/EditQuestionPage/EditQuestion.page";
 
 const NavbarWrapper = () => (
   <div>
@@ -34,18 +35,19 @@ const PageNotFound = () => (
 );
 
 const publicRoutes = [
-  {path: "/login", Component: LoginPage},
-  {path: "/register", Component: ResgistrationPage},
-  {path: "*", element: (<Navigate to="/login" />)} //redirect all other routes to /login
-]
+  { path: "/login", Component: LoginPage },
+  { path: "/register", Component: ResgistrationPage },
+  { path: "*", element: <Navigate to="/login" /> }, //redirect all other routes to /login
+];
 
 const loggedInRoutes = [
   { path: "/", Component: HomePage },
-  { path: "/create", Component: Add },
+  { path: "/create", Component: CreateQuestion },
   { path: "/bank", Component: BankPage },
   { path: "/view/:id", Component: ViewQuestion, loader: qnLoader },
+  { path: "/edit/:id", Component: EditQuestion, loader: qnLoader },
   { path: "*", element: (<Navigate to="/" />) } //redirect all other routes to /
-]
+];
 
 let firstLoad = true;
 
