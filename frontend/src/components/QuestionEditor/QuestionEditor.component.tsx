@@ -22,7 +22,7 @@ import {
 } from "@chakra-ui/react";
 import { MarkdownEditor } from "../MarkdownEditor/MarkdownEditor.component";
 import { CloseableTag } from "../CloseableTag/CloseableTag.component";
-import { diffToScheme, isLoggedin } from "../../helper/UIHelper";
+import { diffToScheme } from "../../helper/UIHelper";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 
 type QuestionEditorProp = {
@@ -95,7 +95,7 @@ export const QuestionEditor = (prop: QuestionEditorProp) => {
     }
     setIsSubmitting(true);
     const result = await onSubmit(buildQuestion());
-    if (result == -1) {
+    if (result === -1) {
       toast({
         title: "Creation of question has failed!",
         status: "error",

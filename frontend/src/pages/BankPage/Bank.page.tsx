@@ -23,9 +23,8 @@ const BankPage = () => {
     }).catch((err) => {
       console.log(err.msg);
     })
-
     // setTimeout(() => dispatch(setQuestions(dummyQn)), 3000) //simulating network fetch
-  }, [])
+  })
 
   return (
     <VStack spacing="3">

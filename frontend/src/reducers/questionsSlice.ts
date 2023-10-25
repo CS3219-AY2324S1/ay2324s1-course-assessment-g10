@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import store,{ RootState } from './store';
+import { RootState } from './store';
 import { QnFilter, Question } from '../models/Question.model';
 
 const questionsSlice = createSlice({

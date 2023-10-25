@@ -92,7 +92,7 @@ function App() {
           console.error(err.message);
         });
     }
-  }, []);
+  });
 
   console.log(isAuthenticated)
 

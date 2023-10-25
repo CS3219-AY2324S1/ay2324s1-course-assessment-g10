@@ -31,7 +31,7 @@ export async function addQuestion(
 /**
  * @param id - question id 
  */
-export async function delQuestion(id : string) {
+export async function delQuestion(id : number) {
     const response = await questionServiceClient.delete(`/api/questions/${id}`);
 
     return response;

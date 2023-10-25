@@ -1,8 +1,6 @@
 import {
   FormControl,
   FormLabel,
-  FormErrorMessage,
-  FormHelperText,
   Box,
   VStack,
   Input,
@@ -12,7 +10,7 @@ import {
   useToast
 } from '@chakra-ui/react'
 import { useState } from 'react';
-import { User, setUser } from '../../reducers/authSlice';
+import { setUser } from '../../reducers/authSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../api/auth';
