@@ -1,3 +1,5 @@
+import { AxiosResponse } from "axios";
+import { Question } from "../models/Question.model";
 import { questionServiceClient } from "./server";
 
 export async function fetchAllQuestions() {
@@ -12,20 +14,32 @@ export async function fetchQuestion(questionId: string) {
     return response;
 }
 
-export async function addQuestion(
-    title: string, 
-    description: string, 
-    category: string[], 
-    complexity: string) {
+/**
+ * Adds a question to the backend server via POST
+ * 
+ * @param question The question to add to the database
+ * @returns
+ */
+export async function addQuestion(question : Question) {
 
-    const response = await questionServiceClient.post('/api/questions', {
-        title: title,
-        description: description,
-        category: category,
-        complexity: complexity
+    const response : AxiosResponse = await questionServiceClient.post('/api/questions', {
+        title: question.title,
+        description: question.descMd,
+        topics: question.topics,
+        difficulty: question.difficulty
     })
 
-    return response;
+    const resData = response.data;
+    
+    const resQuestion : Question = new Question(
+        resData._id, 
+        0, //BACKEND DOES NOT RETURN AN ID FIELD YET
+        resData.title, 
+        resData.description, 
+        resData.topics, 
+        resData.difficulty);
+
+    return resQuestion;
 }
 
 /**
