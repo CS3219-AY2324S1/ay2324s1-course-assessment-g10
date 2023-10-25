@@ -23,8 +23,8 @@ const fetchQuestion = async (req, res) => {
             _id: question._id,
             title: question.title,
             description: question.description,
-            category: question.category,
-            complexity: question.complexity
+            topics: question.topics,
+            difficulty: question.difficulty
         })
     } catch (error) {
         res.status(400).json({ message: 'Invalid ID. Question not found in database.' })
@@ -35,24 +35,24 @@ const fetchQuestion = async (req, res) => {
 //@route    POST /api/questions
 //@access   admin only
 const addQuestion = async (req, res) => {
-    const { title, description, category, complexity } = req.body;
+    const { title, description, topics, difficulty } = req.body;
 
-    if (!title || !description || !category || !complexity) {
+    if (!title || !description || !topics || !difficulty) {
         console.log(req.body)
         return res.status(400).json({ message: 'Please enter all fields' })
     }
 
     try {
         const question = await Question.create({
-            title, description, category, complexity
+            title, description, topics, difficulty
         })
 
         res.status(201).json({
             _id: question._id,
             title: question.title,
             description: question.description,
-            category: question.category,
-            complexity: question.complexity
+            topics: question.topics,
+            difficulty: question.difficulty
         })
     } catch (error) {
         res.status(400).json({ message: 'Invalid question data' })
@@ -63,9 +63,9 @@ const addQuestion = async (req, res) => {
 // @route   PUT /api/addresses/:id
 // @access  admin only
 const updateQuestion = async (req, res) => {
-    const { title, description, category, complexity } = req.body
+    const { title, description, topics, difficulty } = req.body
 
-    if (!title || !description || !category || !complexity) {
+    if (!title || !description || !topics || !difficulty) {
         return res.status(400).json({ message: 'Please enter all fields' })
     }
 
@@ -76,8 +76,8 @@ const updateQuestion = async (req, res) => {
         // update the document
         question.title = title
         question.description = description
-        question.category = category
-        question.complexity = complexity
+        question.topics = topics
+        question.difficulty = difficulty
         // function provided by mongoose to
         // save the changes made to a document
         await question.save()
@@ -87,8 +87,8 @@ const updateQuestion = async (req, res) => {
             _id: question._id,
             title: question.title,
             description: question.description,
-            category: question.category,
-            complexity: question.complexity
+            topics: question.topics,
+            difficulty: question.difficulty
         })
     } catch (error) {
         res.status(400).json({ message: 'Invalid question data.' })
