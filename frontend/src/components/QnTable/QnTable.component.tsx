@@ -5,28 +5,15 @@ import {
   Tbody,
   Tr,
   Th,
-  Td,
   TableCaption,
   TableContainer,
-  HStack,
-  Tag,
   Center,
-  Text,
-  useToast,
-  ButtonGroup,
-  IconButton,
 } from "@chakra-ui/react";
 import { Paginator } from "../Paginator/Paginator.component";
 import { Question } from "../../models/Question.model";
-import { diffToScheme } from "../../helper/UIHelper";
-import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
-import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectIsAdmin } from "../../reducers/authSlice";
-import { delQuestion } from "../../api/questions";
-import { deleteQuestion } from "../../reducers/questionsSlice";
-import { useDispatch } from "react-redux";
-import { DeleteQnBtn } from "../DeleteQnBtn/DeleteQnBtn.component";
+import { QuestionEntry } from "./QuestionEntry.component";
 
 export type TableProp = {
   filteredQn: Question[];
@@ -34,68 +21,7 @@ export type TableProp = {
 };
 
 
-const QnEntry = (props : {
-  qn: Question, 
-}) => {
-  
-  const qn = props.qn;
-  const toast = useToast();
-  const dispatch = useDispatch();
-  const isAdmin = useSelector(selectIsAdmin);
-
-  function onDelete(id: number) {
-  
-    if (isAdmin) {
-      delQuestion(id.toString()).then((res) => {
-        dispatch(deleteQuestion(id));
-      }).catch((err) => {
-        toast({
-          title: 'Unable to delete',
-          description: err.msg,
-          status: 'error',
-          isClosable: true,
-        })
-      })
-    }
-  }
-
-  return (
-    <Tr>
-      <Td>
-        <Link to={`/view/${qn.id}`}>
-          <Text>{qn.displayedQuestion}</Text>
-        </Link>
-      </Td>
-      <Td>
-        <HStack spacing={1}>
-          {qn.topics.map((qntype) => (
-            <Tag colorScheme="blue">{qntype}</Tag>
-          ))}
-        </HStack>
-      </Td>
-      <Td>
-        <Tag colorScheme={diffToScheme(qn.difficulty)}>{qn.difficulty}</Tag>
-      </Td>
-      {isAdmin ? (
-        <Td>
-          <ButtonGroup>
-            <Link to={`/edit/${qn.id}`}>
-              <IconButton
-                aria-label="Edit question"
-                icon={<EditIcon />}
-              ></IconButton>
-            </Link>
-            <DeleteQnBtn qn={qn}></DeleteQnBtn>
-          </ButtonGroup>
-        </Td>
-      ) : (
-        <></>
-      )}
-    </Tr>
-  );
-};
-
-export const QnTable = (pp: TableProp) => {
+export function QnTable(pp: TableProp) {
   const { filteredQn, pageSize = 10 } = pp;
   const [pageNumber, changePage] = useState(1);
   const isAdmin = useSelector(selectIsAdmin);
@@ -145,7 +71,7 @@ export const QnTable = (pp: TableProp) => {
                 {isAdmin ? <Th>Modify/Delete</Th> : <></>}
               </Tr>
             </Thead>
-            <Tbody>{getCurrentPage(pageNumber).map((qn) => QnEntry({qn: qn}))}</Tbody>
+            <Tbody>{getCurrentPage(pageNumber).map((qn) => QuestionEntry({qn: qn, isAdmin: isAdmin}))}</Tbody>
           </Table>
         </Center>
       </TableContainer>

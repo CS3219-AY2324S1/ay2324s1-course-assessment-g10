@@ -21,7 +21,7 @@ const BankPage = () => {
       const questions = res.data.questions;
       dispatch(setQuestions(questions));
     }).catch((err) => {
-      console.log(err.msg);
+      console.log(err.message);
     })
     // setTimeout(() => dispatch(setQuestions(dummyQn)), 3000) //simulating network fetch
   })
