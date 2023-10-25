@@ -1,11 +1,6 @@
 import axios from 'axios'
 
-export const userServiceClient = axios.create({
-    baseURL:'http://localhost:8081',
-    withCredentials: true
-})
-
-export const questionServiceClient = axios.create({
-    baseURL:'http://localhost:8080',
+export const apiGatewayClient = axios.create({
+    baseURL:'http://localhost:8000',
     withCredentials: true
 })
