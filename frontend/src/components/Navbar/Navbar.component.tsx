@@ -1,7 +1,6 @@
 import React from "react";
 import { Flex, Button, HStack, chakra } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { isLoggedin } from "../../helper/UIHelper";
 import { useSelector } from "react-redux";
 import { selectIsAuthenticated } from "../../reducers/authSlice";
 import LogoutButton from "../auth/LogoutButton";

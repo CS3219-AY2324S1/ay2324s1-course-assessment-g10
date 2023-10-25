@@ -25,7 +25,8 @@ import { CardBody } from "react-bootstrap";
 type MarkdownEditorProp = {
   title?: string;
   markdown?: string;
-  onSave?: (markdown: string) => void;
+  isDisabled?: boolean;
+  onChange?: (markdown: string) => void;
 };
 
 export const MarkdownEditor = (prop: MarkdownEditorProp) => {
@@ -33,6 +34,13 @@ export const MarkdownEditor = (prop: MarkdownEditorProp) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const ref = useRef<HTMLDivElement>(null);
+
+  const valChange = (value: string) => {
+    setCode(value);
+    if (prop.onChange) {
+      prop.onChange(value);
+    }
+  };
 
   return (
     <>
@@ -51,6 +59,7 @@ export const MarkdownEditor = (prop: MarkdownEditorProp) => {
             </Text>
             <Spacer />
             <IconButton
+              isDisabled={prop.isDisabled}
               variant="ghost"
               colorScheme="gray"
               aria-label="Edit Markdown"
@@ -93,7 +102,7 @@ export const MarkdownEditor = (prop: MarkdownEditorProp) => {
                       codeLanguages: languages,
                     }),
                   ]}
-                  onChange={(value) => setCode(value)}
+                  onChange={valChange}
                 />
               </Box>
               <Box
