@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Counter = require('../model/counterModel');
 
 
 // function to start up and connect to MongoDB database
@@ -15,5 +16,21 @@ const connectDB = async () => {
     }
 }
 
+const initCounter = async () => {
+    try {
+      const questionIndex = await Counter.findById('questionIndex');
+      if (!questionIndex) {
+        await new Counter({ _id: 'questionIndex', seq: 1 }).save();
+        console.log(`Counter not found in DB, initializing...`)
+      }
+
+      console.log(`Counter found in DB, current sequence: ${questionIndex.seq}`)
+
+    } catch (error) {
+      console.log('Error initializing counter:', error);
+    }
+};
+
 // export connection function to be used in index.js
-module.exports = connectDB
+module.exports = { connectDB, initCounter }
+

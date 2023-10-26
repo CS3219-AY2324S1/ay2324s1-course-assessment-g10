@@ -1,6 +1,9 @@
 const mongoose = require('mongoose')
 
 const questionSchema = mongoose.Schema({
+    id: {
+        type: Number
+    },
     title: {
         type: String,
         required: true,
@@ -21,6 +24,6 @@ const questionSchema = mongoose.Schema({
         type: Number,
         required: true,
     }
-})
+}, { id: false })
 
 module.exports = mongoose.model('Question', questionSchema)

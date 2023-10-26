@@ -1,4 +1,5 @@
 const Question = require('../model/questionModel')
+const getNextSequenceValue = require('./counterController')
 
 //@desc     fetch all questions
 //@route    GET /api/questions
@@ -20,6 +21,7 @@ const fetchQuestion = async (req, res) => {
         const question = await Question.findById(req.params.id)
 
         res.status(200).json({
+            id : question.id,
             _id: question._id,
             title: question.title,
             description: question.description,
@@ -43,11 +45,13 @@ const addQuestion = async (req, res) => {
     }
 
     try {
+        const id = await getNextSequenceValue('questionIndex');
         const question = await Question.create({
-            title, description, topics, difficulty
+            id, title, description, topics, difficulty
         })
 
         res.status(201).json({
+            id : question.id,
             _id: question._id,
             title: question.title,
             description: question.description,
@@ -55,7 +59,7 @@ const addQuestion = async (req, res) => {
             difficulty: question.difficulty
         })
     } catch (error) {
-        res.status(400).json({ message: 'Invalid question data' })
+        res.status(400).json({ message: 'Invalid question data', error: error.message })
     }
 }
 
@@ -84,6 +88,7 @@ const updateQuestion = async (req, res) => {
         // return the updated address in JSON format
         // with success status 200
         res.status(200).json({
+            id : question.id,
             _id: question._id,
             title: question.title,
             description: question.description,
