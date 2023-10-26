@@ -42,7 +42,7 @@ const CreateQuestion = () => {
     }
   }
 
-  return <QuestionEditor onSubmit={process.env.ENV_TYPE === 'prod' ? trySubmit : trySubmitDev} onCancel={() => nav(-1)} />;
+  return <QuestionEditor onSubmit={process.env.REACT_APP_ENV_TYPE === 'prod' ? trySubmit : trySubmitDev} onCancel={() => nav(-1)} />;
 };
 
 export default CreateQuestion;

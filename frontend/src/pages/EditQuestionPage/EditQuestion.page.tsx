@@ -25,7 +25,7 @@ const EditQuestion = () => {
   return (
     <QuestionEditor
       question={qn}
-      onSubmit={process.env.ENV_TYPE === 'prod' ? updateQn : updateQnDev}
+      onSubmit={process.env.REACT_APP_ENV_TYPE === 'prod' ? updateQn : updateQnDev}
       onCancel={() => nav(-1)}
     />
   );

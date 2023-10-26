@@ -15,7 +15,7 @@ export const qnLoader: LoaderFunction<Question> = async ({ params }) => {
   
   let qn : Question | undefined;
 
-  if (process.env.ENV_TYPE === 'prod') {
+  if (process.env.REACT_APP_ENV_TYPE === 'prod') {
     qn = await fetchQuestion(params._id)
   } else {
     await loadQuestions();    

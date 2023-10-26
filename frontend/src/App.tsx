@@ -68,8 +68,12 @@ function App() {
   
   useEffect(() => {
     console.log(`first load: ${firstLoad}`);
+    console.log(process.env.REACT_APP_ENV_TYPE)
+    if (process.env.REACT_APP_ENV_TYPE === 'prod') {
+      console.log('running in prod')
+    }
 
-    if (firstLoad && process.env.ENV_TYPE === 'prod') {
+    if (firstLoad && process.env.REACT_APP_ENV_TYPE === 'prod') {
       firstLoad = false;
       getSessionUser()
         .then((fetchedUser) => {

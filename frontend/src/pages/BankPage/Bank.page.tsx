@@ -19,7 +19,7 @@ const BankPage = () => {
   useEffect(() => {
     console.log('fetching...')
     
-    if (process.env.ENV_TYPE !== 'prod') {
+    if (process.env.REACT_APP_ENV_TYPE !== 'prod') {
       loadQuestions();
     } else {      
       fetchAllQuestions().then((res : AxiosResponse) => {
