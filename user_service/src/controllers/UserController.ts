@@ -44,3 +44,44 @@ export const delUserProfile = async (req: any, res: any) => {
             message: 'User not found.'})
     }
 }
+
+export async function getUserQuestions(req: any, res: any) {
+  try {
+    const userId = parseInt(req.params.userId, 10); // Parse userId as an integer
+
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: 'Invalid user ID' });
+    }
+
+    const answeredQuestions = await prisma.answeredQuestion.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+
+    return res.json(answeredQuestions);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+export async function addUserQuestion(req: any, res: any) {
+  try {
+    const { userId, questionId, complexity, category } = req.body;
+
+    const createdQuestion = await prisma.answeredQuestion.create({
+      data: {
+        userId: userId,
+        questionId: questionId,
+        complexity: complexity,
+        category: { set: category },
+      },
+    });
+
+    res.json(createdQuestion);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}

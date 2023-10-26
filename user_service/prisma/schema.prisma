@@ -22,3 +22,15 @@ model User {
   hashedPassword  String   
   role            Role     @default(USER)
 }
+
+
+model AnsweredQuestion {
+  id         Int        @id @default(autoincrement())
+  userId     Int
+  questionTitle String
+  questionId Int
+  complexity Complexity
+  category   String[]
+  answeredAt DateTime @default(now())
+  @@map("AnsweredQuestion")
+}
