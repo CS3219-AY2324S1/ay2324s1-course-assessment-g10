@@ -16,14 +16,14 @@ const questionsSlice = createSlice({
         },
         modifyQuestion: (state, action) => {
             state.originalQuestions = state.originalQuestions.map((qn) => {
-              if (qn.id === action.payload.id) {
+              if (qn._id === action.payload._id) {
                 return action.payload;
               }
               return qn;
             });
         },
         deleteQuestion: (state, action) => {
-          state.originalQuestions = state.originalQuestions.filter((qn) => qn.id !== action.payload);
+          state.originalQuestions = state.originalQuestions.filter((qn) => qn._id !== action.payload);
         }
     },
 });

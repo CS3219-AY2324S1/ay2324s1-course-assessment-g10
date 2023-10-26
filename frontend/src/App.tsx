@@ -42,14 +42,14 @@ const publicRoutes = [
 const loggedInRoutes = [
   { path: "/", Component: HomePage },
   { path: "/bank", Component: BankPage },
-  { path: "/view/:id", Component: ViewQuestion, loader: qnLoader },
+  { path: "/view/:_id", Component: ViewQuestion, loader: qnLoader },
   { path: "*", element: (<Navigate to="/" />) } //redirect all other routes to /
 ];
 
 
 const adminOnlyRoutes = [
   { path: "/create", Component: CreateQuestion },
-  { path: "/edit/:id", Component: EditQuestion, loader: qnLoader },
+  { path: "/edit/:_id", Component: EditQuestion, loader: qnLoader },
 ]
 
 

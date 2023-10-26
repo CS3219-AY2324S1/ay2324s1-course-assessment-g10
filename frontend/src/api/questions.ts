@@ -8,8 +8,8 @@ export async function fetchAllQuestions() {
     return response;
 }
 
-export async function fetchQuestion(questionId: string) {
-    const response = await questionServiceClient.get(`/api/questions/${questionId}`);
+export async function fetchQuestion(_id: string) {
+    const response = await questionServiceClient.get(`/api/questions/${_id}`);
 
     return response;
 }
@@ -33,7 +33,7 @@ export async function addQuestion(question : Question) {
     
     const resQuestion : Question = new Question(
         resData._id, 
-        0, //BACKEND DOES NOT RETURN AN ID FIELD YET
+        resData.id, 
         resData.title, 
         resData.description, 
         resData.topics, 
@@ -43,10 +43,10 @@ export async function addQuestion(question : Question) {
 }
 
 /**
- * @param id - question id 
+ * @param _id The uuid identifying the question resource
  */
-export async function delQuestion(id : number) {
-    const response = await questionServiceClient.delete(`/api/questions/${id}`);
+export async function delQuestion(_id : string) {
+    const response = await questionServiceClient.delete(`/api/questions/${_id}`);
 
     return response;
 }
@@ -70,7 +70,7 @@ export async function updateQuestion(_id: string, question: Question) {
     const resData = response.data;
     const resQuestion : Question = new Question(
         resData._id, 
-        0, //BACKEND DOES NOT RETURN AN ID FIELD YET
+        resData.id,
         resData.title, 
         resData.description, 
         resData.topics, 

@@ -18,15 +18,15 @@ export function QuestionEntry(props : QuestionEntryProps) {
     const {qn, isAdmin} = props;
     const dispatch = useDispatch();
 
-    const onDelete = async (id: number) => {
-        await delQuestion(qn.id);
-        dispatch(deleteQuestion(qn.id));
+    const onDelete = async (_id: string) => {
+        await delQuestion(_id);
+        dispatch(deleteQuestion(_id));
     }
 
     return (
       <Tr>
         <Td>
-          <Link to={`/view/${qn.id}`}>
+          <Link to={`/view/${qn._id}`}>
             <Text>{qn.displayedQuestion}</Text>
           </Link>
         </Td>
@@ -43,13 +43,13 @@ export function QuestionEntry(props : QuestionEntryProps) {
         {isAdmin ? (
           <Td>
             <ButtonGroup>
-              <Link to={`/edit/${qn.id}`}>
+              <Link to={`/edit/${qn._id}`}>
                 <IconButton
                   aria-label="Edit question"
                   icon={<EditIcon />}
                 ></IconButton>
               </Link>
-              <DeleteQnBtn qn={qn} onSubmit={() => onDelete(qn.id)}></DeleteQnBtn>
+              <DeleteQnBtn qn={qn} onSubmit={() => onDelete(qn._id)}></DeleteQnBtn>
             </ButtonGroup>
           </Td>
         ) : (

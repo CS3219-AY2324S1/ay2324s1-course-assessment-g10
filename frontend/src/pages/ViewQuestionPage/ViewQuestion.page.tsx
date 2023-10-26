@@ -8,7 +8,7 @@ import store from "../../reducers/store";
 import { loadQuestions } from "../../data/sampleqn";
 
 export const qnLoader: LoaderFunction<Question> = async ({ params }) => {
-  if (!params.id) {
+  if (!params._id) {
     return redirect("/");
   }
 
@@ -16,7 +16,7 @@ export const qnLoader: LoaderFunction<Question> = async ({ params }) => {
 
   const qn = store
     .getState()
-    .questions.originalQuestions.find((qn) => qn.id.toString() === params.id);
+    .questions.originalQuestions.find((qn) => qn._id.toString() === params._id);
 
   return qn ?? redirect("/");
 };
