@@ -22,9 +22,9 @@ const initCounter = async () => {
       if (!questionIndex) {
         await new Counter({ _id: 'questionIndex', seq: 1 }).save();
         console.log(`Counter not found in DB, initializing...`)
+      } else {
+        console.log(`Counter found in DB, current sequence: ${questionIndex.seq}`)
       }
-
-      console.log(`Counter found in DB, current sequence: ${questionIndex.seq}`)
 
     } catch (error) {
       console.log('Error initializing counter:', error);
