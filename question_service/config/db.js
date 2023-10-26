@@ -20,7 +20,7 @@ const initCounter = async () => {
     try {
       const questionIndex = await Counter.findById('questionIndex');
       if (!questionIndex) {
-        await new Counter({ _id: 'questionIndex', seq: 1 }).save();
+        await new Counter({ _id: 'questionIndex', seq: 0 }).save();
         console.log(`Counter not found in DB, initializing...`)
       } else {
         console.log(`Counter found in DB, current sequence: ${questionIndex.seq}`)
