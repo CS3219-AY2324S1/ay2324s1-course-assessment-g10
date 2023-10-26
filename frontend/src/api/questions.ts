@@ -5,7 +5,9 @@ import { questionServiceClient } from "./server";
 export async function fetchAllQuestions() {
     const response = await questionServiceClient.get('/api/questions');
 
-    return response;
+    const resData = response.data;
+    const questions : Question[] = resData.map((q : any) => new Question(q._id, q.id, q.title, q.description, q.topics, q.difficulty))
+    return questions;
 }
 
 /**
