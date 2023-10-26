@@ -4,13 +4,14 @@ import cookieParser from 'cookie-parser'
 import authRouter from './routes/authRoutes'
 import { Request } from "express";
 import cors from "cors";
+import { setupAdminUser } from './config/initialSetup';
 
 const app = express();
 const PORT = process.env.PORT || 8081;
-const corsOptions ={
-    origin:'http://localhost:3000', //TODO: need to add our production url here once we host it. Currently assuming all requests will be made from this url
-    credentials:true,            //access-control-allow-credentials:true
-    optionSuccessStatus:200
+const corsOptions = {
+    origin: 'http://localhost:3000', //TODO: need to add our production url here once we host it. Currently assuming all requests will be made from this url
+    credentials: true,            //access-control-allow-credentials:true
+    optionSuccessStatus: 200
 }
 
 
@@ -21,7 +22,8 @@ app.use(express.json());
 app.use('/api/users', userRouter);
 app.use('/', authRouter);
 
-
-app.listen(PORT, () => {
-    console.log(`User service is running on http://localhost:${PORT}`);
-});
+setupAdminUser().then(() => {
+    app.listen(PORT, () => {
+        console.log(`User service is running on http://localhost:${PORT}`);
+    });
+})

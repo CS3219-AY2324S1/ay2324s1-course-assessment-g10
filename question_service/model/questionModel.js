@@ -1,6 +1,9 @@
 const mongoose = require('mongoose')
 
 const questionSchema = mongoose.Schema({
+    id: {
+        type: Number
+    },
     title: {
         type: String,
         required: true,
@@ -13,15 +16,14 @@ const questionSchema = mongoose.Schema({
         unique: true,
         trim: true,
     },
-    category: {
+    topics: {
         type: [String],
         validate: (v) => Array.isArray(v) && v.length > 0
     },
-    complexity: {
-        type: String,
+    difficulty: {
+        type: Number,
         required: true,
-        enum: ['Easy', 'Medium', 'Difficult']
     }
-})
+}, { id: false })
 
 module.exports = mongoose.model('Question', questionSchema)
