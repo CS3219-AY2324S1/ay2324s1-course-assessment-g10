@@ -8,10 +8,29 @@ export async function fetchAllQuestions() {
     return response;
 }
 
+/**
+ * Tries to fetch a specific question from the backend
+ * 
+ * @param _id The uuid identifying the question resource
+ * @returns The fetched question, or undefined on error
+ */
 export async function fetchQuestion(_id: string) {
-    const response = await questionServiceClient.get(`/api/questions/${_id}`);
-
-    return response;
+    try {
+        const response = await questionServiceClient.get(`/api/questions/${_id}`);
+    
+        const resData = response.data;
+        const resQuestion : Question = new Question(
+            resData._id, 
+            resData.id, 
+            resData.title, 
+            resData.description, 
+            resData.topics, 
+            resData.difficulty);
+    
+        return resQuestion;
+    } catch (err) {
+        return undefined;
+    }
 }
 
 /**
