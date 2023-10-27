@@ -13,11 +13,11 @@ const questionSchema = mongoose.Schema({
         unique: true,
         trim: true,
     },
-    category: {
+    topics: {
         type: [String],
         validate: (v) => Array.isArray(v) && v.length > 0
     },
-    complexity: {
+    difficulty: {
         type: String,
         required: true,
         enum: ['Easy', 'Medium', 'Difficult']

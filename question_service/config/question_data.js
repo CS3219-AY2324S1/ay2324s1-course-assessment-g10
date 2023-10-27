@@ -16,8 +16,8 @@ const questions = [
       - 1 <= s.length <= 105
       - s[i] is a printable ascii character.
       `,
-      category: ['String', 'Algorithms'],
-      complexity: 'Easy',
+      topics: ['String', 'Algorithms'],
+      difficulty: 'Easy',
     },
     {
         title: 'Linked List Cycle Detection',
@@ -29,13 +29,16 @@ const questions = [
         used to denote the index of the node that tail's next pointer is connected to.
         Note that pos is not passed as a parameter.
         Return true if there is a cycle in the linked list. Otherwise, return false.
-        Example 1:
-        Page 14 of 28
+        
+        ![Example 1](../images/ll_cycle_1.png)
+        
         Input: head = [3,2,0,-4], pos = 1
         Output: true
         Explanation: There is a cycle in the linked list, where the tail connects to the
         1st node (0-indexed).
-        Example 2:
+
+        ![Example 2](../images/ll_cycle_2.png)
+
         Input: head = [1,2], pos = 0
         Output: true
         Explanation: There is a cycle in the linked list, where the tail connects to the
@@ -50,8 +53,8 @@ const questions = [
          pos is -1 or a valid index in the linked-list.
         Follow up: Can you solve it using O(1) (i.e. constant) memory?
         `,
-        category: ['Data Structures', 'Algorithms'],
-        complexity: 'Easy',
+        topics: ['Data Structures', 'Algorithms'],
+        difficulty: 'Easy',
       },
       {
         title: 'Roman to Integer',
@@ -71,7 +74,6 @@ const questions = [
         as XXVII, which is XX + V + II.
         Roman numerals are usually written largest to smallest from left to right.
         However, the numeral for four is not IIII. Instead, the number four is written
-        Page 15 of 28
         as IV. Because the one is before the five we subtract it making four. The
         same principle applies to the number nine, which is written as IX. There are
         six instances where subtraction is used:
@@ -97,8 +99,8 @@ const questions = [
          It is guaranteed that s is a valid roman numeral in the range [1,
         3999].
         `,
-        category: ['Algorithms'],
-        complexity: 'Easy',
+        topics: ['Algorithms'],
+        difficulty: 'Easy',
       },
       {
         title: 'Add Binary',
@@ -114,7 +116,6 @@ const questions = [
          1 <= a.length, b.length <= 104
          a and b consist only of '0' or '1' characters.
          Each string does not contain leading zeros except for the zero itself.
-        Page 16 of 28
         5 The Fibonacci numbers, commonly denoted F(n) form a sequence, called the
         Fibonacci sequence, such that each number is the sum of the two preceding
         ones, starting from 0 and 1. That is,
@@ -136,8 +137,8 @@ const questions = [
         Constraints:
          0 <= n <= 30
         `,
-        category: ['Bit Manipulation', 'Algorithms'],
-        complexity: 'Easy',
+        topics: ['Bit Manipulation', 'Algorithms'],
+        difficulty: 'Easy',
       },
       {
         title: 'Fibonacci Number',
@@ -163,8 +164,8 @@ const questions = [
         Constraints:
          0 <= n <= 30
         `,
-        category: ['Recursion', 'Algorithms'],
-        complexity: 'Easy',
+        topics: ['Recursion', 'Algorithms'],
+        difficulty: 'Easy',
       },
       {
         title: 'Repeated DNA Sequences',
@@ -178,7 +179,6 @@ const questions = [
         long sequences (substrings) that occur more than once in a DNA molecule.
         You may return the answer in any order.
         Example 1:
-        Page 19 of 28
         Input: s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"
         Output: ["AAAAACCCCC","CCCCCAAAAA"]
         Example 2:
@@ -188,8 +188,8 @@ const questions = [
          1 <= s.length <= 105
          s[i] is either 'A', 'C', 'G', or 'T'.
         `,
-        category: ['Bit Manipulation', 'Algorithms'],
-        complexity: 'Medium',
+        topics: ['Bit Manipulation', 'Algorithms'],
+        difficulty: 'Medium',
       },
       {
         title: 'Course Schedule',
@@ -219,8 +219,8 @@ const questions = [
          0 <= ai, bi < numCourses
          All the pairs prerequisites[i] are unique.
         `,
-        category: ['Data Structures', 'Algorithms'],
-        complexity: 'Medium',
+        topics: ['Data Structures', 'Algorithms'],
+        difficulty: 'Medium',
       },
       {
         title: 'Sliding Window Maximum',
@@ -250,8 +250,8 @@ const questions = [
          -104 <= nums[i] <= 104
          1 <= k <= nums.length
         `,
-        category: ['Arrays', 'Algorithms'],
-        complexity: 'Hard',
+        topics: ['Arrays', 'Algorithms'],
+        difficulty: 'Hard',
       },
       {
         title: 'N-Queen Problem',
@@ -263,6 +263,9 @@ const questions = [
         Each solution contains a distinct board configuration of the n-queens'
         placement, where 'Q' and '.' both indicate a queen and an empty space,
         respectively.
+
+        ![Example Image 1](../images/N_Queens.png)
+
         Input: n = 4
         Output: [[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
         Explanation: There exist two distinct solutions to the 4-queens puzzle as
@@ -273,8 +276,8 @@ const questions = [
         Constraints:
          1 <= n <= 9
         `,
-        category: ['Algorithms'],
-        complexity: 'Hard',
+        topics: ['Algorithms'],
+        difficulty: 'Hard',
       },
   ];
   
