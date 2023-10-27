@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   Thead,
@@ -14,19 +14,44 @@ import { Paginator } from "../Paginator/Paginator.component";
 import { Question } from "../../models/Question.model";
 
 export type TableProp = {
-  questions: Question[];
+  userId: number; // Add userId prop to specify the user whose solved questions to fetch
   pageSize?: number;
 };
 
 export const SolvedTable = (props: TableProp) => {
-  const { questions, pageSize = 10 } = props;
-  const [currentPage, setCurrentPage] = React.useState(1);
-
-  const solvedQuestions = questions.filter((question) => question.solved);
+  const { userId, pageSize = 10 } = props;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [solvedQuestions, setSolvedQuestions] = useState<Question[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const onPageChange = (page: React.SetStateAction<number>) => {
     setCurrentPage(page);
   };
+
+  useEffect(() => {
+    const fetchSolvedQuestions = async (): Promise<void> => {
+      if (userId) {
+        try {
+          const response = await fetch(`http://localhost:8000/api/users/${userId}/questions`);
+          if (response.ok) {
+            const data = await response.json();
+            setSolvedQuestions(data);
+            setIsLoaded(true);
+          } else {
+            console.error("Failed to fetch solved questions");
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    };
+
+    if (!isLoaded) {
+      fetchSolvedQuestions().catch((error) => {
+        console.error(error);
+      });
+    }
+  }, [userId, isLoaded]);
 
   const getQuestionsForPage = () => {
     const startIndex = (currentPage - 1) * pageSize;
