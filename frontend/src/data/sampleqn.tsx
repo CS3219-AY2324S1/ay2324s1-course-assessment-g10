@@ -45,7 +45,7 @@ const dummy = [
 
 export const dummyQn = dummy.map(
   //@ts-ignore
-  (x) => new Question(x[0], x[1], x[4], x[2], x[3])
+  (x) => new Question(x[0], x[0], x[1], x[4], x[2], x[3])
 );
 
 let hasLoadedBefore = false;

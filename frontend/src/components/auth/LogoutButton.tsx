@@ -2,6 +2,7 @@ import { Button, useToast } from "@chakra-ui/react"
 import { clearUser } from '../../reducers/authSlice';
 import { useDispatch } from 'react-redux';
 import { logOut } from "../../api/auth";
+import { AxiosError } from "axios";
 
 export default function LogoutButton() {
     const dispatch = useDispatch();
@@ -9,12 +10,13 @@ export default function LogoutButton() {
 
     const handleLogout = async () => {
         try {
-            const response = await logOut();
+            await logOut();
             dispatch(clearUser());
         } catch (err : any) {
+            console.log(err)
             toast({
                 title: 'Failed to logout',
-                description: err.msg,
+                description: err.message,
                 status: 'error'
             })
         }

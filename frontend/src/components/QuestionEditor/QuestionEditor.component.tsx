@@ -22,12 +22,12 @@ import {
 } from "@chakra-ui/react";
 import { MarkdownEditor } from "../MarkdownEditor/MarkdownEditor.component";
 import { CloseableTag } from "../CloseableTag/CloseableTag.component";
-import { diffToScheme, isLoggedin } from "../../helper/UIHelper";
+import { diffToScheme } from "../../helper/UIHelper";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 
 type QuestionEditorProp = {
   question?: Question;
-  onSubmit?: (question: Question) => Promise<number | string>;
+  onSubmit?: (question: Question) => Promise<void>;
   onCancel?: () => void;
 };
 
@@ -36,7 +36,7 @@ export const QuestionEditor = (prop: QuestionEditorProp) => {
     question,
     onSubmit = async (x) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      return -1;
+      throw Error('no action defined for Question Editor onSubmit')
     },
   } = prop;
 
@@ -70,12 +70,17 @@ export const QuestionEditor = (prop: QuestionEditorProp) => {
     setType("");
   };
 
+  /**
+   * Checks if a question is valid. A question is valid if title, description and topics are not empty.
+   * @returns boolean
+   */
   const checkValid = () => {
     return title.length > 0 && description.length > 0 && topics.length > 0;
   };
 
   const buildQuestion = () => {
     return new Question(
+      question?._id ?? '',
       question?.id ?? -1,
       title,
       description,
@@ -93,17 +98,21 @@ export const QuestionEditor = (prop: QuestionEditorProp) => {
       });
       return;
     }
+
     setIsSubmitting(true);
-    const result = await onSubmit(buildQuestion());
-    if (result == -1) {
+
+    try {
+      await onSubmit(buildQuestion());
+      console.log("Submit success!");
+    } catch (err : any) {
       toast({
-        title: "Creation of question has failed!",
+        title: "Creation/Modification of question has failed!",
+        description: err.message,
         status: "error",
         isClosable: false,
       });
-    } else {
-      console.log("Submit success!");
-    }
+    } 
+
     setIsSubmitting(false);
   };
 

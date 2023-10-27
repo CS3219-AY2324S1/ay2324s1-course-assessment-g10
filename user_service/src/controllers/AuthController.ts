@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { User } from '@prisma/client';
 
-async function isRegistered(username: string) {
+export async function isRegistered(username: string) {
     const user : User | null = await prisma.user.findUnique({
         where: { username: username }
     });

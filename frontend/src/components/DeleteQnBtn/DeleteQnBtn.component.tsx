@@ -9,35 +9,44 @@ import {
   ButtonProps,
   IconButton,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import { Question } from "../../models/Question.model";
 import React, { useRef } from "react";
 import { DeleteIcon } from "@chakra-ui/icons";
-import { deleteQuestion } from "../../reducers/questionsSlice";
-import { useDispatch } from "react-redux";
 
 type DeleteQnBtnProp = ButtonProps & {
   qn?: Question;
   onSubmit?: () => void;
 };
 
-export const DeleteQnBtn = (pp: DeleteQnBtnProp) => {
+export function DeleteQnBtn(pp: DeleteQnBtnProp) {
   const { qn, onSubmit, colorScheme = "red", ...rest } = pp;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef<HTMLButtonElement>(null);
   const [loading, setLoading] = React.useState(false);
-  const dispatch = useDispatch();
+  const toast = useToast();
+
 
   const onDelete = async () => {
     if (!qn) return;
+    
     setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // simulate network api call
-    dispatch(deleteQuestion(qn.id));
-    setLoading(false);
-
-    if (onSubmit) {
-      onSubmit();
+    try {
+      if (onSubmit) {
+        await onSubmit();
+      }
+    } catch (err : any) {
+      toast({
+        title: 'Unable to delete',
+        description: err.message,
+        status: 'error',
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
     }
+
     onClose();
   };
 
