@@ -16,27 +16,41 @@ interface CollabEditorProps {
 }
 
 const CollabEditor = (props: CollabEditorProps) => {
-  const extensions = [];
+  const extensions: any = [];
   const { matchedRoom } = useMatchmake();
-  if (!props.isCollab) {
-    if (!matchedRoom) return <Navigate to="/" />;
+  const navigate = useNavigate();
 
-    const room = Buffer.from(matchedRoom.host).toString("base64");
+  useEffect(() => {
+    if (!props.isCollab) {
+      if (!matchedRoom) {
+        navigate('/');
+      }
 
-    const ydoc = new Y.Doc();
-    const provider = new WebrtcProvider(room, ydoc);
-    const ytext = ydoc.getText();
+      const room = Buffer.from(matchedRoom!.host).toString("base64");
 
-    const undoManager = new Y.UndoManager(ytext);
+      const ydoc = new Y.Doc();
+      const provider = new WebrtcProvider(room, ydoc);
+      const ytext = ydoc.getText();
 
-    provider.awareness.setLocalStateField("user", {
-      name: "Anonymous " + Math.floor(Math.random() * 100),
-      color: userColor.color,
-      colorLight: userColor.light,
-    });
+      const undoManager = new Y.UndoManager(ytext);
 
-    extensions.push(yCollab(ytext, provider.awareness, { undoManager }));
-  }
+      provider.awareness.setLocalStateField("user", {
+        name: "Anonymous " + Math.floor(Math.random() * 100),
+        color: userColor.color,
+        colorLight: userColor.light,
+      });
+
+      extensions.push(yCollab(ytext, provider.awareness, { undoManager }));
+      
+      return () => {
+        if (provider) {
+          provider.disconnect();
+          ydoc.destroy();
+        }
+      }
+
+    }
+  }, [navigate, props, matchedRoom])
 
   return (
     <CodeMirror
