@@ -1,7 +1,7 @@
 import express from 'express';
 import http from 'http';
 import { Server, Socket } from 'socket.io';
-import { uidToUserWsockid, sockidToSocket } from './shared';
+import { uidToUserWsockid, sockidToSocket, getSockFromUid } from './shared';
 import { User } from './types';
 import { addMatchToQ, removeMatchFromQ } from './rabbitmq';
 
@@ -16,6 +16,7 @@ io.on('connection', (socket: Socket) => {
     console.log('Cancel event received');
     removeMatchFromQ(data);
     uidToUserWsockid.delete(data.id);
+    socket.disconnect();
   });
   
   socket.on('findMatch', async (data: User) => {
@@ -26,6 +27,19 @@ io.on('connection', (socket: Socket) => {
       isMatched: false,
     });
     await addMatchToQ(data);
+  });
+
+  socket.on('leave', async (data: User) => {
+    console.log(`Leave event received from ${data.id}`);
+    const user = uidToUserWsockid.get(data.id);
+    if (!user) return;
+    if (user.matchedWith) {
+      const sock = getSockFromUid(user.matchedWith);
+      sock?.emit('matchLeave');
+    }
+    await removeMatchFromQ(data);
+    uidToUserWsockid.delete(data.id);
+    socket.disconnect();
   });
 
   socket.on('disconnect', () => {
