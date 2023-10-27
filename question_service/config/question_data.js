@@ -17,7 +17,7 @@ const questions = [
       - s[i] is a printable ascii character.
       `,
       topics: ['String', 'Algorithms'],
-      difficulty: 'Easy',
+      difficulty: 1.0,
     },
     {
         title: 'Linked List Cycle Detection',
@@ -54,7 +54,7 @@ const questions = [
         Follow up: Can you solve it using O(1) (i.e. constant) memory?
         `,
         topics: ['Data Structures', 'Algorithms'],
-        difficulty: 'Easy',
+        difficulty: 1.1,
       },
       {
         title: 'Roman to Integer',
@@ -100,7 +100,7 @@ const questions = [
         3999].
         `,
         topics: ['Algorithms'],
-        difficulty: 'Easy',
+        difficulty: 2.1,
       },
       {
         title: 'Add Binary',
@@ -138,7 +138,7 @@ const questions = [
          0 <= n <= 30
         `,
         topics: ['Bit Manipulation', 'Algorithms'],
-        difficulty: 'Easy',
+        difficulty: 1.4,
       },
       {
         title: 'Fibonacci Number',
@@ -165,7 +165,7 @@ const questions = [
          0 <= n <= 30
         `,
         topics: ['Recursion', 'Algorithms'],
-        difficulty: 'Easy',
+        difficulty: 1.8,
       },
       {
         title: 'Repeated DNA Sequences',
@@ -189,7 +189,7 @@ const questions = [
          s[i] is either 'A', 'C', 'G', or 'T'.
         `,
         topics: ['Bit Manipulation', 'Algorithms'],
-        difficulty: 'Medium',
+        difficulty: 3.7,
       },
       {
         title: 'Course Schedule',
@@ -220,7 +220,7 @@ const questions = [
          All the pairs prerequisites[i] are unique.
         `,
         topics: ['Data Structures', 'Algorithms'],
-        difficulty: 'Medium',
+        difficulty: 4.5,
       },
       {
         title: 'Sliding Window Maximum',
@@ -251,7 +251,7 @@ const questions = [
          1 <= k <= nums.length
         `,
         topics: ['Arrays', 'Algorithms'],
-        difficulty: 'Hard',
+        difficulty: 7.9,
       },
       {
         title: 'N-Queen Problem',
@@ -277,7 +277,7 @@ const questions = [
          1 <= n <= 9
         `,
         topics: ['Algorithms'],
-        difficulty: 'Hard',
+        difficulty: 9,
       },
   ];
   
