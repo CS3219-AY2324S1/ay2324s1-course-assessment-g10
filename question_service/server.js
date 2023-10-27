@@ -2,12 +2,14 @@ const express = require('express')
 const cors = require('cors')
 const dotenv = require('dotenv').config()
 const {connectDB, initCounter } = require('./config/db')
-
+const populateData = require('./config/populate_qns');
 
 require('dotenv').config()
 
 connectDB().then((v) => {
     initCounter();
+}).then(()=> {
+    populateData();
 });
 
 const app = express()
