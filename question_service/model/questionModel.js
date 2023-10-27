@@ -21,11 +21,7 @@ const questionSchema = mongoose.Schema({
         validate: (v) => Array.isArray(v) && v.length > 0
     },
     difficulty: {
-<<<<<<< HEAD
-        type: String,
-=======
         type: Number,
->>>>>>> master
         required: true,
     }
 }, { id: false })
