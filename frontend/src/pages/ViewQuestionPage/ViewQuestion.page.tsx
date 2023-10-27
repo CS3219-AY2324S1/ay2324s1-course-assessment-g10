@@ -6,19 +6,24 @@ import { QnDrawer } from "../../components/QnDrawer/QnDrawer.component";
 import "./ViewQuestion.page.css";
 import store from "../../reducers/store";
 import { loadQuestions } from "../../data/sampleqn";
+import { fetchQuestion } from "../../api/questions";
 
 export const qnLoader: LoaderFunction<Question> = async ({ params }) => {
-  if (!params.id) {
+  if (!params._id) {
     return redirect("/");
   }
+  
+  let qn : Question | undefined;
 
-  await loadQuestions();
-
-  const qn = store
-    .getState()
-    .questions.originalQuestions.find((qn) => qn.id.toString() === params.id);
-
-  return qn ?? redirect("/");
+  if (process.env.REACT_APP_ENV_TYPE === 'prod') {
+    qn = await fetchQuestion(params._id)
+  } else {
+    await loadQuestions();    
+    qn = store
+        .getState()
+        .questions.originalQuestions.find((qn) => qn._id.toString() === params._id);
+  }
+return qn ?? redirect("/");
 };
 
 const ViewQuestion = () => {

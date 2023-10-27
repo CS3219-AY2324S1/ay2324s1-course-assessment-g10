@@ -1,18 +1,24 @@
 const express = require('express')
 const cors = require('cors')
 const dotenv = require('dotenv').config()
-const connectDB = require('./config/db')
+const {connectDB, initCounter } = require('./config/db')
+const populateData = require('./config/populate_qns');
 
+require('dotenv').config()
 
-connectDB()
+connectDB().then((v) => {
+    initCounter();
+}).then(()=> {
+    populateData();
+});
+
 const app = express()
 
-app.options('*', cors({
+app.use(cors({
     origin: 'http://localhost:3000',
     optionsSuccessStatus: 200,
+    credentials: true,            //access-control-allow-credentials:true
 }))
-
-app.use(cors());
 
 //allows JSON data in request body to be parsed
 app.use(express.json())

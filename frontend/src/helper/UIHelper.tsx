@@ -11,5 +11,3 @@ export const diffToScheme = (diff: number) => {
   }
   return "red";
 };
-
-export const isAdmin = true;

@@ -2,12 +2,13 @@ import React from "react";
 import { Flex, Button, HStack, chakra } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectIsAuthenticated } from "../../reducers/authSlice";
+import { selectIsAdmin, selectIsAuthenticated } from "../../reducers/authSlice";
 import LogoutButton from "../auth/LogoutButton";
 
 export const Navbar = () => {
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const isAdmin = useSelector(selectIsAdmin);
 
   return (
     <chakra.header boxShadow={"md"} minH="10vh" zIndex="999">
@@ -29,9 +30,13 @@ export const Navbar = () => {
             <Button variant="ghost">Bank</Button>
           </Link>
 
-          <Link to="/create">
-            <Button variant="ghost">Create</Button>
-          </Link>
+          { isAdmin ? (
+            <Link to="/create">
+              <Button variant="ghost">Create</Button>
+            </Link>
+          ) :
+          <></>
+          }
 
           <Link to="/about">
             <Button variant="ghost">About</Button>
