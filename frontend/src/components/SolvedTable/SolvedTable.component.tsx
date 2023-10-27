@@ -11,17 +11,17 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 import { Paginator } from "../Paginator/Paginator.component";
-import { Question } from "../../models/Question.model";
+import { SolvedQuestion, SolvedQnFilter } from "../../models/SolvedQuestion.model"; // Import the SolvedQuestion model
 
 export type TableProp = {
-  userId: number; // Add userId prop to specify the user whose solved questions to fetch
+  userId: number;
   pageSize?: number;
 };
 
 export const SolvedTable = (props: TableProp) => {
   const { userId, pageSize = 10 } = props;
   const [currentPage, setCurrentPage] = useState(1);
-  const [solvedQuestions, setSolvedQuestions] = useState<Question[]>([]);
+  const [solvedQuestions, setSolvedQuestions] = useState<SolvedQuestion[]>([]); // Use SolvedQuestion type
   const [isLoaded, setIsLoaded] = useState(false);
 
   const onPageChange = (page: React.SetStateAction<number>) => {
