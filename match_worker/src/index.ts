@@ -21,7 +21,7 @@ const tryMatchUser = async (uid: string) => {
         user2: possiblematch,
         questionId: "1",
         hostUser: uid,
-    })))
+    })));
 }
 
 (async () => {
