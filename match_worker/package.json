@@ -1,0 +1,21 @@
+{
+  "name": "matching_worker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --init && tsc",
+    "start": "tsc && node dist/index.js diff1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/amqplib": "^0.10.3",
+    "amqplib": "^0.10.3",
+    "sequelize": "^6.33.0",
+    "sqlite3": "^5.1.6",
+    "typescript": "^5.2.2"
+  }
+}

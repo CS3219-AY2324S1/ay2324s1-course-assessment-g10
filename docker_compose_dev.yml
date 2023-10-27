@@ -28,6 +28,29 @@ services:
       - postgres
     volumes:
       - ./user_service:/usr/src/app
+
+  matching-service:
+    container_name: matching-service
+    build:
+      context: ./matching_service
+    environment:
+      - PORT=8082
+    ports:
+      - "8082:8082"
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./matching_service:/usr/src/app
+
+  match-worker:
+    container_name: match-worker
+    build:
+      context: ./match_worker
+    depends_on:
+      - rabbitmq
+      - matching-service
+    volumes:
+      - ./match_worker:/usr/src/app
   
   mongo:
     container_name: mongo
@@ -49,6 +72,16 @@ services:
       - "${PG_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 volumes:
   postgres_data:
   mongo-dev-data:
