@@ -7,13 +7,16 @@ export class Question {
   id: number;
   _id: string;
 
+
   constructor(
     _id: string,
     id: number,
     title: string,
     descMd: string,
     categories: string[],
-    difficulty: number
+    difficulty: number,
+    solved: boolean = false,
+    solvedDate?: string
   ) {
     this.title = title;
     this.descMd = descMd;
