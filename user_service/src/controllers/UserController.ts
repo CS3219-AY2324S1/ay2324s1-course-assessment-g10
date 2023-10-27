@@ -45,6 +45,11 @@ export const delUserProfile = async (req: any, res: any) => {
     }
 }
 
+
+//@desc     get user's answered questions
+//@route    GET /api/users/:userId/questions
+//@access   authenticated users
+
 export async function getUserQuestions(req: any, res: any) {
   try {
     const userId = parseInt(req.params.userId, 10); // Parse userId as an integer
@@ -65,6 +70,12 @@ export async function getUserQuestions(req: any, res: any) {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 }
+
+
+
+//@desc     add a new user question
+//@route    POST /api/users/:userId/questions
+//@access   authenticated users
 
 export async function addUserQuestion(req: any, res: any) {
   try {

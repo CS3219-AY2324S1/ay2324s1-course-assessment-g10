@@ -27,6 +27,7 @@ model User {
 model AnsweredQuestion {
   id         Int        @id @default(autoincrement())
   userId     Int
+  user       User     @relation(fields: [userId], references: [id])
   questionTitle String
   questionId Int
   complexity Complexity
