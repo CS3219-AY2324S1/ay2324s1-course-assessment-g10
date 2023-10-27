@@ -1,8 +1,6 @@
 import {
   FormControl,
   FormLabel,
-  FormErrorMessage,
-  FormHelperText,
   Box,
   VStack,
   Input,
@@ -12,7 +10,7 @@ import {
   useToast
 } from '@chakra-ui/react'
 import { useState } from 'react';
-import { User, setUser } from '../../reducers/authSlice';
+import { setUser } from '../../reducers/authSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../api/auth';
@@ -30,8 +28,6 @@ export default function LoginForm() {
 
     login(username, password).then(response => {
       const user = response.data.user;
-      //TODO: do something w access token?
-      const access_token = response.data.token;
       dispatch(setUser(user));
       navigate('/');
     }).catch((err) => {

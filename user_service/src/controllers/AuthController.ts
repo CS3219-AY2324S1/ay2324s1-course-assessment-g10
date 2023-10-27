@@ -1,9 +1,10 @@
 import prisma from '../config/db';
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
+import { User } from '@prisma/client';
 
-async function isRegistered(username: string) {
-    const user = await prisma.user.findUnique({
+export async function isRegistered(username: string) {
+    const user : User | null = await prisma.user.findUnique({
         where: { username: username }
     });
 
@@ -18,23 +19,23 @@ async function isRegistered(username: string) {
  * @returns 
  */
 async function authenticate(loginName: string, password: string) {
-    const user = await prisma.user.findUnique({
+    const user : User | null = await prisma.user.findUnique({
         where: {
             username: loginName
         }
     });
-    
+
     if (user === null) {
-        return {isCorrectPassword: false , user: null};
+        return { isCorrectPassword: false, user: null };
     }
     const isCorrectPassword = await bcrypt.compare(password, user?.hashedPassword!);
-    
-    return {isCorrectPassword , user}
+
+    return { isCorrectPassword, user }
 }
 
 function createToken(payload: any) {
     const expiresIn = '1h'
-    return jwt.sign(payload, process.env.SECRET_KEY || 'testingKey', { expiresIn });
+    return jwt.sign(payload, process.env.SECRET_KEY || 'YOUR_SECRET_KEY', { expiresIn });
 }
 
 
@@ -45,7 +46,7 @@ export const register = async (req: any, res: any) => {
     const { username, password } = req.body;
 
     if (await isRegistered(username) === true) {
-        const status = 401;
+        const status = 409;
         const message = 'Credentials already exist';
         res.status(status).json({ status, message });
         return;
@@ -54,22 +55,29 @@ export const register = async (req: any, res: any) => {
     try {
         const hPassword = await bcrypt.hash(password, 10);
 
-        const user = await prisma.user.create({ data: { 
-            username: username, 
-            hashedPassword: hPassword, 
-            role: "USER" 
-        }});
+        const user : User = await prisma.user.create({
+            data: {
+                username: username,
+                hashedPassword: hPassword,
+                role: "USER"
+            }
+        });
 
-        const {hashedPassword, ...payload} = user
+        const { hashedPassword, ...payload } = user
         const access_token = createToken(payload);
+
+        res.cookie('AUTH_SESSION', access_token, {
+            httpOnly: true,
+            maxAge: 3600000
+        });
 
         res.status(201).json({ 
             user: payload,            
             access_token: access_token });
     } catch (error) {
-        res.status(400).json({ 
+        res.status(400).json({
             error: error,
-            message: 'Failed to register user!' 
+            message: 'Failed to register user!'
         })
     }
 };
@@ -81,17 +89,68 @@ export const login = async (req: any, res: any) => {
     const { username, password } = req.body;
     const { isCorrectPassword, user } = await authenticate(username, password)
 
-    if ( isCorrectPassword === false) {
+    if (isCorrectPassword === false) {
         const status = 401;
         const message = 'Incorrect username or password';
         res.status(status).json({ status, message });
         return;
     }
 
-    const { hashedPassword, ...payload} = user!;
+    const { hashedPassword, ...payload } = user!;
     const access_token = createToken(payload);
+
+    res.cookie('AUTH_SESSION', access_token, {
+        httpOnly: true,
+        maxAge: 3600000
+    });
     res.status(200).json({ 
         user: payload,
         access_token: access_token });
 };
 
+//@desc         get the session user stored in the auth header
+//@middleware   jwtCheckNoCredentials
+//@route        GET /login
+//@access       all users
+export const getSessionUser = async (req: any, res: any) => {
+    const id = req.auth?.id;
+    if (id === undefined) {
+        console.log(`result of parsing token: ${req.auth}`);
+        
+        res.clearCookie('AUTH_SESSION')
+        res.status(200).json({
+            user: null
+        });
+
+        return;
+    }
+
+    try {
+        const user : User | null = await prisma.user.findUnique({
+            where: {
+                id: id
+            }
+        });
+
+        const { hashedPassword, ...payload } = user!;
+
+        res.status(200).json({
+            user: payload
+        })
+    } catch (error) {
+        res.clearCookie('AUTH_SESSION')
+        res.status(400).json({
+            error: error,
+            message: 'Invalid ID. User not found in database.'
+        })
+    }
+
+}
+
+//@desc        logs the user out by clearing their session token
+//@route        GET /logout
+//@access       all users
+export const logOut = async (req: any, res: any) => {
+    res.clearCookie('AUTH_SESSION')
+    res.status(200).send('Logged out successfully');
+}

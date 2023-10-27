@@ -1,18 +1,22 @@
 const express = require('express')
 const cors = require('cors')
 const dotenv = require('dotenv').config()
-const connectDB = require('./config/db')
+const {connectDB, initCounter } = require('./config/db')
 
 
-connectDB()
+require('dotenv').config()
+
+connectDB().then((v) => {
+    initCounter();
+});
+
 const app = express()
 
-app.options('*', cors({
+app.use(cors({
     origin: 'http://localhost:3000',
     optionsSuccessStatus: 200,
+    credentials: true,            //access-control-allow-credentials:true
 }))
-
-app.use(cors());
 
 //allows JSON data in request body to be parsed
 app.use(express.json())

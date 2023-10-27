@@ -5,64 +5,26 @@ import {
   Tbody,
   Tr,
   Th,
-  Td,
   TableCaption,
   TableContainer,
-  HStack,
-  Tag,
   Center,
-  IconButton,
-  Text,
 } from "@chakra-ui/react";
 import { Paginator } from "../Paginator/Paginator.component";
 import { Question } from "../../models/Question.model";
-import { diffToScheme, isAdmin } from "../../helper/UIHelper";
-import { DeleteIcon } from "@chakra-ui/icons";
-import { deleteDummyQn } from "../../data/sampleqn";
-import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectIsAdmin } from "../../reducers/authSlice";
+import { QuestionEntry } from "./QuestionEntry.component";
 
 export type TableProp = {
   filteredQn: Question[];
   pageSize?: number;
 };
 
-const QnEntry = (qn: Question) => {
-  return (
-    <Tr>
-      <Td>
-        <Link to={`/view/${qn.id}`}>
-          <Text>{qn.displayedQuestion}</Text>
-        </Link>
-      </Td>
-      <Td>
-        <HStack spacing={1}>
-          {qn.topics.map((qntype) => (
-            <Tag colorScheme="blue">{qntype}</Tag>
-          ))}
-        </HStack>
-      </Td>
-      <Td isNumeric>
-        <Tag colorScheme={diffToScheme(qn.difficulty)}>{qn.difficulty}</Tag>
-      </Td>
-      {isAdmin ? (
-        <Td>
-          <IconButton
-            aria-label="Delete Qn"
-            colorScheme="red"
-            icon={<DeleteIcon />}
-            onClick={() => deleteDummyQn(qn.id)}
-          />
-        </Td>
-      ) : (
-        <></>
-      )}
-    </Tr>
-  );
-};
 
-export const QnTable = (pp: TableProp) => {
+export function QnTable(pp: TableProp) {
   const { filteredQn, pageSize = 10 } = pp;
   const [pageNumber, changePage] = useState(1);
+  const isAdmin = useSelector(selectIsAdmin);
 
   const getCurrentPage = (x: number) => {
     return filteredQn.slice(
@@ -105,11 +67,11 @@ export const QnTable = (pp: TableProp) => {
               <Tr boxShadow="base">
                 <Th>Questions</Th>
                 <Th>Type</Th>
-                <Th isNumeric>Difficulty</Th>
+                <Th>Difficulty</Th>
                 {isAdmin ? <Th>Modify/Delete</Th> : <></>}
               </Tr>
             </Thead>
-            <Tbody>{getCurrentPage(pageNumber).map((qn) => QnEntry(qn))}</Tbody>
+            <Tbody>{getCurrentPage(pageNumber).map((qn) => QuestionEntry({qn: qn, isAdmin: isAdmin}))}</Tbody>
           </Table>
         </Center>
       </TableContainer>

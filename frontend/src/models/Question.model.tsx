@@ -5,10 +5,11 @@ export class Question {
   topics: string[];
   difficulty: number;
   id: number;
-  solved: boolean; // Field to indicate whether the question has been solved
-  solvedDate?: string;
+  _id: string;
+
 
   constructor(
+    _id: string,
     id: number,
     title: string,
     descMd: string,
@@ -21,10 +22,14 @@ export class Question {
     this.descMd = descMd;
     this.topics = categories;
     this.difficulty = difficulty;
+    this._id = _id;
     this.id = id;
-    this.solved = solved;
-    this.solvedDate = solvedDate;
     this.displayedQuestion = `${id}.  ${title}`;
+  };
+  
+  setId(id: number) {
+    this.id = id;
+    this.displayedQuestion = `${id}.  ${this.title}`;
   }
 }
 

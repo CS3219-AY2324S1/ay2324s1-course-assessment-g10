@@ -6,10 +6,11 @@ import {
   Input,
   Button,
   Heading,
-  HStack
+  HStack,
+  useToast
 } from '@chakra-ui/react'
 import { useState } from 'react';
-import { User, setUser } from '../../reducers/authSlice';
+import { setUser } from '../../reducers/authSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { register } from '../../api/auth';
@@ -19,14 +20,15 @@ export default function RegistrationForm() {
   const [password, setPassword] = useState('');
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const toast = useToast();
+
 
   //TODO: require integration with backend API
   const onSubmit = (e: any) => {
     e.preventDefault();
     register(username, password).then(response => {
       const user = response.data.user;
-      //TODO: do something w access token?
-      const access_token = response.data.token;
+
       dispatch(setUser(user));
       navigate('/');
     }).catch((err) => {
@@ -78,8 +80,4 @@ export default function RegistrationForm() {
       </form>
     </Box >
   )
-}
-
-function toast(arg0: { title: string; description: string; status: string; isClosable: boolean; }) {
-  throw new Error('Function not implemented.');
 }

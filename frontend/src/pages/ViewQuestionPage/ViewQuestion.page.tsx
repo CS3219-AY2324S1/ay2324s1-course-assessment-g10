@@ -1,17 +1,29 @@
 import { redirect, LoaderFunction, useLoaderData } from "react-router-dom";
 import { HStack, VStack, Box, Heading, Center } from "@chakra-ui/react";
-import { dummyQnLookup } from "../../data/sampleqn";
 import { Question } from "../../models/Question.model";
 import { QnDrawer } from "../../components/QnDrawer/QnDrawer.component";
 
 import "./ViewQuestion.page.css";
+import store from "../../reducers/store";
+import { loadQuestions } from "../../data/sampleqn";
+import { fetchQuestion } from "../../api/questions";
 
 export const qnLoader: LoaderFunction<Question> = async ({ params }) => {
-  if (!params.id || !dummyQnLookup.has(params.id)) {
+  if (!params._id) {
     return redirect("/");
   }
+  
+  let qn : Question | undefined;
 
-  return dummyQnLookup.get(params.id);
+  if (process.env.REACT_APP_ENV_TYPE === 'prod') {
+    qn = await fetchQuestion(params._id)
+  } else {
+    await loadQuestions();    
+    qn = store
+        .getState()
+        .questions.originalQuestions.find((qn) => qn._id.toString() === params._id);
+  }
+return qn ?? redirect("/");
 };
 
 const ViewQuestion = () => {
