@@ -8,7 +8,7 @@ let consumeCh: amqp.Channel;
 const diffchs:amqp.Channel[] = [];
 
 (async () => {
-    connection = await amqp.connect('amqp://localhost');
+    connection = await amqp.connect('amqp://rabbitmq');
     consumeCh = await connection.createChannel();
     await consumeCh.assertQueue('match', { durable: false });
     for (let i = 0; i < diffs.length; i++) {

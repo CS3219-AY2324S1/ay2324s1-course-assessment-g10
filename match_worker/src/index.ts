@@ -2,7 +2,7 @@ import * as amqp from 'amqplib';
 import { Match, User } from './type';
 import { removeUser, removeRandomUser, addUser } from './db'
 
-const channel = process.argv[2];
+const channel : string = process.env.CHANNEL_NAME!;
 const retChannel = "match"
 
 let connection: amqp.Connection;
@@ -25,14 +25,14 @@ const tryMatchUser = async (uid: string) => {
 }
 
 (async () => {
-    connection = await amqp.connect('amqp://localhost');
+    connection = await amqp.connect('amqp://rabbitmq');
     const consumeCh = await connection.createChannel();
     writeCh = await connection.createChannel();
     await writeCh.assertQueue(retChannel, { durable: false });
     await consumeCh.assertQueue(channel, { durable: false });
 
     consumeCh.consume(channel, async (msg) => {
-        if (!msg) return; 
+        if (!msg) return;
         const data = JSON.parse(msg.content.toString()) as User;
         console.log("received", data)
         if (data.add) {

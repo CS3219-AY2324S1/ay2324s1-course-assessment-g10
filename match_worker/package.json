@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --init && tsc",
-    "start": "tsc && node dist/index.js diff1"
+    "start": "ts-node src/index.ts \"diff1\""
   },
   "keywords": [],
   "author": "",
@@ -16,6 +16,10 @@
     "amqplib": "^0.10.3",
     "sequelize": "^6.33.0",
     "sqlite3": "^5.1.6",
-    "typescript": "^5.2.2"
+    "nodemon": "^3.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "ts-node-dev": "^2.0.0"
   }
 }
