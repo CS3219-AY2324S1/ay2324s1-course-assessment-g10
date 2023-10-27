@@ -67,28 +67,34 @@ const getMatch = async (match: Match) => {
     const { user1, user2, questionId, hostUser } = match;
     const u1 = uidToUserWsockid.get(user1);
     const u2 = uidToUserWsockid.get(user2);
+    const s1 = u1 ? sockidToSocket.get(u1.socketId) : undefined;
+    const s2 = u2 ? sockidToSocket.get(u2.socketId) : undefined;
     if (u1 && u2 && !u1.isMatched && !u2.isMatched) {
-        const sock1 = sockidToSocket.get(u1.socketId);
-        const sock2 = sockidToSocket.get(u2.socketId);
-        if (sock1 && sock2) {
-            sock1.emit('matchFound', {
-                questionId,
-                hostUser,
+        if (s1 && s2) {
+            u1.isMatched = true;
+            u2.isMatched = true;
+            u1.matchedWith = u2.id;
+            u2.matchedWith = u1.id;
+            s1.emit('matchFound', {
+                partner: u2.id,
+                qn: questionId,
+                host: hostUser,
             });
-            sock2.emit('matchFound', {
-                questionId,
-                hostUser,
+            s2.emit('matchFound', {
+                partner: u1.id,
+                qn: questionId,
+                host: hostUser,
             });
             await removeMatchFromQ(u1);
             await removeMatchFromQ(u2);
         }
     }
 
-    console.log('One of the users has disconnected/cancelled');
+    console.log('One of the users has disconnected/cancelled/matched');
     if (u1) {
         if (u1.isMatched) {
             removeMatchFromQ(u1);
-        } 
+        }
         const sock = sockidToSocket.get(u1.socketId);
         if (sock) {
             await addMatchToQ(u1);
