@@ -3,7 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 import { QuestionEditor } from "../../components/QuestionEditor/QuestionEditor.component";
 import { SolvedTable } from "../../components/SolvedTable/SolvedTable.component";
-import { sampleSolvedQuestions } from "../../data/sampleqn";
 
 function HomePage() {
   const [userId, setUserId] = useState(null);

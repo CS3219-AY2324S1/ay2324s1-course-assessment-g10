@@ -6,7 +6,7 @@ const router = express.Router()
 router.get('/:id', getUserProfile);
 router.delete('/:id', delUserProfile);
 router.get('/:id/questions', getUserQuestions);
-router.post('/:userId/questions', addUserQuestion);
+router.post('/:id/addquestions', addUserQuestion);
 
 
 export default router;

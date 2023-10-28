@@ -32,6 +32,7 @@ model AnsweredQuestion {
   questionId Int
   complexity Complexity
   category   String[]
+  solved     Boolean
   answeredAt DateTime @default(now())
   @@map("AnsweredQuestion")
 }

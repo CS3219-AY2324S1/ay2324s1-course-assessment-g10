@@ -11,7 +11,7 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 import { Paginator } from "../Paginator/Paginator.component";
-import { SolvedQuestion, SolvedQnFilter } from "../../models/SolvedQuestion.model"; // Import the SolvedQuestion model
+import { SolvedQuestion, SolvedQnFilter } from "../../models/SolvedQuestion.model";
 
 export type TableProp = {
   userId: number;
@@ -21,7 +21,7 @@ export type TableProp = {
 export const SolvedTable = (props: TableProp) => {
   const { userId, pageSize = 10 } = props;
   const [currentPage, setCurrentPage] = useState(1);
-  const [solvedQuestions, setSolvedQuestions] = useState<SolvedQuestion[]>([]); // Use SolvedQuestion type
+  const [solvedQuestions, setSolvedQuestions] = useState<SolvedQuestion[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const onPageChange = (page: React.SetStateAction<number>) => {
@@ -88,15 +88,15 @@ export const SolvedTable = (props: TableProp) => {
           </Tr>
           <Tr>
             <Th>Question</Th>
-            <Th>Topic</Th>
+            <Th>Topics</Th>
             <Th isNumeric>Difficulty</Th>
             <Th isNumeric>Solved Date</Th>
           </Tr>
         </Thead>
         <Tbody>
           {getQuestionsForPage().map((question) => (
-            <Tr key={question.id}>
-              <Td>{question.displayedQuestion}</Td>
+            <Tr key={question._id}>
+              <Td>{question.title}</Td>
               <Td>{question.topics.join(", ")}</Td>
               <Td isNumeric>{question.difficulty}</Td>
               <Td isNumeric>

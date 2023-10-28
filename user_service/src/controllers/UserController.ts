@@ -1,5 +1,6 @@
 import prisma from "../config/db";
 
+
 //@desc     fetch a user's profile
 //@route    GET /api/users/:id
 //@access   authenticated users
@@ -47,9 +48,8 @@ export const delUserProfile = async (req: any, res: any) => {
 
 
 //@desc     get user's answered questions
-//@route    GET /api/users/:userId/questions
+//@route    GET /api/users/:id/questions
 //@access   authenticated users
-
 export async function getUserQuestions(req: any, res: any) {
   try {
     const userId = parseInt(req.params.userId, 10); // Parse userId as an integer
@@ -74,9 +74,8 @@ export async function getUserQuestions(req: any, res: any) {
 
 
 //@desc     add a new user question
-//@route    POST /api/users/:userId/questions
+//@route    POST /api/users/:id/addquestions
 //@access   authenticated users
-
 export async function addUserQuestion(req: any, res: any) {
   try {
     const { userId, questionId, complexity, category } = req.body;
