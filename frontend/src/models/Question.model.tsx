@@ -15,8 +15,6 @@ export class Question {
     descMd: string,
     categories: string[],
     difficulty: number,
-    solved: boolean = false,
-    solvedDate?: string
   ) {
     this.title = title;
     this.descMd = descMd;
