@@ -170,7 +170,7 @@ export const SharedEditorProvider = ({
 
     let pastSubmissions: submissionRecord[];
 
-    async () => {
+    (async () => {
       if (!qn) {
         await new Promise((r) => setTimeout(() => r, 2000)); // simulate fetching submission history
         pastSubmissions = [
@@ -183,7 +183,7 @@ export const SharedEditorProvider = ({
           },
         ];
       }
-    };
+    })();
 
     ysubmissions.observe(() => {
       setSubmissions(pastSubmissions.concat(ysubmissions.toArray())); // updates submission array
@@ -211,6 +211,7 @@ export const SharedEditorProvider = ({
   }, []);
 
   const memo = useMemo(() => {
+    console.log("updating sharededitor memo");
     return {
       lang,
       provider,
@@ -227,7 +228,7 @@ export const SharedEditorProvider = ({
       changeLang,
       clearCode,
     };
-  }, [qn, matchedRoom, user]); // ctx only changes when: qn changes, user changes, collab state changes.
+  }, [qn, matchedRoom, user, provider]); // ctx only changes when: qn changes, user changes, collab state changes or provider change
 
   return (
     <SharedEditorContext.Provider value={memo}>
