@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --init && tsc",
-    "start": "tsc && node dist/server.js"
+    "start": "ts-node src/server.ts"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +20,14 @@
     "sequelize": "^6.33.0",
     "socket.io": "^4.7.2",
     "sqlite3": "^5.1.6",
+    "nodemon": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.14",
+    "@types/express": "^4.17.19",
+    "@types/express-jwt": "^7.4.2",
+    "prisma": "^5.4.2",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.2.2"
   }
 }

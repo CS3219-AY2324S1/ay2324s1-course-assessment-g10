@@ -74,7 +74,7 @@ export const MatchmakeProvider = ({
       socket.off("matchLeave");
       socket.disconnect();
     };
-  }, []);
+  }, [navigate]);
 
   const findMatch = (diffStart: number, diffEnd: number) => {
     if (!socket || !user) return;

@@ -46,8 +46,39 @@ export const qnLoader: LoaderFunction<Question> = async ({ params }) => {
   return qn ?? redirect("/");
 };
 
-const ViewQuestion = () => {
-  const qn = useLoaderData() as Question;
+const ViewQuestion = ({ collab = false }: { collab?: boolean }) => {
+  const urlqn = useLoaderData() as Question;
+  const { matchedRoom } = useMatchmake();
+  const dispatch = useDispatch();
+  const toast = useToast();
+
+  useEffect(() => {
+    if (collab) {
+      if (process.env.REACT_APP_ENV_TYPE !== "prod") {
+        loadQuestions();
+      } else {
+        fetchAllQuestions()
+          .then((questions: Question[]) => {
+            dispatch(setQuestions(questions));
+          })
+          .catch((err) => {
+            console.log(err.message);
+            toast({
+              title: "Error",
+              description: err.message,
+              status: "error",
+            });
+          });
+      }
+    }
+  }, []);
+
+  const qn = useSelector((state: RootState) => {
+    if (!collab) return urlqn;
+    return state.questions.originalQuestions.find(
+      (q) => matchedRoom?.qn === q._id.toString()
+    );
+  });
 
   return (
     <>
