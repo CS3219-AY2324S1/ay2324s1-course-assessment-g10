@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { useMatchmake } from "../../contexts/matchmake.context";
 import { python } from "@codemirror/lang-python";
 import { cpp } from "@codemirror/lang-cpp";
 import { java } from "@codemirror/lang-java";
@@ -11,9 +10,7 @@ import {
   ViewUpdate,
   basicSetup,
 } from "@uiw/react-codemirror";
-import { useSelector } from "react-redux";
-import { selectUser } from "../../reducers/authSlice";
-import { Flex, Heading } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { language, useSharedEditor } from "../../contexts/sharededitor.context";
 
 const toLangSyntax = (lang: language) => {
