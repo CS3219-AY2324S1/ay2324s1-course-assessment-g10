@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { QnTable } from "../../components/QnTable/QnTable.component";
 import { FilterBar } from "../../components/QnFilter/QnFilter.component";
-import { VStack, useToast } from "@chakra-ui/react";
+import { DifficultyFilter } from "../../components/QnFilter/DifficultyFilter.component";
+import { VStack, useToast, Box, HStack } from "@chakra-ui/react";
 import { QnFilter, Question } from "../../models/Question.model";
 import { loadQuestions } from "../../data/sampleqn";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,12 +33,27 @@ const BankPage = () => {
         })
       })
     }
-  }, [])
+  }, []);
+
+  const handleDifficultyChange = (difficultyFilter: [number, number]) => {
+    const newFilter: QnFilter = {
+      ...filter,
+      difficultyFilter,
+    };
+    setFilter(newFilter);
+  };
 
   return (
     <VStack spacing="3">
-      <FilterBar setFilter={setFilter} />
-
+      <Box w="80%">
+        <HStack spacing="2">
+          <FilterBar setFilter={setFilter} />
+          <DifficultyFilter
+            difficultyFilter={filter.difficultyFilter}
+            setDifficultyFilter={handleDifficultyChange}
+          />
+        </HStack>
+      </Box>
       <QnTable filteredQn={filteredQns} pageSize={7}></QnTable>
     </VStack>
   );
