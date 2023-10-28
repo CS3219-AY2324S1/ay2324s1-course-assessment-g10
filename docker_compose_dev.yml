@@ -60,7 +60,7 @@ services:
     volumes:
       - mongo-dev-data:/data/db
 
-  postgres:
+  postgres:    
     container_name: postgres
     image: postgres:latest
     environment:

@@ -46,46 +46,15 @@ export const qnLoader: LoaderFunction<Question> = async ({ params }) => {
   return qn ?? redirect("/");
 };
 
-const ViewQuestion = ({ collab = false }: { collab?: boolean }) => {
-  const urlqn = useLoaderData() as Question;
-  const { matchedRoom } = useMatchmake();
-  const dispatch = useDispatch();
-  const toast = useToast();
-
-  useEffect(() => {
-    if (collab) {
-      if (process.env.REACT_APP_ENV_TYPE !== "prod") {
-        loadQuestions();
-      } else {
-        fetchAllQuestions()
-          .then((questions: Question[]) => {
-            dispatch(setQuestions(questions));
-          })
-          .catch((err) => {
-            console.log(err.message);
-            toast({
-              title: "Error",
-              description: err.message,
-              status: "error",
-            });
-          });
-      }
-    }
-  }, []);
-
-  const qn = useSelector((state: RootState) => {
-    if (!collab) return urlqn;
-    return state.questions.originalQuestions.find(
-      (q) => matchedRoom?.qn === q._id.toString()
-    );
-  });
+const ViewQuestion = () => {
+  const qn = useLoaderData() as Question;
 
   return (
     <>
       {qn ? <QnDrawer question={qn} size="xl" /> : <></>}
       <HStack className="fit-parent">
         <Box backgroundColor="red.100" className="fit-parent">
-          <CollabEditor isCollab={collab}></CollabEditor>
+          {/* <CollabEditor></CollabEditor> */}
         </Box>
         <VStack h="100%" w="30%">
           <Box backgroundColor="blue.300" className="fit-parent">
