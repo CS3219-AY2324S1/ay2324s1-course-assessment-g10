@@ -3,16 +3,18 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 import { QuestionEditor } from "../../components/QuestionEditor/QuestionEditor.component";
 import { SolvedTable } from "../../components/SolvedTable/SolvedTable.component";
+import { fetchUserId } from "../../api/user"; 
 
 function HomePage() {
-  const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
-    // Fetch the user ID dynamically from your API or data source
-    fetch("http://localhost:8000/api/get-user-id")
-      .then((response) => response.json())
-      .then((data) => {
-        setUserId(data.userId);
+    // Fetch the user ID dynamically using fetchUserId
+    fetchUserId()
+      .then((id) => {
+        if (id !== null) {
+          setUserId(id);
+        }
       })
       .catch((error) => {
         console.error("Error fetching user ID: ", error);

@@ -52,7 +52,7 @@ export const delUserProfile = async (req: any, res: any) => {
 //@access   authenticated users
 export async function getUserQuestions(req: any, res: any) {
   try {
-    const userId = parseInt(req.params.userId, 10); // Parse userId as an integer
+    const userId = req.params.userId;
 
     if (isNaN(userId)) {
       return res.status(400).json({ error: 'Invalid user ID' });

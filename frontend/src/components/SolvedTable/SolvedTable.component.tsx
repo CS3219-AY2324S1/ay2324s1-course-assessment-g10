@@ -11,7 +11,8 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 import { Paginator } from "../Paginator/Paginator.component";
-import { SolvedQuestion, SolvedQnFilter } from "../../models/SolvedQuestion.model";
+import { SolvedQuestion } from "../../models/SolvedQuestion.model";
+import { fetchUserCompletedQuestions } from "../../api/user"; // Import your API function
 
 export type TableProp = {
   userId: number;
@@ -22,36 +23,25 @@ export const SolvedTable = (props: TableProp) => {
   const { userId, pageSize = 10 } = props;
   const [currentPage, setCurrentPage] = useState(1);
   const [solvedQuestions, setSolvedQuestions] = useState<SolvedQuestion[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
 
   const onPageChange = (page: React.SetStateAction<number>) => {
     setCurrentPage(page);
   };
 
   useEffect(() => {
-    const fetchSolvedQuestions = async (): Promise<void> => {
-      if (userId) {
-        try {
-          const response = await fetch(`http://localhost:8000/api/users/${userId}/questions`);
-          if (response.ok) {
-            const data = await response.json();
-            setSolvedQuestions(data);
-            setIsLoaded(true);
-          } else {
-            console.error("Failed to fetch solved questions");
-          }
-        } catch (error) {
-          console.error(error);
-        }
+  const loadSolvedQuestions = async () => {
+    if (userId) {
+      try {
+        const data = await fetchUserCompletedQuestions(userId);
+        setSolvedQuestions(data);
+      } catch (error) {
+        console.error("Failed to fetch solved questions:", error);
       }
-    };
-
-    if (!isLoaded) {
-      fetchSolvedQuestions().catch((error) => {
-        console.error(error);
-      });
     }
-  }, [userId, isLoaded]);
+  };
+
+    loadSolvedQuestions();
+  }, [userId]);
 
   const getQuestionsForPage = () => {
     const startIndex = (currentPage - 1) * pageSize;
@@ -111,5 +101,3 @@ export const SolvedTable = (props: TableProp) => {
     </TableContainer>
   );
 };
-
-export default SolvedTable;
