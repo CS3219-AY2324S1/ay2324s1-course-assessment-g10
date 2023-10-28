@@ -57,7 +57,7 @@ export const MatchmakeProvider = ({
       });
       setIsMatching(false);
       setMatchedRoom(roomDetail);
-      navigate(`/collab`);
+      navigate(`/view/${roomDetail.qn}`);
     });
 
     socket.on("matchLeave", () => {
