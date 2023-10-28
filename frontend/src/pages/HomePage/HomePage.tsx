@@ -3,28 +3,26 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 import { QuestionEditor } from "../../components/QuestionEditor/QuestionEditor.component";
 import { SolvedTable } from "../../components/SolvedTable/SolvedTable.component";
-import { fetchUserId } from "../../api/user"; 
+import { selectUser } from "../../reducers/authSlice";
+import { useSelector } from "react-redux";
 
 function HomePage() {
-  const [userId, setUserId] = useState<number | null>(null);
+  // Use the useSelector hook to access the user from the Redux store
+  const user = useSelector(selectUser);
 
-  useEffect(() => {
-    // Fetch the user ID dynamically using fetchUserId
-    fetchUserId()
-      .then((id) => {
-        if (id !== null) {
-          setUserId(id);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching user ID: ", error);
-      });
-  }, []);
+  if (user === null) {
+    return (
+      <div>
+        <QuestionEditor />
+      </div>
+    );
+  }
 
+  // At this point, you're sure that user is not null
   return (
     <div>
       <QuestionEditor />
-      {userId !== null && <SolvedTable userId={userId} pageSize={4} />} {/* Render SolvedTable when userId is available */}
+      <SolvedTable userId={user.id} pageSize={4} />
     </div>
   );
 }

@@ -8,7 +8,7 @@ import { userServiceClient } from "./server";
  * @returns An array of completed questions.
  */
 export async function fetchUserCompletedQuestions(
-  userId: number
+  userId: String
 ): Promise<SolvedQuestion[]> { 
   try {
     const response: AxiosResponse = await userServiceClient.get(
@@ -84,17 +84,3 @@ export async function addUserQuestion(
 }
 
 
-/**
- * Fetch the user's ID.
- * @returns The user's ID or null if not found.
- */
-export async function fetchUserId(): Promise<number | null> {
-  try {
-    const response: AxiosResponse = await userServiceClient.get("/api/get-user-id");
-    return response.data.userId;
-  } catch (error) {
-    // Handle errors appropriately, e.g., log the error or return null.
-    console.error("Error fetching user ID:", error);
-    return null;
-  }
-}

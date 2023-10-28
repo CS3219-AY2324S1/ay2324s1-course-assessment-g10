@@ -15,7 +15,7 @@ import { SolvedQuestion } from "../../models/SolvedQuestion.model";
 import { fetchUserCompletedQuestions } from "../../api/user"; // Import your API function
 
 export type TableProp = {
-  userId: number;
+  userId: String;
   pageSize?: number;
 };
 
