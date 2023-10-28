@@ -24,6 +24,7 @@ export type language = "C++17" | "Python3" | "Java";
 type executionResult = "Correct" | "TLE" | "MLE" | "WA" | "Unknown";
 
 type submissionRecord = {
+  time: number;
   user: string;
   qn_id: string;
   code: string;
@@ -64,7 +65,7 @@ interface SharedEditorInterface {
 
   setCode: (s: string) => void;
   sendToChat: (s: string) => void;
-  submitCode: (s: string) => void;
+  submitCode: () => void;
   changeLang: (s: language) => void;
   clearCode: () => void;
 }
@@ -118,11 +119,12 @@ export const SharedEditorProvider = ({
     ]);
   };
 
-  const submitCode = (s: string) => {
+  const submitCode = () => {
     if (!_states || currSubmission) return;
     const tmp: submissionRecord = {
+      time: Date.now(),
       user: user.username,
-      code: s,
+      code: code,
       lang: lang,
       qn_id: qn?._id ?? "-1", // in case we implement a sandbox code editor
       result: "Unknown",
@@ -175,6 +177,7 @@ export const SharedEditorProvider = ({
         await new Promise((r) => setTimeout(() => r, 2000)); // simulate fetching submission history
         pastSubmissions = [
           {
+            time: Date.now(),
             user: user.username,
             code: "lorem ipsum",
             lang: "C++17",
