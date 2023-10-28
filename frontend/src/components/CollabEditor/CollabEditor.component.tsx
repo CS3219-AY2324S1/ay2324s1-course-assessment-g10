@@ -1,11 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useMatchmake } from "../../contexts/matchmake.context";
 import { python } from "@codemirror/lang-python";
 import { cpp } from "@codemirror/lang-cpp";
 import { java } from "@codemirror/lang-java";
-import * as Y from "yjs";
 import { yCollab } from "y-codemirror.next";
-import { WebrtcProvider } from "y-webrtc";
 import {
   EditorState,
   EditorView,
@@ -15,12 +13,12 @@ import {
 } from "@uiw/react-codemirror";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../reducers/authSlice";
+import { Flex, Heading } from "@chakra-ui/react";
+import { language, useSharedEditor } from "../../contexts/sharededitor.context";
 
-const userColor = { color: "#30bced", light: "#30bced33" };
-
-const toLangSyntax = (lang: "C++" | "Python3" | "Java") => {
+const toLangSyntax = (lang: language) => {
   switch (lang) {
-    case "C++":
+    case "C++17":
       return cpp();
     case "Python3":
       return python();
@@ -29,74 +27,43 @@ const toLangSyntax = (lang: "C++" | "Python3" | "Java") => {
   }
 };
 
-type editorprop = {
-  language: "C++" | "Python3" | "Java";
-  defaultValue?: string;
-  onChange?: (s: string) => void;
-};
-
-const CollabEditor = (prop: editorprop) => {
-  const { language, defaultValue = "", onChange = (s: string) => {} } = prop;
-  const user = useSelector(selectUser);
-  const { matchedRoom } = useMatchmake();
+const CollabEditor = () => {
   const editorRef = useRef<HTMLDivElement>(null);
+  const { setCode, lang, codeUndo, ycode, provider } = useSharedEditor();
 
   useEffect(() => {
-    if (!editorRef.current) return;
-    let ydoc: Y.Doc;
-    let provider: WebrtcProvider;
+    if (!editorRef.current || !ycode || !codeUndo || !provider) return () => {}; // nothing to reset
 
     const extensions: Extension[] = [
       basicSetup(),
-      toLangSyntax(language),
+      toLangSyntax(lang),
       EditorView.updateListener.of((v: ViewUpdate) => {
         if (v.docChanged) {
-          onChange(v.state.doc.toString());
+          setCode(v.state.doc.toString());
         }
       }),
+      yCollab(ycode, provider?.awareness, { undoManager: codeUndo }),
     ];
-
-    if (matchedRoom) {
-      ydoc = new Y.Doc();
-      const ytext = ydoc.getText("peerconnectcc");
-      ytext.insert(0, defaultValue);
-      const undoManager = new Y.UndoManager(ytext);
-      provider = new WebrtcProvider(matchedRoom.host, ydoc);
-
-      provider.awareness.setLocalStateField("user", {
-        name: matchedRoom.partner,
-        color: userColor.color,
-        colorLight: userColor.light,
-      });
-
-      extensions.push(yCollab(ytext, provider.awareness, { undoManager }));
-    }
 
     const view = new EditorView({
       state: EditorState.create({
-        doc: defaultValue,
+        doc: ycode.toString(),
         extensions: extensions,
       }),
     });
 
     editorRef.current.appendChild(view.dom);
+    view.dom.style.flex = "1";
+    view.dom.style.width = "100%";
 
     return () => {
-      console.log("destoroyed!");
-      if (provider) {
-        provider.destroy();
-      }
-      if (ydoc) {
-        ydoc.destroy();
-      }
-
       if (editorRef.current) {
         editorRef.current.removeChild(view.dom);
       }
     };
-  }, [editorRef, user, matchedRoom]);
+  }, [editorRef, lang, provider]);
 
-  return <div ref={editorRef}></div>;
+  return <Flex h="100%" w="100%" ref={editorRef}></Flex>;
 };
 
 export default CollabEditor;

@@ -20,7 +20,7 @@ type chatRecord = {
   msg: string;
 };
 
-type language = "C++17" | "Python3" | "Java";
+export type language = "C++17" | "Python3" | "Java";
 type executionResult = "Correct" | "TLE" | "MLE" | "WA" | "Unknown";
 
 type submissionRecord = {
