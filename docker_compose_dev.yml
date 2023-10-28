@@ -90,7 +90,16 @@ services:
         condition: service_healthy
       matching-service:
         condition: service_started
-  
+
+  collab-service:
+    container_name: collab-service
+    environment:
+      PORT: 8083
+    build:
+      context: ./collab_service
+    ports:
+      - "8083:8083"
+
   mongo:
     container_name: mongo
     image: mongo:6.0
