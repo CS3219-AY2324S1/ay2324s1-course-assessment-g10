@@ -8,7 +8,6 @@ import React, {
 import * as Y from "yjs";
 import { WebrtcProvider } from "y-webrtc";
 import * as random from "lib0/random";
-import { IndexeddbPersistence } from "y-indexeddb";
 import { Question } from "../models/Question.model";
 import { useSelector } from "react-redux";
 import { User, selectUser } from "../reducers/authSlice";
@@ -54,7 +53,7 @@ const STATES_KEY = "peerprepstates";
 
 interface SharedEditorInterface {
   lang: language;
-  provider?: WebrtcProvider | IndexeddbPersistence;
+  provider?: WebrtcProvider;
   code: string;
   ycode?: Y.Text;
   codeUndo?: Y.UndoManager;
