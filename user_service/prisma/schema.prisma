@@ -21,6 +21,7 @@ model User {
   username        String   @db.VarChar(255) @unique
   hashedPassword  String   
   role            Role     @default(USER)
+  answeredQuestions AnsweredQuestion[]
 }
 
 
@@ -30,7 +31,7 @@ model AnsweredQuestion {
   user       User     @relation(fields: [userId], references: [id])
   questionTitle String
   questionId Int
-  complexity Complexity
+  difficulty Int
   category   String[]
   solved     Boolean
   answeredAt DateTime @default(now())
