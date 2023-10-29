@@ -156,6 +156,9 @@ export const SharedEditorProvider = ({
   const [_states, _setStates] = useState<Y.Map<submissionRecord>>();
   const [_chat, _setChat] = useState<Y.Array<chatRecord>>();
 
+  const [_ysubmissions, _setysubmissions] =
+    useState<Y.Array<submissionRecord>>(); // this line is solely to simulate a successful compiling on submission
+
   const sendToChat = (s: string) => {
     if (!_chat) return;
     _chat.push([
@@ -178,6 +181,14 @@ export const SharedEditorProvider = ({
     };
     _states.set(SUBMISSION_KEY, tmp);
     setCurrSubmission(tmp);
+
+    setTimeout(() => {
+      // this line is solely to simulate a successful compiling on submission
+      setCurrSubmission(null);
+      _states.delete(SUBMISSION_KEY);
+      tmp.result = "WA";
+      _ysubmissions?.push([tmp]);
+    }, 3000);
   };
 
   const clearCode = () => {
@@ -194,6 +205,7 @@ export const SharedEditorProvider = ({
     const doc = new Y.Doc();
     const ychat = doc.getArray<chatRecord>(CHAT_KEY);
     const ysubmissions = doc.getArray<submissionRecord>(SUBMISSION_HISTORY_KEY);
+    _setysubmissions(ysubmissions);
     const ystates = doc.getMap<submissionRecord>(STATES_KEY);
     _setStates(ystates);
 
