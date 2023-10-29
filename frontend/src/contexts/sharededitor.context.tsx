@@ -167,6 +167,7 @@ export const SharedEditorProvider = ({
         nickname: user.username,
       },
     ]);
+    setChat(_chat.toArray());
   };
 
   const submitCode = () => {
@@ -204,6 +205,7 @@ export const SharedEditorProvider = ({
   useEffect(() => {
     const doc = new Y.Doc();
     const ychat = doc.getArray<chatRecord>(CHAT_KEY);
+    _setChat(ychat);
     const ysubmissions = doc.getArray<submissionRecord>(SUBMISSION_HISTORY_KEY);
     _setysubmissions(ysubmissions);
     const ystates = doc.getMap<submissionRecord>(STATES_KEY);
@@ -291,7 +293,16 @@ export const SharedEditorProvider = ({
       changeLang,
       clearCode,
     };
-  }, [qn, matchedRoom, user, provider, submissions, lang, currSubmission]); // ctx only changes when: qn changes, user changes, collab state changes or provider change
+  }, [
+    qn,
+    matchedRoom,
+    user,
+    provider,
+    submissions,
+    lang,
+    currSubmission,
+    chat,
+  ]);
 
   return (
     <SharedEditorContext.Provider value={memo}>

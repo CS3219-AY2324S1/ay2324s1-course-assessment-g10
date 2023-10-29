@@ -26,6 +26,7 @@ import {
   language,
 } from "../../contexts/sharededitor.context";
 import QnSubmissionHistory from "../../components/QnSubmissionHistory/QnSubmissionHistory.component";
+import ChatBox from "../../components/ChatBox/ChatBox.component";
 
 export const qnLoader: LoaderFunction<Question> = async ({ params }) => {
   if (!params._id) {
@@ -75,9 +76,9 @@ const InnerViewQuestion = () => {
               <QnSubmissionHistory />
             </Center>
           </Box>
-          <Box backgroundColor="blue.300" className="fit-parent">
+          <Box className="fit-parent">
             <Center>
-              <Heading>stdout/stderr</Heading>
+              <ChatBox />
             </Center>
           </Box>
           <Box h="10%" w="100%">
