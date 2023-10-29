@@ -248,10 +248,7 @@ export const SharedEditorProvider = ({
     });
 
     ystates.observe((mapEvent) => {
-      const statesChanged = mapEvent.keysChanged;
-      if (statesChanged.has(SUBMISSION_KEY)) {
-        setCurrSubmission(null); // if exist, means some code is being eval.
-      }
+      setCurrSubmission(ystates.get(SUBMISSION_KEY) ?? null); // if exist, means some code is being eval.
     });
 
     return () => {
