@@ -1,9 +1,4 @@
-import {
-  redirect,
-  LoaderFunction,
-  useLoaderData,
-  Navigate,
-} from "react-router-dom";
+import { redirect, LoaderFunction, useLoaderData } from "react-router-dom";
 import {
   HStack,
   VStack,
@@ -11,6 +6,7 @@ import {
   Heading,
   Center,
   useToast,
+  Select,
 } from "@chakra-ui/react";
 import { Question } from "../../models/Question.model";
 import { QnDrawer } from "../../components/QnDrawer/QnDrawer.component";
@@ -21,10 +17,15 @@ import { loadQuestions } from "../../data/sampleqn";
 import { fetchAllQuestions, fetchQuestion } from "../../api/questions";
 import { useMatchmake } from "../../contexts/matchmake.context";
 import CollabEditor from "../../components/CollabEditor/CollabEditor.component";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { setQuestions } from "../../reducers/questionsSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
+import {
+  SharedEditorContext,
+  SharedEditorProvider,
+} from "../../contexts/sharededitor.context";
+import QnSubmissionHistory from "../../components/QnSubmissionHistory/QnSubmissionHistory.component";
 
 export const qnLoader: LoaderFunction<Question> = async ({ params }) => {
   if (!params._id) {
@@ -46,51 +47,26 @@ export const qnLoader: LoaderFunction<Question> = async ({ params }) => {
   return qn ?? redirect("/");
 };
 
-const ViewQuestion = ({ collab = false }: { collab?: boolean }) => {
-  const urlqn = useLoaderData() as Question;
-  const { matchedRoom } = useMatchmake();
-  const dispatch = useDispatch();
-  const toast = useToast();
-
-  useEffect(() => {
-    if (collab) {
-      if (process.env.REACT_APP_ENV_TYPE !== "prod") {
-        loadQuestions();
-      } else {
-        fetchAllQuestions()
-          .then((questions: Question[]) => {
-            dispatch(setQuestions(questions));
-          })
-          .catch((err) => {
-            console.log(err.message);
-            toast({
-              title: "Error",
-              description: err.message,
-              status: "error",
-            });
-          });
-      }
-    }
-  }, []);
-
-  const qn = useSelector((state: RootState) => {
-    if (!collab) return urlqn;
-    return state.questions.originalQuestions.find(
-      (q) => matchedRoom?.qn === q._id.toString()
-    );
-  });
-
+const InnerViewQuestion = () => {
+  const { qn, chat } = useContext(SharedEditorContext);
   return (
     <>
       {qn ? <QnDrawer question={qn} size="xl" /> : <></>}
-      <HStack className="fit-parent">
-        <Box backgroundColor="red.100" className="fit-parent">
-          {/* <CollabEditor></CollabEditor> */}
-        </Box>
+      <HStack className="fit-parent" padding={2.5}>
+        <VStack className="fit-parent" gap="2">
+          <Select>
+            <option value="C++17">C++ 17</option>
+            <option value="Python3">Python3</option>
+            <option value="Java">Java</option>
+          </Select>
+          <Box width="100%" height="95%">
+            <CollabEditor />
+          </Box>
+        </VStack>
         <VStack h="100%" w="30%">
-          <Box backgroundColor="blue.300" className="fit-parent">
+          <Box className="fit-parent">
             <Center>
-              <Heading>Stdin</Heading>
+              <QnSubmissionHistory />
             </Center>
           </Box>
           <Box backgroundColor="blue.300" className="fit-parent">
@@ -106,6 +82,14 @@ const ViewQuestion = ({ collab = false }: { collab?: boolean }) => {
         </VStack>
       </HStack>
     </>
+  );
+};
+
+const ViewQuestion = () => {
+  return (
+    <SharedEditorProvider>
+      <InnerViewQuestion />
+    </SharedEditorProvider>
   );
 };
 
