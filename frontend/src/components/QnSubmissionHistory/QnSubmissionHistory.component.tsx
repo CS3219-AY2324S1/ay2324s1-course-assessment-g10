@@ -69,7 +69,7 @@ const QnSubmissionHistory = () => {
   }
 
   return (
-    <Box overflowY="auto" maxHeight="40vh" w="100%">
+    <Box overflowY="auto" maxHeight="40vh" w="100%" boxShadow="base">
       <Table variant="striped" size="sm" height="100%" overflow="scroll">
         <Thead
           position="sticky"
