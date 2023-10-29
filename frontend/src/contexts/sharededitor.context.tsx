@@ -21,6 +21,46 @@ export type chatRecord = {
 };
 
 export type language = "C++17" | "Python3" | "Java";
+
+type langData = {
+  lang: language;
+  repr: string;
+  templates: { name: string; code: string }[];
+};
+
+export const LanguageData: langData[] = [
+  {
+    lang: "C++17",
+    repr: "C++ 17",
+    templates: [
+      {
+        name: "Dijikstra (SSSP)",
+        code: "// some sssp template code in c++",
+      },
+    ],
+  },
+  {
+    lang: "Python3",
+    repr: "Python 3",
+    templates: [
+      {
+        name: "Dijikstra (SSSP)",
+        code: "// some sssp template code in python",
+      },
+    ],
+  },
+  {
+    lang: "Java",
+    repr: "Java",
+    templates: [
+      {
+        name: "Dijikstra (SSSP)",
+        code: "// some sssp template code in Java",
+      },
+    ],
+  },
+];
+
 type executionResult =
   | "Accepted"
   | "TLE"
@@ -154,7 +194,8 @@ export const SharedEditorProvider = ({
     const doc = new Y.Doc();
     const ychat = doc.getArray<chatRecord>(CHAT_KEY);
     const ysubmissions = doc.getArray<submissionRecord>(SUBMISSION_HISTORY_KEY);
-    const ystates = doc.getMap<string>(STATES_KEY);
+    const ystates = doc.getMap<submissionRecord>(STATES_KEY);
+    _setStates(ystates);
 
     const ycode = doc.getText(CODE_KEY);
     setycode(ycode);
@@ -191,103 +232,7 @@ export const SharedEditorProvider = ({
             code: "lorem ipsum",
             lang: "C++17",
             qn_id: "1",
-            result: "Accepted",
-          },
-          {
-            time: Date.now(),
-            user: user.username,
-            code: "lorem ipsum",
-            lang: "C++17",
-            qn_id: "1",
-            result: "Accepted",
-          },
-          {
-            time: Date.now(),
-            user: user.username,
-            code: "lorem ipsum",
-            lang: "C++17",
-            qn_id: "1",
-            result: "Accepted",
-          },
-          {
-            time: Date.now(),
-            user: user.username,
-            code: "lorem ipsum",
-            lang: "C++17",
-            qn_id: "1",
-            result: "Accepted",
-          },
-          {
-            time: Date.now(),
-            user: user.username,
-            code: "lorem ipsum",
-            lang: "C++17",
-            qn_id: "1",
-            result: "Accepted",
-          },
-          {
-            time: Date.now(),
-            user: user.username,
-            code: "lorem ipsum",
-            lang: "C++17",
-            qn_id: "1",
-            result: "Accepted",
-          },
-          {
-            time: Date.now(),
-            user: user.username,
-            code: "lorem ipsum",
-            lang: "C++17",
-            qn_id: "1",
-            result: "Accepted",
-          },
-          {
-            time: Date.now(),
-            user: user.username,
-            code: "lorem ipsum",
-            lang: "C++17",
-            qn_id: "1",
-            result: "Accepted",
-          },
-          {
-            time: Date.now(),
-            user: user.username,
-            code: "lorem ipsum",
-            lang: "C++17",
-            qn_id: "1",
-            result: "Accepted",
-          },
-          {
-            time: Date.now(),
-            user: user.username,
-            code: "lorem ipsum",
-            lang: "C++17",
-            qn_id: "1",
-            result: "Accepted",
-          },
-          {
-            time: Date.now(),
-            user: user.username,
-            code: "lorem ipsum",
-            lang: "C++17",
-            qn_id: "1",
-            result: "Accepted",
-          },
-          {
-            time: Date.now(),
-            user: user.username,
-            code: "lorem ipsum",
-            lang: "C++17",
-            qn_id: "1",
-            result: "Accepted",
-          },
-          {
-            time: Date.now(),
-            user: user.username,
-            code: "lorem ipsum",
-            lang: "C++17",
-            qn_id: "1",
-            result: "Accepted",
+            result: "TLE",
           },
         ];
         setSubmissions(pastSubmissions.concat(ysubmissions.toArray())); // updates submission array
@@ -337,7 +282,7 @@ export const SharedEditorProvider = ({
       changeLang,
       clearCode,
     };
-  }, [qn, matchedRoom, user, provider, submissions]); // ctx only changes when: qn changes, user changes, collab state changes or provider change
+  }, [qn, matchedRoom, user, provider, submissions, lang, currSubmission]); // ctx only changes when: qn changes, user changes, collab state changes or provider change
 
   return (
     <SharedEditorContext.Provider value={memo}>

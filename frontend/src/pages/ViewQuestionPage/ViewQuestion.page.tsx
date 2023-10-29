@@ -7,23 +7,23 @@ import {
   Center,
   useToast,
   Select,
+  Button,
 } from "@chakra-ui/react";
 import { Question } from "../../models/Question.model";
 import { QnDrawer } from "../../components/QnDrawer/QnDrawer.component";
 
 import "./ViewQuestion.page.css";
-import store, { RootState } from "../../reducers/store";
+import store from "../../reducers/store";
 import { loadQuestions } from "../../data/sampleqn";
-import { fetchAllQuestions, fetchQuestion } from "../../api/questions";
+import { fetchQuestion } from "../../api/questions";
 import { useMatchmake } from "../../contexts/matchmake.context";
 import CollabEditor from "../../components/CollabEditor/CollabEditor.component";
-import { useContext, useEffect, useState } from "react";
-import { setQuestions } from "../../reducers/questionsSlice";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import { useContext } from "react";
 import {
+  LanguageData,
   SharedEditorContext,
   SharedEditorProvider,
+  language,
 } from "../../contexts/sharededitor.context";
 import QnSubmissionHistory from "../../components/QnSubmissionHistory/QnSubmissionHistory.component";
 
@@ -48,16 +48,22 @@ export const qnLoader: LoaderFunction<Question> = async ({ params }) => {
 };
 
 const InnerViewQuestion = () => {
-  const { qn, chat } = useContext(SharedEditorContext);
+  const { qn, chat, lang, changeLang, currSubmission, submitCode } =
+    useContext(SharedEditorContext);
   return (
     <>
       {qn ? <QnDrawer question={qn} size="xl" /> : <></>}
       <HStack className="fit-parent" padding={2.5}>
         <VStack className="fit-parent" gap="2">
-          <Select>
-            <option value="C++17">C++ 17</option>
-            <option value="Python3">Python3</option>
-            <option value="Java">Java</option>
+          <Select
+            defaultValue={lang}
+            onChange={(e) => changeLang(e.currentTarget.value as language)}
+          >
+            {LanguageData.map((data) => (
+              <option value={data.lang} key={data.lang}>
+                {data.repr}
+              </option>
+            ))}
           </Select>
           <Box width="100%" height="95%">
             <CollabEditor />
@@ -74,9 +80,16 @@ const InnerViewQuestion = () => {
               <Heading>stdout/stderr</Heading>
             </Center>
           </Box>
-          <Box backgroundColor="blue.300" h="10%" w="100%">
+          <Box h="10%" w="100%">
             <Center>
-              <Heading>Submit/try</Heading>
+              <Button
+                w="100%"
+                colorScheme="teal"
+                isLoading={!!currSubmission}
+                onClick={submitCode}
+              >
+                Submit
+              </Button>
             </Center>
           </Box>
         </VStack>
