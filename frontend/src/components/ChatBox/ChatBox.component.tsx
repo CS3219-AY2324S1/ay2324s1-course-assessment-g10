@@ -15,8 +15,11 @@ import { useSharedEditor } from "../../contexts/sharededitor.context";
 import { useSelector } from "react-redux";
 import { selectUser } from "../../reducers/authSlice";
 import { useState } from "react";
+import { useMatchmake } from "../../contexts/matchmake.context";
 
 const ChatBox = () => {
+  const { matchedRoom } = useMatchmake();
+
   const { chat, sendToChat } = useSharedEditor();
   const user = useSelector(selectUser);
   const [msg, setMsg] = useState("");
@@ -25,6 +28,7 @@ const ChatBox = () => {
     sendToChat(msg);
     setMsg("");
   };
+  if (!matchedRoom) return <></>;
   return (
     <Flex flexDirection="column" width="100%" height="100%" alignItems="start">
       <VStack flexDirection={"column-reverse"} flex={1} width="100%">
