@@ -15,15 +15,22 @@ import { useMatchmake } from "./matchmake.context";
 import { useLoaderData } from "react-router-dom";
 import { Buffer } from "buffer";
 
-type chatRecord = {
+export type chatRecord = {
   nickname: string;
   msg: string;
 };
 
 export type language = "C++17" | "Python3" | "Java";
-type executionResult = "Correct" | "TLE" | "MLE" | "WA" | "Unknown";
+type executionResult =
+  | "Accepted"
+  | "TLE"
+  | "MLE"
+  | "WA"
+  | "Compile Error"
+  | "Runtime Error"
+  | "Unknown";
 
-type submissionRecord = {
+export type submissionRecord = {
   time: number;
   user: string;
   qn_id: string;
@@ -173,8 +180,10 @@ export const SharedEditorProvider = ({
     let pastSubmissions: submissionRecord[];
 
     (async () => {
-      if (!qn) {
-        await new Promise((r) => setTimeout(() => r, 2000)); // simulate fetching submission history
+      if (qn) {
+        console.log("fetching submissions");
+        await new Promise((r) => setTimeout(r, 1000)); // simulate fetching submission history
+        console.log("fetch complete");
         pastSubmissions = [
           {
             time: Date.now(),
@@ -182,9 +191,106 @@ export const SharedEditorProvider = ({
             code: "lorem ipsum",
             lang: "C++17",
             qn_id: "1",
-            result: "WA",
+            result: "Accepted",
+          },
+          {
+            time: Date.now(),
+            user: user.username,
+            code: "lorem ipsum",
+            lang: "C++17",
+            qn_id: "1",
+            result: "Accepted",
+          },
+          {
+            time: Date.now(),
+            user: user.username,
+            code: "lorem ipsum",
+            lang: "C++17",
+            qn_id: "1",
+            result: "Accepted",
+          },
+          {
+            time: Date.now(),
+            user: user.username,
+            code: "lorem ipsum",
+            lang: "C++17",
+            qn_id: "1",
+            result: "Accepted",
+          },
+          {
+            time: Date.now(),
+            user: user.username,
+            code: "lorem ipsum",
+            lang: "C++17",
+            qn_id: "1",
+            result: "Accepted",
+          },
+          {
+            time: Date.now(),
+            user: user.username,
+            code: "lorem ipsum",
+            lang: "C++17",
+            qn_id: "1",
+            result: "Accepted",
+          },
+          {
+            time: Date.now(),
+            user: user.username,
+            code: "lorem ipsum",
+            lang: "C++17",
+            qn_id: "1",
+            result: "Accepted",
+          },
+          {
+            time: Date.now(),
+            user: user.username,
+            code: "lorem ipsum",
+            lang: "C++17",
+            qn_id: "1",
+            result: "Accepted",
+          },
+          {
+            time: Date.now(),
+            user: user.username,
+            code: "lorem ipsum",
+            lang: "C++17",
+            qn_id: "1",
+            result: "Accepted",
+          },
+          {
+            time: Date.now(),
+            user: user.username,
+            code: "lorem ipsum",
+            lang: "C++17",
+            qn_id: "1",
+            result: "Accepted",
+          },
+          {
+            time: Date.now(),
+            user: user.username,
+            code: "lorem ipsum",
+            lang: "C++17",
+            qn_id: "1",
+            result: "Accepted",
+          },
+          {
+            time: Date.now(),
+            user: user.username,
+            code: "lorem ipsum",
+            lang: "C++17",
+            qn_id: "1",
+            result: "Accepted",
+          },
+          {
+            time: Date.now(),
+            user: user.username,
+            code: "lorem ipsum",
+            lang: "C++17",
+            qn_id: "1",
+            result: "Accepted",
           },
         ];
+        setSubmissions(pastSubmissions.concat(ysubmissions.toArray())); // updates submission array
       }
     })();
 
@@ -231,7 +337,7 @@ export const SharedEditorProvider = ({
       changeLang,
       clearCode,
     };
-  }, [qn, matchedRoom, user, provider]); // ctx only changes when: qn changes, user changes, collab state changes or provider change
+  }, [qn, matchedRoom, user, provider, submissions]); // ctx only changes when: qn changes, user changes, collab state changes or provider change
 
   return (
     <SharedEditorContext.Provider value={memo}>
