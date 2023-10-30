@@ -12,7 +12,8 @@ import { fetchAllQuestions } from "../../api/questions";
 
 const BankPage = () => {
   const [filter, setFilter] = useState<QnFilter>({});
-  const filteredQns = useSelector((state: RootState) =>selectFilteredQuestions(state, filter));
+  const [difficultyFilter, setDifficultyFilter] = useState<[number, number]>([0, 10]);
+  const filteredQns = useSelector((state: RootState) => selectFilteredQuestions(state, { ...filter, difficultyFilter }));
   const dispatch = useDispatch();
   const toast = useToast();
 
@@ -30,27 +31,22 @@ const BankPage = () => {
           title: 'Error',
           description: err.message,
           status: 'error'
-        })
-      })
+        });
+      });
     }
   }, []);
-
-  const handleDifficultyChange = (difficultyFilter: [number, number]) => {
-    const newFilter: QnFilter = {
-      ...filter,
-      difficultyFilter,
-    };
-    setFilter(newFilter);
-  };
 
   return (
     <VStack spacing="3">
       <Box w="80%">
         <HStack spacing="2">
-          <FilterBar setFilter={setFilter} />
+          <FilterBar
+            qnFilter={filter.qnFilter}
+            setFilter={(newFilter) => setFilter(newFilter)}
+          />
           <DifficultyFilter
-            difficultyFilter={filter.difficultyFilter}
-            setDifficultyFilter={handleDifficultyChange}
+            difficultyFilter={difficultyFilter}
+            setDifficultyFilter={(newDifficultyFilter) => setDifficultyFilter(newDifficultyFilter)}
           />
         </HStack>
       </Box>
