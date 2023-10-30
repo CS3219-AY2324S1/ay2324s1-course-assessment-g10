@@ -8,6 +8,8 @@ import store from "../../reducers/store";
 import { loadQuestions } from "../../data/sampleqn";
 import { fetchQuestion } from "../../api/questions";
 
+import Landing from "../../components/CodeEditor/components/Landing"
+
 export const qnLoader: LoaderFunction<Question> = async ({ params }) => {
   if (!params._id) {
     return redirect("/");
@@ -32,7 +34,7 @@ const ViewQuestion = () => {
   return (
     <>
       <QnDrawer question={qn} size="xl" />
-      <HStack className="fit-parent">
+      {/* <HStack className="fit-parent">
         <Box backgroundColor="blue.300" className="fit-parent">
           <Center>
             <Heading>editor</Heading>
@@ -55,7 +57,8 @@ const ViewQuestion = () => {
             </Center>
           </Box>
         </VStack>
-      </HStack>
+      </HStack> */}
+      <Landing />
     </>
   );
 };
