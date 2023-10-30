@@ -26,13 +26,13 @@ model User {
 
 
 model AnsweredQuestion {
-  id         Int        @id @default(autoincrement())
+  id         String        @id @default(uuid())
   userId     Int
   user       User     @relation(fields: [userId], references: [id])
   questionTitle String
   questionId Int
-  difficulty Int
-  category   String[]
+  difficulty Float
+  topics  String[]
   solved     Boolean
   answeredAt DateTime @default(now())
   @@map("AnsweredQuestion")
