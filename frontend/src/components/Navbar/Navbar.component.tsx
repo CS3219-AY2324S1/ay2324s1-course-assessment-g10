@@ -42,15 +42,10 @@ export const Navbar = () => {
           ) : (
             <></>
           )}
-
-          <MatchMakeBtn />
-
-          <Link to="/about">
-            <Button variant="ghost">About</Button>
-          </Link>
         </HStack>
 
         <HStack>
+          <MatchMakeBtn />
           {isAuthenticated ? (
             <>
               <LogoutButton />
