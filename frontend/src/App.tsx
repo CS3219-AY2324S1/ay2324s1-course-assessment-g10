@@ -28,6 +28,7 @@ import { useToast } from "@chakra-ui/toast";
 import CreateQuestion from "./pages/CreateQuestionPage/CreateQuestion.page";
 import EditQuestion from "./pages/EditQuestionPage/EditQuestion.page";
 import { MatchmakeProvider } from "./contexts/matchmake.context";
+import ProfilePage from "./pages/ProfilePage";
 
 const NavbarWrapper = () => (
   <div>
@@ -57,6 +58,7 @@ const loggedInRoutes = [
   { path: "/bank", Component: BankPage },
   { path: "/view/:_id", Component: ViewQuestion, loader: qnLoader },
   { path: "/collab", Component: ViewQuestion },
+  { path: "/profile", Component: ProfilePage },
   { path: "*", element: <Navigate to="/" /> }, //redirect all other routes to /
 ];
 
