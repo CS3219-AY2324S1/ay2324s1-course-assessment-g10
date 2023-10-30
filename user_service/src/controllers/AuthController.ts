@@ -154,3 +154,43 @@ export const logOut = async (req: any, res: any) => {
     res.clearCookie('AUTH_SESSION')
     res.status(200).send('Logged out successfully');
 }
+
+
+//@desc     change user's password
+//@route    POST /changepassword
+//@access   only the user himself
+export const changePassword = async (req: any, res: any) => {
+    const username = req.auth?.username;
+
+    const { newPassword, currPassword } = req.body;
+    
+    const { isCorrectPassword, user } = await authenticate(username, currPassword)
+
+    if (isCorrectPassword === false) {
+        const status = 401;
+        const message = 'Incorrect password';
+        res.status(status).json({ status, message });
+        return;
+    }
+
+    const hPassword = await bcrypt.hash(newPassword, 10);
+
+    try {
+        await prisma.user.update({
+            where: {
+                id: user!.id
+            },
+            data: {
+                hashedPassword: hPassword
+            }
+        })
+        res.clearCookie('AUTH_SESSION')
+        res.status(200).send('Password changed successfully');
+    } catch (error :any) {
+        res.status(400).json({
+            error: error,
+            message: 'Failed to update password!'
+        })
+    }
+
+};

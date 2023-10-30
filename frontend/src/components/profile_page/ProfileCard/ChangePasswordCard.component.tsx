@@ -1,7 +1,8 @@
-import { Button, Card, CardBody, FormControl, FormLabel, Heading, Input, VStack } from "@chakra-ui/react";
+import { Button, Card, CardBody, Flex, FormControl, FormLabel, Heading, Input, VStack, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { clearUser } from "../../../reducers/authSlice";
+import { changePassword } from "../../../api/auth";
 
 export default function ChangePasswordCard() {
 
@@ -12,20 +13,28 @@ export default function ChangePasswordCard() {
   const [isChangingPass, setIsChangingPass] = useState(false)
   
   const dispatch = useDispatch();
+  const toast = useToast();
 
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     try {
-      //TODO:
-      // first check if newpassword == retypepassword
-      // then API call to change password
-      //  - API endpoint should also clear the user cookie (akin to calling logOut)
+      if (newPassword.trim() !== retypePassword.trim()) {
+        throw Error('Make sure you re-type your new password correctly!')
+      }
       
+      await changePassword(newPassword.trim(), currPassword.trim());
       dispatch(clearUser());
-    } catch (error) {
-      //TODO: toast on fail
-    } finally {
 
+    } catch (error : any) {
+      toast({
+        title: "Failed to change password!",
+        description: error.message,
+        status: 'error'
+      })
+    } finally {
+      setNewPassword('');
+      setRetypePassword('');
+      setCurrPassword('');
       setIsChangingPass(false);
     }
 
@@ -65,9 +74,15 @@ export default function ChangePasswordCard() {
             </FormControl>
 
 
-            <Button w="100%" onClick={onSubmit}>
-              Submit
-            </Button>
+            <Flex alignItems={"flex-start"} w="100%" columnGap={"8px"}>
+                <Button colorScheme="green" onClick={onSubmit}>
+                  Save
+                </Button>
+                <Button onClick={() => setIsChangingPass(false)}>
+                  Cancel
+                </Button>
+            </Flex>
+            
 
           </VStack>
         ) : (

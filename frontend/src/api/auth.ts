@@ -55,3 +55,17 @@ export async function logOut() {
     const response = await userServiceClient.get('/logout');
     return response;
 }
+
+
+/**
+ * Changes the user's password
+ */
+
+export async function changePassword(newPassword: string, currPassword: string) {
+    const response = await userServiceClient.post('/changepassword', {
+        newPassword: newPassword, 
+        currPassword: currPassword
+    })
+
+    return response;
+}

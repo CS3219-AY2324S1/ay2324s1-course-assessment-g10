@@ -3,8 +3,6 @@ import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 
 
-
-
 //@desc     fetch a user's profile
 //@route    GET /api/users/:id
 //@access   authenticated users
