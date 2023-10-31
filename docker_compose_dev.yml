@@ -28,7 +28,78 @@ services:
       - postgres
     volumes:
       - ./user_service:/usr/src/app
-  
+
+  matching-service:
+    container_name: matching-service
+    build:
+      context: ./matching_service
+    environment:
+      - PORT=8082
+    ports:
+      - "8082:8082"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./matching_service:/usr/src/app
+
+  match-worker:
+    container_name: match-worker_1
+    environment:
+      - CHANNEL_NAME=diff1
+    build:
+      context: ./match_worker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      matching-service:
+        condition: service_started
+
+  match-worker2:
+    container_name: match-worker_2
+    environment:
+      - CHANNEL_NAME=diff2
+    build:
+      context: ./match_worker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      matching-service:
+        condition: service_started
+
+  match-worker3:
+    container_name: match-worker_3
+    environment:
+      - CHANNEL_NAME=diff3
+    build:
+      context: ./match_worker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      matching-service:
+        condition: service_started
+
+  match-worker4:
+    container_name: match-worker_4
+    environment:
+      - CHANNEL_NAME=diff4
+    build:
+      context: ./match_worker
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      matching-service:
+        condition: service_started
+
+  collab-service:
+    container_name: collab-service
+    environment:
+      PORT: 8083
+    build:
+      context: ./collab_service
+    ports:
+      - "8083:8083"
+
   mongo:
     container_name: mongo
     image: mongo:6.0
@@ -37,7 +108,7 @@ services:
     volumes:
       - mongo-dev-data:/data/db
 
-  postgres:
+  postgres:    
     container_name: postgres
     image: postgres:latest
     environment:
@@ -49,6 +120,22 @@ services:
       - "${PG_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
 volumes:
   postgres_data:
   mongo-dev-data:

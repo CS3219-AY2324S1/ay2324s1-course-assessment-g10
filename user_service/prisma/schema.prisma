@@ -21,4 +21,19 @@ model User {
   username        String   @db.VarChar(255) @unique
   hashedPassword  String   
   role            Role     @default(USER)
+  answeredQuestions AnsweredQuestion[]
+}
+
+
+model AnsweredQuestion {
+  id         String        @id @default(uuid())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  questionTitle String
+  questionId Int
+  difficulty Float
+  topics  String[]
+  solved     Boolean
+  answeredAt DateTime @default(now())
+  @@map("AnsweredQuestion")
 }
