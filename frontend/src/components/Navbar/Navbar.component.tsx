@@ -1,12 +1,17 @@
 import React from "react";
-import { Flex, Button, HStack, chakra } from "@chakra-ui/react";
+import {
+  Flex,
+  Button,
+  HStack,
+  chakra,
+} from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectIsAdmin, selectIsAuthenticated } from "../../reducers/authSlice";
 import LogoutButton from "../auth/LogoutButton";
+import MatchMakeBtn from "../MatchMakeBtn/MatchMakeBtn.component";
 
 export const Navbar = () => {
-
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const isAdmin = useSelector(selectIsAdmin);
 
@@ -30,20 +35,17 @@ export const Navbar = () => {
             <Button variant="ghost">Bank</Button>
           </Link>
 
-          { isAdmin ? (
+          {isAdmin ? (
             <Link to="/create">
               <Button variant="ghost">Create</Button>
             </Link>
-          ) :
-          <></>
-          }
-
-          <Link to="/about">
-            <Button variant="ghost">About</Button>
-          </Link>
+          ) : (
+            <></>
+          )}
         </HStack>
 
         <HStack>
+          <MatchMakeBtn />
           {isAuthenticated ? (
             <>
               <LogoutButton />
@@ -52,7 +54,7 @@ export const Navbar = () => {
           ) : (
             <>
               <Link to="/login">
-                <Button variant="ghost" >Log in</Button>
+                <Button variant="ghost">Log in</Button>
               </Link>
               <Link to="/register">
                 <Button>Sign up</Button>

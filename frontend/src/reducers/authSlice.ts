@@ -2,8 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './store';
 
 interface User {
-    id: String;
-    username: String;
+    id: string;
+    username: string;
     role: 'ADMIN' | 'USER';
 };
 
