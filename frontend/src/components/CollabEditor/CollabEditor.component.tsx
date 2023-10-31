@@ -26,19 +26,15 @@ const toLangSyntax = (lang: language) => {
 
 const CollabEditor = () => {
   const editorRef = useRef<HTMLDivElement>(null);
-  const { setCode, lang, codeUndo, ycode, provider } = useSharedEditor();
+  const { lang, codeUndo, ycode, provider } = useSharedEditor();
 
   useEffect(() => {
-    if (!editorRef.current || !ycode || !codeUndo || !provider) return () => {}; // nothing to reset
+    if (!editorRef.current || !ycode || !codeUndo || !provider || !lang)
+      return () => {}; // nothing to reset
 
     const extensions: Extension[] = [
       basicSetup(),
       toLangSyntax(lang),
-      EditorView.updateListener.of((v: ViewUpdate) => {
-        if (v.docChanged) {
-          setCode(v.state.doc.toString());
-        }
-      }),
       yCollab(ycode, provider?.awareness, { undoManager: codeUndo }),
     ];
 
@@ -58,7 +54,7 @@ const CollabEditor = () => {
         editorRef.current.removeChild(view.dom);
       }
     };
-  }, [editorRef, lang, provider]);
+  }, [editorRef, lang, provider, ycode]);
 
   return <Flex h="100%" w="100%" ref={editorRef}></Flex>;
 };
