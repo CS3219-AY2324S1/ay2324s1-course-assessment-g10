@@ -1,4 +1,4 @@
-import { questionServiceUrl, userServiceHostUrl } from "./service_addresses";
+import { matchServiceHostUrl, questionServiceUrl, userServiceHostUrl } from "./service_addresses";
 
 export const routes_config = [
     {
@@ -22,6 +22,15 @@ export const routes_config = [
             changeOrigin: true,
             pathRewrite: { 
                 '/auth': '/' }
+        }
+    },
+    {
+        url: "/matchmake",
+        proxy: {
+            target: matchServiceHostUrl,
+            ws: true,
+            pathRewrite: { 
+                '/matchmake': '/' }
         }
     }
 ]
