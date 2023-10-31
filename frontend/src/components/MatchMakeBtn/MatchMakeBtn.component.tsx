@@ -1,5 +1,13 @@
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { Button, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
+import {
+  Button,
+  HStack,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  Text,
+} from "@chakra-ui/react";
 import { useMatchmake } from "../../contexts/matchmake.context";
 
 const diffRange = [
@@ -9,12 +17,26 @@ const diffRange = [
   [8, 9.9],
 ];
 
-const MatchMakeBtn = () => {
-  const { findMatch } = useMatchmake();
-
+const CollaborateBtn = () => {
   return (
+    <HStack>
+      <Text>In Room</Text>
+    </HStack>
+  );
+};
+
+const MatchMakeBtn = () => {
+  const { findMatch, isMatching, matchedRoom } = useMatchmake();
+
+  return matchedRoom ? (
+    <CollaborateBtn />
+  ) : (
     <Menu>
-      <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+      <MenuButton
+        as={Button}
+        rightIcon={<ChevronDownIcon />}
+        isLoading={isMatching}
+      >
         Collaborate
       </MenuButton>
       <MenuList>
