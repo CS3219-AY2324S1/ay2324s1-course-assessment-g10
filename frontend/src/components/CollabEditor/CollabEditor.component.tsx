@@ -15,11 +15,11 @@ import { language, useSharedEditor } from "../../contexts/sharededitor.context";
 
 const toLangSyntax = (lang: language) => {
   switch (lang) {
-    case "C++17":
+    case "c++17":
       return cpp();
-    case "Python3":
+    case "python3":
       return python();
-    case "Java":
+    case "java":
       return java();
   }
 };

@@ -14,52 +14,17 @@ import { User, selectUser } from "../reducers/authSlice";
 import { useMatchmake } from "./matchmake.context";
 import { useLoaderData } from "react-router-dom";
 import { Buffer } from "buffer";
+import data from "../data/lang_temps.json";
+
+export type language = keyof typeof data;
+
+export const langList = Object.keys(data) as language[];
+export const LangDataMap = data;
 
 export type chatRecord = {
   nickname: string;
   msg: string;
 };
-
-export type language = "C++17" | "Python3" | "Java";
-
-type langData = {
-  lang: language;
-  repr: string;
-  templates: { name: string; code: string }[];
-};
-
-export const LanguageData: langData[] = [
-  {
-    lang: "C++17",
-    repr: "C++ 17",
-    templates: [
-      {
-        name: "Dijikstra (SSSP)",
-        code: "// some sssp template code in c++",
-      },
-    ],
-  },
-  {
-    lang: "Python3",
-    repr: "Python 3",
-    templates: [
-      {
-        name: "Dijikstra (SSSP)",
-        code: "// some sssp template code in python",
-      },
-    ],
-  },
-  {
-    lang: "Java",
-    repr: "Java",
-    templates: [
-      {
-        name: "Dijikstra (SSSP)",
-        code: "// some sssp template code in Java",
-      },
-    ],
-  },
-];
 
 type executionResult =
   | "Accepted"
@@ -110,6 +75,7 @@ interface SharedEditorInterface {
   qn?: Question;
   currSubmission: submissionRecord | null;
 
+  replaceCode: (s: string) => void;
   setCode: (s: string) => void;
   sendToChat: (s: string) => void;
   submitCode: () => void;
@@ -118,12 +84,13 @@ interface SharedEditorInterface {
 }
 
 export const SharedEditorContext = createContext<SharedEditorInterface>({
-  lang: "C++17",
+  lang: "c++17",
   code: "",
   chat: [],
   submissions: [],
   currSubmission: null,
 
+  replaceCode: () => {},
   setCode: () => {},
   sendToChat: () => {},
   submitCode: () => {},
@@ -141,7 +108,7 @@ export const SharedEditorProvider = ({
 
   // exposed variables
   const { matchedRoom } = useMatchmake();
-  const [lang, setLang] = useState<language>("C++17");
+  const [lang, setLang] = useState<language>("c++17");
   const [codeUndo, setCodeUndo] = useState<Y.UndoManager>();
   const [ycode, setycode] = useState<Y.Text>();
   const [code, setCode] = useState("");
@@ -198,8 +165,13 @@ export const SharedEditorProvider = ({
 
   const changeLang = (newLang: language) => {
     if (newLang == lang) return;
-    clearCode();
+    replaceCode(LangDataMap[newLang]?.default ?? "");
     setLang(newLang);
+  };
+
+  const replaceCode = (s: string) => {
+    clearCode();
+    ycode?.insert(0, s);
   };
 
   useEffect(() => {
@@ -217,7 +189,7 @@ export const SharedEditorProvider = ({
     setCodeUndo(undoManager);
 
     const roomvalue = matchedRoom
-      ? matchedRoom.host
+      ? matchedRoom.room
       : Buffer.from(`${user.id}/${user.username}/${qn?.id ?? ""}`).toString(
           "base64"
         );
@@ -244,7 +216,7 @@ export const SharedEditorProvider = ({
             time: Date.now(),
             user: user.username,
             code: "lorem ipsum",
-            lang: "C++17",
+            lang: "c++17",
             qn_id: "1",
             result: "TLE",
           },
@@ -287,6 +259,7 @@ export const SharedEditorProvider = ({
       submissions,
       qn,
       currSubmission,
+      replaceCode,
       setCode,
       sendToChat,
       submitCode,
