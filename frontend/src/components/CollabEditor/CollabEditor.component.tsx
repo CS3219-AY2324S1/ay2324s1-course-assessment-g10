@@ -7,7 +7,6 @@ import {
   EditorState,
   EditorView,
   Extension,
-  ViewUpdate,
   basicSetup,
 } from "@uiw/react-codemirror";
 import { Flex } from "@chakra-ui/react";
@@ -35,6 +34,7 @@ const CollabEditor = () => {
     const extensions: Extension[] = [
       basicSetup(),
       toLangSyntax(lang),
+      EditorView.lineWrapping,
       yCollab(ycode, provider?.awareness, { undoManager: codeUndo }),
     ];
 
