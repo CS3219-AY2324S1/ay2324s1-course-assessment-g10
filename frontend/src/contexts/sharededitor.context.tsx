@@ -127,7 +127,8 @@ export const SharedEditorProvider = ({
   const submitToServer = async (
     submission: submissionRecord,
     _states: Y.Map<any>,
-    _ysubmissions: Y.Array<submissionRecord>
+    _ysubmissions: Y.Array<submissionRecord>,
+    isLocal = false
   ) => {
     lastSubmissionToastId = toast({
       title: `${
@@ -139,8 +140,7 @@ export const SharedEditorProvider = ({
     });
     if (matchedRoom && !matchedRoom.init) return; // only the initer can submit to server
 
-    // ! currsubmission wont be updated until the next cycle
-    if (submission.user === user.id && currSubmission) return; // host has already submitted
+    if (submission.user === user.id && !isLocal) return; // host has already submitted in some other tab/window
     console.log("submitting answer to server");
     setTimeout(() => {
       // this line is solely to simulate a successful compiling on submission
@@ -207,7 +207,10 @@ export const SharedEditorProvider = ({
 
     let ycode: Y.Text | null = null;
 
-    const stateEventObserver = (mapEvent: Y.YMapEvent<any>) => {
+    const stateEventObserver = (
+      mapEvent: Y.YMapEvent<any>,
+      t: Y.Transaction
+    ) => {
       const keyschanged = mapEvent.keysChanged;
       if (keyschanged.has(SUBMISSION_STATE)) {
         const newSubmission =
@@ -217,7 +220,7 @@ export const SharedEditorProvider = ({
         if (newSubmission) {
           if (!currSubmission) {
             // if there are no current submission
-            submitToServer(newSubmission, ystates, ysubmissions);
+            submitToServer(newSubmission, ystates, ysubmissions, t.local);
           } else if (newSubmission.user != user.id && !matchedRoom?.init) {
             // the initiator submitted a solution before the user's submission was synced
             if (lastSubmissionToastId) {
@@ -239,8 +242,28 @@ export const SharedEditorProvider = ({
         setLang(newLang);
       }
 
-      if (mapEvent.keysChanged.has(CODE_STATE)) {
+      if (mapEvent.keysChanged.has(CODE_STATE) && !t.local) {
         ycode = ystates.get(CODE_STATE) as Y.Text;
+
+        if (!matchedRoom || matchedRoom.init) {
+          // this the init user accessed this page from another account. ...
+          toast({
+            title:
+              "Your account accessed this page from another tab/device/browser",
+            description: "Please change your password if you did not do so.",
+            status: "warning",
+            duration: 9000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title:
+              "Your partner modifed the page from another tab/device/browser",
+            status: "info",
+            duration: 5000,
+            isClosable: true,
+          });
+        }
         initCode(ycode);
       }
     };
@@ -266,52 +289,6 @@ export const SharedEditorProvider = ({
       }
     };
 
-    // this is to force all users in multiplayer room to a receve ysates change event
-    // we will use this to initialize the default values
-    ystates.set("SYNCEVENT", user.id + random.uint32().toString());
-
-    const initCodeIfNotExist = (e: Y.YMapEvent<any>) => {
-      // all user will receive ystate change event due to us retrieveing
-      if (!matchedRoom || matchedRoom.init) {
-        const tmp_code = ystates.get(CODE_STATE) as Y.Text | undefined;
-        if (tmp_code) {
-          if (tmp_code != ycode) {
-            // this the init user accessed this page from another account. ...
-            toast({
-              title:
-                "Your account accessed this page from another tab/device/browser",
-              description: "Please change your password if you did not do so.",
-              status: "warning",
-              duration: 9000,
-              isClosable: true,
-            });
-            setCodeFromMap();
-          }
-        } else {
-          console.log("Initalizing code...");
-          ycode = new Y.Text();
-          ystates.set(CODE_STATE, ycode);
-          initStates();
-        }
-        ystates.unobserve(initCodeIfNotExist); // remove this method from observer
-        ystates.observe(stateEventObserver);
-      } else {
-        // the initer have not initialized the code => wait for him to do so
-        if (!ystates.has(CODE_STATE)) return;
-        setCodeFromMap();
-        ystates.unobserve(initCodeIfNotExist); // remove this method from observer
-        ystates.observe(stateEventObserver);
-      }
-    };
-
-    // single player init
-    if (!matchedRoom) {
-      // prevent double init from same users from different tabs
-      ycode = new Y.Text();
-      ystates.set(CODE_STATE, ycode);
-      initStates();
-    }
-
     const roomvalue = matchedRoom
       ? matchedRoom.room
       : Buffer.from(`${user.id}/${user.username}/${qn?._id ?? ""}`).toString(
@@ -329,7 +306,60 @@ export const SharedEditorProvider = ({
       colorLight: userColor.light,
     });
 
-    ystates.observe(initCodeIfNotExist);
+    const initCodeIfNotExist = (e: Y.YMapEvent<any>, t: Y.Transaction) => {
+      if (t.local) return;
+      // all user will receive ystate change event due to us retrieveing
+      if (!matchedRoom || matchedRoom.init) {
+        const tmp_code = ystates.get(CODE_STATE) as Y.Text | undefined;
+        if (tmp_code) {
+          // this the init user accessed this page from another account. ...
+          toast({
+            title:
+              "Your account accessed this page from another tab/device/browser",
+            description: "Please change your password if you did not do so.",
+            status: "warning",
+            duration: 9000,
+            isClosable: true,
+          });
+          setCodeFromMap();
+        } else {
+          console.log("Initalizing code...");
+          ycode = new Y.Text();
+          ystates.set(CODE_STATE, ycode);
+          initStates();
+        }
+        ystates.unobserve(initCodeIfNotExist); // remove this method from observer
+        ystates.observe(stateEventObserver);
+      } else {
+        // the initer have not initialized the code => wait for him to do so
+        if (!ystates.has(CODE_STATE)) return;
+        setCodeFromMap();
+        ystates.unobserve(initCodeIfNotExist); // remove this method from observer
+        ystates.observe(stateEventObserver);
+      }
+    };
+
+    const observeDocLoad = (e: Y.YMapEvent<any>, t: Y.Transaction) => {
+      if (t.local) return; // wait for our local change to propagaate back to us
+      if (ystates.has(CODE_STATE)) {
+        setCodeFromMap();
+      }
+      ystates.unobserve(observeDocLoad);
+      ystates.observe(stateEventObserver);
+    };
+
+    if (matchedRoom) {
+      // this is to force all users in multiplayer room to a receve ysates change event
+      // we will use this to initialize the default values
+      ystates.observe(initCodeIfNotExist);
+      ystates.set("SYNCEVENT", user.id + random.uint32().toString());
+    } else {
+      // this is for single player mode
+      ystates.observe(observeDocLoad);
+      ycode = new Y.Text();
+      ystates.set(CODE_STATE, ycode);
+      initStates();
+    }
 
     let pastSubmissions: submissionRecord[];
 
@@ -337,7 +367,6 @@ export const SharedEditorProvider = ({
       if (qn) {
         console.log("fetching submissions");
         await new Promise((r) => setTimeout(r, 1000)); // simulate fetching submission history
-        console.log("fetch complete");
         pastSubmissions = [
           {
             time: Date.now(),
@@ -361,7 +390,6 @@ export const SharedEditorProvider = ({
     });
 
     return () => {
-      console.log("destroying sharededitor");
       provider.destroy();
       doc.destroy();
 
@@ -372,7 +400,6 @@ export const SharedEditorProvider = ({
   }, []);
 
   const memo = useMemo(() => {
-    console.log("updating sharededitor memo");
     return {
       lang,
       provider,
