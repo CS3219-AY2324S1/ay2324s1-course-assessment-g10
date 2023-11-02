@@ -40,7 +40,7 @@ const ChatBox = () => {
     setMsg("");
   };
 
-if (!matchedRoom) return <></>;
+  if (!matchedRoom) return <></>;
   return (
     <Flex
       flexDirection="column"
@@ -64,11 +64,15 @@ if (!matchedRoom) return <></>;
         {chat.map((entry, i) => (
           <HStack
             w="100%"
-            direction={entry.nickname === user?.username ? "row-reverse" : "row"}
+            direction={
+              entry.nickname === user?.username ? "row-reverse" : "row"
+            }
             key={i}
           >
             <Tag
-              backgroundColor={entry.nickname === user?.username ? "blue.400" : "gray.200"}
+              backgroundColor={
+                entry.nickname === user?.username ? "blue.400" : "gray.200"
+              }
               color={entry.nickname === user?.username ? "white" : "black"}
               borderRadius="lg"
               paddingX={2} // Adjust the horizontal padding
