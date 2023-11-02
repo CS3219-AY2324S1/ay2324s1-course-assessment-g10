@@ -76,7 +76,7 @@ export async function getUserQuestions(req: any, res: any) {
       },
     });
 
-    return res.json(answeredQuestions);
+    return res.status(200).json(answeredQuestions);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Internal Server Error' });
@@ -103,7 +103,7 @@ export async function addUserQuestion(req: Request, res: Response) {
       },
     });
 
-    res.json(createdQuestion);
+    res.status(200).json(createdQuestion);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
