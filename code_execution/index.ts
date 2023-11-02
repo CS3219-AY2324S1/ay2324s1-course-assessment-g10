@@ -13,9 +13,12 @@ const REACT_APP_RAPID_API_KEY = '37be15bcc6msh436383ad7e63c94p1e682bjsna4ff7e6e3
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post("/execute", async (req, res) => {
+// Checks for requests made to the /submit route
+app.post("/submit", async (req, res) => {
   try {
-    const { language_id, source_code, stdin } = req.body;
+
+    // Extracts these 4 variables
+    const { language_id, source_code, stdin, expectedResult } = req.body;
 
     // Prepare the data to be sent to Judge0
     const data = {
@@ -24,6 +27,7 @@ app.post("/execute", async (req, res) => {
       stdin: Buffer.from(stdin, "base64").toString("utf-8"),
     };
 
+    console.log(data);
     // Send a POST request to Judge0
     const response = await axios.post(REACT_APP_RAPID_API_URL, data, {
       headers: {
@@ -35,22 +39,21 @@ app.post("/execute", async (req, res) => {
     });
 
     // Send the Judge0 response back to the client
-    res.json(response.data);
-
-    // Check the statusId in the response
-    const statusId = response.data.status?.id;
+    res.json(response.data.token);
+    console.log(response.data.token);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "An error occurred" });
   }
 });
 
-app.get("/status/:token", async (req, res) => {
+app.get("/result/:token", async (req, res) => {
   try {
     const token = req.params.token;
 
     // Define the Judge0 API endpoint for status
     const statusEndpoint = `${REACT_APP_RAPID_API_URL}/${token}`;
+    console.log(statusEndpoint);
     const options = {
       method: "GET",
       url: statusEndpoint,
@@ -68,16 +71,36 @@ app.get("/status/:token", async (req, res) => {
     if (statusId === 3) {
       console.log("status:", result.data.status?.id);
       console.log("result:", atob(result.data.stdout));
-      res.json(atob(result.data.stdout));
+      
+      const testResult = {
+        statusId: statusId,
+        output: atob(result.data.stdout),
+      };
+  
+      res.json(testResult);
     } else if (statusId === 6) {
       console.log("status:", result.data.status?.id);
       console.log("result:", result.data.compile_output);
-      res.json(atob(result.data.compile_output));
+
+      const testResult = {
+        statusId: statusId,
+        output: atob(result.data.compile_output),
+      };
+      
+      console.log("statusID: ", testResult.statusId);
+      res.json(testResult);
     } else {
       console.log("status:", result.data.status?.id);
       console.log("result:", result.data.status?.description);
-      res.json(result.data.status?.description);
+      
+      const testResult = {
+        statusId: statusId,
+        output: atob(result.data.status?.description),
+      };
+      
+      res.json(testResult);
     }
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "An error occurred" });
