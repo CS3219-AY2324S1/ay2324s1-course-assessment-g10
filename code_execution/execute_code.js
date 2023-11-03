@@ -27,30 +27,30 @@ async function submitCode(language_id, source_code, stdin) {
 // Function to get the result of code execution
 async function getResult(token) {
   try {
-    // Make a GET request to your server's /sresult endpoint using the token
-    const response = await axios.get(`${SERVER_URL}/result/${token}`);
+    let status;
+    let response;
 
-    const status = response.data.statusId;
+    do {
+      response = await axios.get(`${SERVER_URL}/result/${token}`);
+      status = response.data.statusId;
 
-    // Still processing, request again
-    if (status === 1 || status === 2) {
-        // still processing
-        setTimeout(() => {
-          getResult(token);
-        }, 1000);
-    }
+      if (status === 1 || status === 2) {
+        // Still processing, wait for 1 second and then check again
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    } while (status === 1 || status === 2);
 
-    // Return the result obtained from the server
-    return response.data.output;
+    return response.data.output; // Return the result obtained from the server
   } catch (error) {
     console.error(error);
     throw new Error("Error while fetching code execution result");
   }
 }
 
+
 // Function to compare results with expected values
 function compareResults(result, expectedValue) {
-    return result === expectedValue;
+  return result.trim() === expectedValue.trim();
 }
   
 async function execute(language_id, source_code, testCases) {
@@ -61,7 +61,7 @@ async function execute(language_id, source_code, testCases) {
       const expectedValue = testCases[i].expected;
 
       // Submit the code for execution
-      const token = await submitCode(language_id, source_code, testCases);
+      const token = await submitCode(language_id, source_code, stdin);
 
       // Get the result of code execution using the token
       const result = await getResult(token);
@@ -69,8 +69,8 @@ async function execute(language_id, source_code, testCases) {
       // Compare the result with the expected value for this test case
       const testResult = compareResults(result, expectedValue);
 
-      console.log(`Test Case ${i}: ${testResult ? 'Passed' : 'Failed'} ${result} ${expectedValue}`);
-      
+      console.log(`Test Case ${i}: ${testResult ? 'Passed' : 'Failed'} Actual: ${result} Expected: ${expectedValue}`);
+
       results.push({
         status: testResult,
         output: result,
@@ -85,4 +85,4 @@ async function execute(language_id, source_code, testCases) {
 // Example usage
 execute(language_id, source_code, testCases);
 
-module.exports = { execute };
+// module.exports = { execute };
