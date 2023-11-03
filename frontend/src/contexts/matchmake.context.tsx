@@ -47,6 +47,13 @@ export const MatchmakeProvider = ({
   const toast = useToast();
   const toastIdRef = React.useRef<ToastId>();
 
+  const clearToast = () => {
+    if (toastIdRef.current) {
+      toast.close(toastIdRef.current);
+      toastIdRef.current = undefined;
+    }
+  };
+
   useEffect(() => {
     const socket = io("ws://localhost:8082", {
       autoConnect: false,
@@ -61,10 +68,7 @@ export const MatchmakeProvider = ({
       });
       setIsMatching(false);
       setMatchedRoom(roomDetail);
-      if (toastIdRef.current) {
-        toast.close(toastIdRef.current);
-      }
-      toastIdRef.current = undefined;
+      clearToast();
       navigate(`/view/${roomDetail.questionId}`);
     });
 
@@ -84,6 +88,7 @@ export const MatchmakeProvider = ({
         });
       }
     });
+
     socket.on("matchLeave", () => {
       setMatchedRoom(undefined);
       toast({
@@ -97,10 +102,7 @@ export const MatchmakeProvider = ({
       setTimeLeft(undefined);
       setMatchedRoom(undefined);
       setIsMatching(false);
-      if (toastIdRef.current) {
-        toast.close(toastIdRef.current);
-        toastIdRef.current = undefined;
-      }
+      clearToast();
       socket.disconnect();
     });
 
