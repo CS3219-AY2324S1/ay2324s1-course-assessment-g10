@@ -70,7 +70,6 @@ export const MatchmakeProvider = ({
 
     socket.on("countdown", (countdown: number) => {
       setTimeLeft(countdown);
-      console.log(timeLeft, countdown);
       if (toastIdRef.current) {
         toast.update(toastIdRef.current, {
           title: "Seeking worthy allies...",
@@ -102,6 +101,7 @@ export const MatchmakeProvider = ({
         toast.close(toastIdRef.current);
         toastIdRef.current = undefined;
       }
+      socket.disconnect();
     });
 
     return () => {

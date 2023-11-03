@@ -3,6 +3,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import * as Y from "yjs";
@@ -74,6 +75,7 @@ interface SharedEditorInterface {
   codeUndo?: Y.UndoManager;
   chat: chatRecord[];
   submissions: submissionRecord[];
+  submissionLoading?: boolean;
   qn?: Question;
   currSubmission: submissionRecord | null;
 
@@ -88,6 +90,7 @@ export const SharedEditorContext = createContext<SharedEditorInterface>({
   chat: [],
   submissions: [],
   currSubmission: null,
+  submissionLoading: true,
 
   replaceCode: () => {},
   sendToChat: () => {},
@@ -112,6 +115,7 @@ export const SharedEditorProvider = ({
   const [ycode, setycode] = useState<Y.Text>();
   const [provider, setProvider] = useState<WebrtcProvider>();
   const [submissions, setSubmissions] = useState<submissionRecord[]>([]);
+  const [submissionLoading, setSubmissionLoading] = useState<boolean>(true);
   const [chat, setChat] = useState<chatRecord[]>([]);
   const [currSubmission, setCurrSubmission] = useState<submissionRecord | null>(
     null
@@ -122,7 +126,9 @@ export const SharedEditorProvider = ({
   const [_chat, _setChat] = useState<Y.Array<chatRecord>>();
 
   // state variables that are accessed internally to track states
-  let lastSubmissionToastId: ToastId | undefined = undefined;
+  const lastSubmissionToastId = useRef<ToastId | undefined>();
+  const lastLangSelected = useRef<language | undefined>();
+  const lastCode = useRef<string | undefined>();
 
   const submitToServer = async (
     submission: submissionRecord,
@@ -130,7 +136,7 @@ export const SharedEditorProvider = ({
     _ysubmissions: Y.Array<submissionRecord>,
     isLocal = false
   ) => {
-    lastSubmissionToastId = toast({
+    lastSubmissionToastId.current = toast({
       title: `${
         submission.user === user.id ? "You have" : "Your partner has"
       } submitted a solution`,
@@ -183,6 +189,7 @@ export const SharedEditorProvider = ({
     if (newLang == lang) return;
     _states?.set(CURR_LANG_STATE, newLang);
     replaceCode(LangDataMap[newLang]?.default ?? "");
+    lastLangSelected.current = newLang;
     setLang(newLang);
   };
 
@@ -223,9 +230,9 @@ export const SharedEditorProvider = ({
             submitToServer(newSubmission, ystates, ysubmissions, t.local);
           } else if (newSubmission.user != user.id && !matchedRoom?.init) {
             // the initiator submitted a solution before the user's submission was synced
-            if (lastSubmissionToastId) {
-              toast.close(lastSubmissionToastId);
-              lastSubmissionToastId = undefined;
+            if (lastSubmissionToastId.current) {
+              toast.close(lastSubmissionToastId.current);
+              lastSubmissionToastId.current = undefined;
             }
             toast({
               title: "Your partner has already submitted a solution",
@@ -272,10 +279,12 @@ export const SharedEditorProvider = ({
       if (!ycode) return;
       initCode(ycode);
       // init lang
-      const randLang = langList[random.uint32() % langList.length];
+      const randLang =
+        lastLangSelected.current ?? langList[random.uint32() % langList.length];
       setLang(randLang);
+      lastLangSelected.current = randLang;
       ystates.set(CURR_LANG_STATE, randLang);
-      ycode.insert(0, LangDataMap[randLang]?.default ?? "");
+      ycode.insert(0, lastCode.current ?? LangDataMap[randLang]?.default ?? "");
     };
 
     const setCodeFromMap = () => {
@@ -366,7 +375,7 @@ export const SharedEditorProvider = ({
     (async () => {
       if (qn) {
         console.log("fetching submissions");
-        await new Promise((r) => setTimeout(r, 1000)); // simulate fetching submission history
+        await new Promise((r) => setTimeout(r, 6000)); // simulate fetching submission history
         pastSubmissions = [
           {
             time: Date.now(),
@@ -378,6 +387,7 @@ export const SharedEditorProvider = ({
           },
         ];
         setSubmissions(pastSubmissions.concat(ysubmissions.toArray())); // updates submission array
+        setSubmissionLoading(false);
       }
     })();
 
@@ -390,6 +400,7 @@ export const SharedEditorProvider = ({
     });
 
     return () => {
+      lastCode.current = ycode?.toString();
       provider.destroy();
       doc.destroy();
 
@@ -409,6 +420,7 @@ export const SharedEditorProvider = ({
       submissions,
       qn,
       currSubmission,
+      submissionLoading,
       replaceCode,
       sendToChat,
       submitCode,
@@ -426,6 +438,7 @@ export const SharedEditorProvider = ({
     chat,
     ycode,
     _states,
+    submissionLoading,
   ]);
 
   if (matchedRoom && matchedRoom.questionId != qn?._id) {
