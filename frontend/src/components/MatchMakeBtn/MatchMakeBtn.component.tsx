@@ -17,6 +17,7 @@ const diffRange = [
   [3, 5.9],
   [6, 7.9],
   [8, 9.9],
+  [0, 9.9],
 ];
 
 const CollaborateBtn = () => {
@@ -66,6 +67,9 @@ const MatchMakeBtn = () => {
         </MenuItem>
         <MenuItem onClick={() => findMatch(diffRange[3][0], diffRange[3][1])}>
           Hard
+        </MenuItem>
+        <MenuItem onClick={() => findMatch(diffRange[4][0], diffRange[4][1])}>
+          All
         </MenuItem>
       </MenuList>
     </Menu>
