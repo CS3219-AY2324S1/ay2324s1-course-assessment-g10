@@ -397,7 +397,7 @@ export const SharedEditorProvider = ({
       setCodeUndo(undefined);
       setycode(undefined);
     };
-  }, []);
+  }, [matchedRoom, user, qn]);
 
   const memo = useMemo(() => {
     return {
