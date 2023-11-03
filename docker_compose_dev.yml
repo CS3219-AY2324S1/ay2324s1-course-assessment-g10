@@ -108,6 +108,12 @@ services:
     volumes:
       - mongo-dev-data:/data/db
 
+  redis:
+    container_name: redis
+    image: redis:7
+    ports:
+      - "6379:6379"
+
   postgres:    
     container_name: postgres
     image: postgres:latest

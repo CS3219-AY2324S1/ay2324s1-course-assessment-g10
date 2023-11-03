@@ -1,12 +1,5 @@
-import { Socket } from "socket.io";
-import { UserWithSocketId } from "./types";
+import { Mutex } from "async-mutex";
+import { socketDetail } from "./types";
 
-export const uidToUserWsockid = new Map<string, UserWithSocketId>();
-export const sockidToSocket = new Map<string, Socket>();
-
-export const getSockFromUid = (uid: string) => {
-    const userWsockid = uidToUserWsockid.get(uid);
-    if (userWsockid)
-        return sockidToSocket.get(userWsockid.socketId);
-    return undefined;
-}
+export const lock = new Mutex();
+export const socketDetails: Record<string, socketDetail> = {};
