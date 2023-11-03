@@ -247,6 +247,7 @@ export const SharedEditorProvider = ({
       const newLang = ystates.get(CURR_LANG_STATE) as language;
       if (newLang && newLang != lang) {
         setLang(newLang);
+        lastLangSelected.current = newLang;
       }
 
       if (mapEvent.keysChanged.has(CODE_STATE) && !t.local) {
@@ -295,6 +296,7 @@ export const SharedEditorProvider = ({
       const newlang = ystates.get(CURR_LANG_STATE) as language | undefined;
       if (newlang && newlang != lang) {
         setLang(newlang);
+        lastLangSelected.current = newlang;
       }
     };
 
