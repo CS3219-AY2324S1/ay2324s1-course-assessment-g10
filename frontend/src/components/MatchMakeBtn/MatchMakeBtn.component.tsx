@@ -1,7 +1,9 @@
-import { ChevronDownIcon } from "@chakra-ui/icons";
+import { ChatIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import {
   Button,
+  ButtonGroup,
   HStack,
+  IconButton,
   Menu,
   MenuButton,
   MenuItem,
@@ -19,26 +21,39 @@ const diffRange = [
 
 const CollaborateBtn = () => {
   return (
-    <HStack>
-      <Text>In Room</Text>
-    </HStack>
+    <ButtonGroup>
+      <IconButton
+        aria-label="open_chat"
+        colorScheme="teal"
+        variant="outline"
+        icon={<ChatIcon />}
+      />
+    </ButtonGroup>
   );
 };
 
 const MatchMakeBtn = () => {
-  const { findMatch, isMatching, matchedRoom } = useMatchmake();
+  const { findMatch, isMatching, matchedRoom, timeLeft, cancelMatch } =
+    useMatchmake();
 
   return matchedRoom ? (
     <CollaborateBtn />
   ) : (
     <Menu>
-      <MenuButton
-        as={Button}
-        rightIcon={<ChevronDownIcon />}
-        isLoading={isMatching}
-      >
-        Collaborate
-      </MenuButton>
+      {timeLeft ? (
+        <Button onClick={cancelMatch} colorScheme="red">
+          Cancel
+        </Button>
+      ) : (
+        <MenuButton
+          as={Button}
+          rightIcon={<ChevronDownIcon />}
+          isLoading={isMatching}
+        >
+          Collaborate
+        </MenuButton>
+      )}
+
       <MenuList>
         <MenuItem onClick={() => findMatch(diffRange[0][0], diffRange[0][1])}>
           Basic

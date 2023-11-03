@@ -4,6 +4,7 @@ import { Server, Socket } from 'socket.io';
 import { lock, socketDetails } from './shared';
 import { handleConnection } from './sockethandlers';
 
+const PORT = process.env.PORT || 8082;
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -14,6 +15,7 @@ const io = new Server(server, {
 });
 
 io.on('connection', async (socket: Socket) => {
+  console.log("New connection from", socket.id);
   const release = await lock.acquire();
   try {
     socketDetails[socket.id] = {
@@ -26,4 +28,8 @@ io.on('connection', async (socket: Socket) => {
   }
 
   handleConnection(socket);
+});
+
+server.listen(PORT, () => {
+  console.log(`listening on *:${PORT}`);
 });

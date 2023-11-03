@@ -9,20 +9,21 @@ import React, {
 import { selectUser } from "../reducers/authSlice";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@chakra-ui/react";
+import { ToastId, useToast } from "@chakra-ui/react";
 
-interface RoomDetail {
-  partner: string;
-  init: boolean;
-  qn: string;
+export interface Match {
+  user: string;
   room: string;
+  questionId: string;
+  init: boolean;
 }
 
 interface MatchmakeContextInterface {
   findMatch: (diffStart: number, diffEnd: number) => void;
   cancelMatch: () => void;
   isMatching: boolean;
-  matchedRoom?: RoomDetail;
+  timeLeft?: number;
+  matchedRoom?: Match;
 }
 
 const MatchmakeContext = createContext<MatchmakeContextInterface>({
@@ -39,10 +40,12 @@ export const MatchmakeProvider = ({
   const navigate = useNavigate();
   const user = useSelector(selectUser);
   const [isMatching, setIsMatching] = useState(false);
-  const [matchedRoom, setMatchedRoom] = useState<RoomDetail>();
+  const [matchedRoom, setMatchedRoom] = useState<Match>();
   const [socket, setSocket] = useState<Socket>();
+  const [timeLeft, setTimeLeft] = useState<number>();
 
   const toast = useToast();
+  const toastIdRef = React.useRef<ToastId>();
 
   useEffect(() => {
     const socket = io("ws://localhost:8082", {
@@ -50,17 +53,38 @@ export const MatchmakeProvider = ({
     });
     setSocket(socket);
 
-    socket.on("matchFound", (roomDetail: RoomDetail) => {
+    socket.on("matchFound", (roomDetail: Match) => {
       toast({
         title: "Match found",
-        description: `You have been partnered with ${roomDetail.partner}`,
+        description: "Redirecting...",
         status: "success",
       });
       setIsMatching(false);
       setMatchedRoom(roomDetail);
-      navigate(`/view/${roomDetail.qn}`);
+      if (toastIdRef.current) {
+        toast.close(toastIdRef.current);
+      }
+      toastIdRef.current = undefined;
+      navigate(`/view/${roomDetail.questionId}`);
     });
 
+    socket.on("countdown", (countdown: number) => {
+      setTimeLeft(countdown);
+      console.log(timeLeft, countdown);
+      if (toastIdRef.current) {
+        toast.update(toastIdRef.current, {
+          title: "Seeking worthy allies...",
+          description: `Matching... ${countdown}`,
+          status: "loading",
+        });
+      } else {
+        toastIdRef.current = toast({
+          title: "Seeking worthy allies...",
+          description: `Matching... ${countdown}`,
+          status: "loading",
+        });
+      }
+    });
     socket.on("matchLeave", () => {
       setMatchedRoom(undefined);
       toast({
@@ -70,37 +94,49 @@ export const MatchmakeProvider = ({
       });
     });
 
+    socket.on("disconnect", () => {
+      setTimeLeft(undefined);
+      setMatchedRoom(undefined);
+      setIsMatching(false);
+      if (toastIdRef.current) {
+        toast.close(toastIdRef.current);
+        toastIdRef.current = undefined;
+      }
+    });
+
     return () => {
       socket.off("matchFound");
       socket.off("matchLeave");
+      socket.off("countdown");
+      socket.off("isCancellable");
+      socket.off("disconnect");
+
       socket.disconnect();
     };
-  }, [navigate]);
+  }, [navigate, user]);
 
   const findMatch = (diffStart: number, diffEnd: number) => {
     if (!socket || !user) return;
     if (!socket.connected) socket.connect();
 
     setIsMatching(true);
-    toast({
+    toastIdRef.current = toast({
       title: "Seeking worthy allies...",
+      description: "Matching...",
       status: "loading",
+      duration: null,
     });
     socket.emit("findMatch", {
-      id: user.username,
-      difficultyFrom: diffStart,
-      difficultyTo: diffEnd,
+      username: user.username,
+      from: diffStart,
+      to: diffEnd,
     });
   };
 
   const cancelMatch = () => {
     if (!socket || !user) return;
     if (!socket.connected) return;
-
-    setIsMatching(false);
-    socket.emit("cancelMatch", {
-      username: user.username,
-    });
+    socket.emit("cancelMatch");
   };
 
   const memo = useMemo(() => {
@@ -109,8 +145,9 @@ export const MatchmakeProvider = ({
       cancelMatch,
       isMatching,
       matchedRoom,
+      timeLeft,
     };
-  }, [socket, user, isMatching, matchedRoom]);
+  }, [socket, user, isMatching, matchedRoom, timeLeft]);
 
   return (
     <MatchmakeContext.Provider value={memo}>

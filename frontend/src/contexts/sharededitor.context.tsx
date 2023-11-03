@@ -12,7 +12,7 @@ import { Question } from "../models/Question.model";
 import { useSelector } from "react-redux";
 import { User, selectUser } from "../reducers/authSlice";
 import { useMatchmake } from "./matchmake.context";
-import { useLoaderData } from "react-router-dom";
+import { Navigate, useLoaderData } from "react-router-dom";
 import { Buffer } from "buffer";
 import data from "../data/lang_temps.json";
 import { ToastId, useToast } from "@chakra-ui/react";
@@ -427,6 +427,10 @@ export const SharedEditorProvider = ({
     ycode,
     _states,
   ]);
+
+  if (matchedRoom && matchedRoom.questionId != qn?._id) {
+    return <Navigate to={`/view/${matchedRoom.questionId}`} />;
+  }
 
   return (
     <SharedEditorContext.Provider value={memo}>

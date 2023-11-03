@@ -1,5 +1,5 @@
 import { Interval, IntervalTree } from "node-interval-tree";
-import { Match, UserInterval } from "./types";
+import { EngineMatch, UserInterval, socketDetail } from "./types";
 import { fetchRandQn } from "./communication";
 import { lock, socketDetails } from "./shared";
 
@@ -15,20 +15,23 @@ const overlapOf = (user1: UserInterval, user2: UserInterval): Interval => {
     };
 }
 
-export const findMatch = async (user: UserInterval): Promise<Match | null> => {
+export const findMatch = async (user: UserInterval): Promise<EngineMatch | null> => {
     const overlaps = findOverlaps(user.low, user.high);
-
+    
     for (const overlap of overlaps) {
         if (user.preferredQn && user.preferredQn !== overlap.preferredQn) continue;
-
-        const release = await lock.acquire();
         let res = false;
+        let matchedDetail: socketDetail | undefined = undefined;
+    
+        const release = await lock.acquire();
         try { // mutex area
+            matchedDetail = socketDetails[overlap.socketid];
             const detail = socketDetails[user.socketid];
+            if (!(matchedDetail?.inQueue)) continue; // found user left/disconnected
             if (!detail) return null; // users has cancelled/disconnected
 
             res = removeInterval(overlap);
-            res = res && (socketDetails[overlap.socketid]?.inQueue ?? false);
+            res = res && (matchedDetail.inQueue ?? false);
             if (res) {
                 // a match is found
                 detail.inQueue = false;
@@ -36,6 +39,7 @@ export const findMatch = async (user: UserInterval): Promise<Match | null> => {
                 detail.inQueue = false;
                 detail.isMatched = true;
                 clearInterval(detail.countdown);
+                clearInterval(matchedDetail.countdown);
             }
         } finally {
             release();
@@ -49,8 +53,7 @@ export const findMatch = async (user: UserInterval): Promise<Match | null> => {
         return {
             questionId: qn,
             room: Buffer.from(`${user.socketid}${overlap.socketid}/${qn}`).toString('base64'),
-            user1: user.socketid,
-            user2: overlap.socketid,
+            sockdet: matchedDetail,
         };
     }
     return null;

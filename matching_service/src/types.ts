@@ -1,15 +1,21 @@
 import { Interval } from "node-interval-tree";
 import { Socket } from "socket.io";
 
-export interface Match {
-    user1: string;
-    user2: string;
+export interface EngineMatch {
+    sockdet: socketDetail;
     room: string;
     questionId: string;
 }
 
+export interface Match {
+    user: string;
+    room: string;
+    questionId: string;
+    init: boolean;
+}
+
 export interface MatchRequest {
-    uid: string;
+    username: string;
     preferredQn?: string;
     from: number;
     to: number;
@@ -24,7 +30,7 @@ export interface socketDetail {
     socket: Socket;
     inQueue: boolean;
     isMatched: boolean;
-    uid?: string;
+    username?: string;
     UserDetail?: UserInterval;
     countdown?: NodeJS.Timeout;
 }
