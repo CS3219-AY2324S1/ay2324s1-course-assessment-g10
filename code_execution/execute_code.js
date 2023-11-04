@@ -1,5 +1,4 @@
 const axios = require("axios");
-const { language_id, source_code, testCases } = require('./input_sample');
 
 // Define the URL 
 const SERVER_URL = "http://localhost:3000";
@@ -82,7 +81,5 @@ async function execute(language_id, source_code, testCases) {
     console.error(error);
   }
 }
-// Example usage
-execute(language_id, source_code, testCases);
 
-// module.exports = { execute };
+module.exports = { execute };
