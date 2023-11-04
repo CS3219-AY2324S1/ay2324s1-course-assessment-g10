@@ -1,4 +1,4 @@
-import { AxiosResponse } from "axios";
+import { Axios, AxiosResponse } from "axios";
 import { SolvedQuestion } from "../models/SolvedQuestion.model"; // Import the SolvedQuestion model
 import { userServiceClient } from "./server";
 
@@ -81,6 +81,25 @@ export async function addUserQuestion(
     console.error(error);
     throw error;
   }
+}
+
+
+/**
+ * Tries to find users with a username that matches `query`
+ * @param query 
+ * @returns A list of users and their details
+ */
+export async function findUsers(query : string) {
+
+  const response : AxiosResponse = await userServiceClient.post(
+    `/api/users/findusers`, {
+      query
+    }
+  )
+
+  const resData = response.data;
+  return resData;
+
 }
 
 

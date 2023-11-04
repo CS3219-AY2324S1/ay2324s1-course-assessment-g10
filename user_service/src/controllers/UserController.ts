@@ -109,3 +109,38 @@ export async function addUserQuestion(req: Request, res: Response) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+
+//@desc     find users that match part of a query
+//@route    POST /api/users/findusers
+//@access   authenticated users
+export async function findUsersWithName(req: Request, res: Response) {
+  try {
+    const { query } = req.body;
+
+    const users = await prisma.user.findMany({
+      where : {
+        username : {
+          contains: query,
+          mode: 'insensitive'
+        }
+      },
+      take: 5,
+      distinct: 'id',
+      select: {
+        username: true,
+        role: true,
+        id: true,
+      }
+    })
+
+    res.status(200).json(users);
+    
+  } catch (error : any) {
+    res.status(400).json({
+      error: error,
+      message: 'An error occured while looking for users!'
+    });
+  }
+
+}

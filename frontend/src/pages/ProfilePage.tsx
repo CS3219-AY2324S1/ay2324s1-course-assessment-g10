@@ -3,8 +3,8 @@ import { SolvedTable } from "../components/SolvedTable/SolvedTable.component";
 import { selectIsAdmin, selectUser } from "../reducers/authSlice";
 import { Box, Card, CardHeader, CardBody, CardFooter, Flex, Heading, Text, Button } from "@chakra-ui/react";
 import ProfileCard from "../components/profile_page/ProfileCard/ProfileCard.component";
-import FindUserCard from "../components/profile_page/ProfileCard/FindUserCard.component";
-import ChangePasswordCard from "../components/profile_page/ProfileCard/ChangePasswordCard.component";
+import FindUserCard from "../components/profile_page/FindUserCard/FindUserCard.component";
+import ChangePasswordCard from "../components/profile_page/ChangePasswordCard/ChangePasswordCard.component";
 
 
 export default function ProfilePage() {
