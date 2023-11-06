@@ -16,8 +16,9 @@ export const Navbar = () => {
   const isAdmin = useSelector(selectIsAdmin);
 
   return (
-    <chakra.header boxShadow={"md"} minH="10vh" zIndex="999">
-      <Flex w="100%" px="6" py="2vh" align={"center"} justify={"space-between"}>
+    <chakra.header boxShadow="md" minH="10vh" zIndex="2" pos="sticky">
+      {/* chakra dont recomment zindex > 2 */}
+      <Flex w="100%" px="6" py="2vh" align="center" justify="space-between">
         <HStack spacing="4px">
           <Link to="/">
             <Button colorScheme="linkedin" variant="outline">

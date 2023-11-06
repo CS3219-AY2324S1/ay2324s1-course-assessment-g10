@@ -13,8 +13,9 @@ import { useToast } from "@chakra-ui/react";
 
 interface RoomDetail {
   partner: string;
-  host: string;
+  init: boolean;
   qn: string;
+  room: string;
 }
 
 interface MatchmakeContextInterface {
