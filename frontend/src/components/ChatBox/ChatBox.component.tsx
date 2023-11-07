@@ -31,7 +31,8 @@ const ChatBox = () => {
       chatContainer.scrollTop = chatContainer.scrollHeight;
 
       // Set scrollLeft to the maximum value to keep the scroll bar at the right
-      chatContainer.scrollLeft = chatContainer.scrollWidth - chatContainer.clientWidth;
+      chatContainer.scrollLeft =
+        chatContainer.scrollWidth - chatContainer.clientWidth;
     }
   }, [chat]);
 
@@ -60,20 +61,29 @@ const ChatBox = () => {
           backgroundColor: "gray.100",
           borderRadius: "md",
           padding: "10px",
-          width: "100%" // Use 100% width
+          width: "100%", // Use 100% width
         }}
       >
         {chat.map((entry, i) => (
           <HStack
             w="100%"
-            justifyContent={entry.nickname === user?.username ? "flex-end" : "flex-start"} // Align based on the sender
+            justifyContent={
+              entry.nickname === user?.username ? "flex-end" : "flex-start"
+            } // Align based on the sender
             key={i}
           >
             {entry.nickname !== user?.username && (
-              <Avatar name={entry.nickname} w="40px" h="40px" />
+              <Avatar
+                name={entry.nickname}
+                w="40px"
+                h="40px"
+                alignSelf="flex-start"
+              />
             )}
             <Text
-              backgroundColor={entry.nickname === user?.username ? "blue.400" : "gray.200"}
+              backgroundColor={
+                entry.nickname === user?.username ? "blue.400" : "gray.200"
+              }
               color={entry.nickname === user?.username ? "white" : "black"}
               borderRadius="lg"
               paddingX={2}
@@ -87,7 +97,12 @@ const ChatBox = () => {
               {entry.msg}
             </Text>
             {entry.nickname === user?.username && (
-              <Avatar name={entry.nickname} w="40px" h="40px" />
+              <Avatar
+                name={entry.nickname}
+                w="40px"
+                h="40px"
+                alignSelf="flex-start"
+              />
             )}
           </HStack>
         ))}
