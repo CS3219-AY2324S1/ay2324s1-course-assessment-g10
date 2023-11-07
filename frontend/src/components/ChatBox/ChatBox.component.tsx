@@ -41,11 +41,12 @@ const ChatBox = () => {
     setMsg("");
   };
 
+  if (!matchedRoom) return <></>;
   return (
-   <Flex
+    <Flex
       flexDirection="column"
       width="400px"
-      height="400px" // Set the desired fixed height for the parent container
+      height="400px"
       alignItems="start"
       border="1px solid #ccc"
       borderRadius="md"
@@ -59,36 +60,35 @@ const ChatBox = () => {
           backgroundColor: "gray.100",
           borderRadius: "md",
           padding: "10px",
-          width: "calc(100%)" // Adjust the width to match parent container
+          width: "100%" // Use 100% width
         }}
       >
         {chat.map((entry, i) => (
           <HStack
             w="100%"
-            direction={
-              entry.nickname === user?.username ? "row-reverse" : "row"
-            }
+            justifyContent={entry.nickname === user?.username ? "flex-end" : "flex-start"} // Align based on the sender
             key={i}
           >
-            <Flex alignItems="flex-start">
-              <Avatar name={entry.nickname} w="40px" h="40px" marginRight="10px" />
-              <Text
-                backgroundColor={
-                  entry.nickname === user?.username ? "blue.400" : "gray.200"
-                }
-                color={entry.nickname === user?.username ? "white" : "black"}
-                borderRadius="lg"
-                paddingX={2}
-                paddingY={1}
-                style={{
-                  whiteSpace: "pre-wrap",
-                  wordWrap: "break-word",
-                  maxWidth: "70%",
-                }}
-              >
-                {entry.msg}
-              </Text>
-            </Flex>
+            {entry.nickname !== user?.username && (
+              <Avatar name={entry.nickname} w="40px" h="40px" />
+            )}
+            <Text
+              backgroundColor={entry.nickname === user?.username ? "blue.400" : "gray.200"}
+              color={entry.nickname === user?.username ? "white" : "black"}
+              borderRadius="lg"
+              paddingX={2}
+              paddingY={1}
+              style={{
+                whiteSpace: "pre-wrap",
+                wordWrap: "break-word",
+                maxWidth: "70%",
+              }}
+            >
+              {entry.msg}
+            </Text>
+            {entry.nickname === user?.username && (
+              <Avatar name={entry.nickname} w="40px" h="40px" />
+            )}
           </HStack>
         ))}
       </div>
