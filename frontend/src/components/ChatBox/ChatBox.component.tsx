@@ -1,5 +1,6 @@
 import { ChevronRightIcon } from "@chakra-ui/icons";
 import {
+  Avatar,
   Flex,
   IconButton,
   Input,
@@ -8,7 +9,6 @@ import {
   Text,
   VStack,
   HStack,
-  Tag,
   Spacer,
 } from "@chakra-ui/react";
 import { useSharedEditor } from "../../contexts/sharededitor.context";
@@ -27,10 +27,11 @@ const ChatBox = () => {
   useEffect(() => {
     const chatContainer = chatContainerRef.current;
     if (chatContainer) {
-      // Use a setTimeout to ensure the chatContainer has been rendered
-      setTimeout(() => {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-      }, 0);
+      // Set scrollTop to the maximum value to keep the scroll bar at the bottom
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      // Set scrollLeft to the maximum value to keep the scroll bar at the right
+      chatContainer.scrollLeft = chatContainer.scrollWidth - chatContainer.clientWidth;
     }
   }, [chat]);
 
@@ -40,12 +41,11 @@ const ChatBox = () => {
     setMsg("");
   };
 
-  if (!matchedRoom) return <></>;
   return (
-    <Flex
+   <Flex
       flexDirection="column"
-      width="400px" // Set the desired fixed width
-      height="400px" // Set the desired fixed height
+      width="400px"
+      height="400px" // Set the desired fixed height for the parent container
       alignItems="start"
       border="1px solid #ccc"
       borderRadius="md"
@@ -54,11 +54,12 @@ const ChatBox = () => {
       <div
         ref={chatContainerRef}
         style={{
-          maxHeight: "300px", // Set the desired fixed height for the chat container
-          overflowY: "auto", // Enable vertical scroll when messages overflow
-          backgroundColor: "gray.100", // Example background color
+          overflowY: "auto",
+          overflowX: "hidden",
+          backgroundColor: "gray.100",
           borderRadius: "md",
           padding: "10px",
+          width: "calc(100%)" // Adjust the width to match parent container
         }}
       >
         {chat.map((entry, i) => (
@@ -69,41 +70,25 @@ const ChatBox = () => {
             }
             key={i}
           >
-            <Tag
-              backgroundColor={
-                entry.nickname === user?.username ? "blue.400" : "gray.200"
-              }
-              color={entry.nickname === user?.username ? "white" : "black"}
-              borderRadius="lg"
-              paddingX={2} // Adjust the horizontal padding
-              paddingY={1} // Adjust the vertical padding
-              style={{
-                whiteSpace: "pre-wrap", // Allow text to wrap within the message tag
-                wordWrap: "break-word", // Allow breaking long words
-                maxWidth: "70%", // Set a maximum width for the message tag
-              }}
-            >
-              <Text>{entry.nickname}:</Text>
-            </Tag>
-
-            <Tag
-              backgroundColor="transparent" // Set the background color to transparent for the message
-              color="black" // Set text color to black
-              borderRadius="lg"
-              padding={2}
-              style={{
-                whiteSpace: "pre-wrap", // Allow text to wrap within the message tag
-                wordWrap: "break-word", // Allow breaking long words
-                maxWidth: "70%", // Set a maximum width for the message tag
-                border: "1px solid #ccc", // Add a border to create a bubble effect
-                padding: "5px", // Adjust padding to create space between the border and text
-                borderRadius: "lg", // Make the border rounded
-                fontSize: "14px", // Increase the font size
-                fontWeight: "bold", // Make the font bold
-              }}
-            >
-              <Text>{entry.msg}</Text>
-            </Tag>
+            <Flex alignItems="flex-start">
+              <Avatar name={entry.nickname} w="40px" h="40px" marginRight="10px" />
+              <Text
+                backgroundColor={
+                  entry.nickname === user?.username ? "blue.400" : "gray.200"
+                }
+                color={entry.nickname === user?.username ? "white" : "black"}
+                borderRadius="lg"
+                paddingX={2}
+                paddingY={1}
+                style={{
+                  whiteSpace: "pre-wrap",
+                  wordWrap: "break-word",
+                  maxWidth: "70%",
+                }}
+              >
+                {entry.msg}
+              </Text>
+            </Flex>
           </HStack>
         ))}
       </div>
@@ -113,7 +98,7 @@ const ChatBox = () => {
           placeholder="Enter message"
           onChange={(e) => setMsg(e.target.value)}
           value={msg}
-          variant="filled" // Example input field style
+          variant="filled"
         />
         <InputRightElement>
           <IconButton
