@@ -25,7 +25,7 @@ export default function ProfilePage() {
     } else {
       setDisplayedUser(currUser);
     }
-  }, [location]);
+  }, [location, currUser]);
 
   return (
 

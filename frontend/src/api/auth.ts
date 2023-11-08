@@ -69,3 +69,16 @@ export async function changePassword(newPassword: string, currPassword: string) 
 
     return response;
 }
+
+/**
+ * Updates the user's profile
+ */
+export async function updateUserProfile(username : string, bio: string | null) {
+
+    const response = await userServiceClient.post('/updateProfile', {
+        username: username,
+        bio: bio,
+    })
+
+    return response;
+}
