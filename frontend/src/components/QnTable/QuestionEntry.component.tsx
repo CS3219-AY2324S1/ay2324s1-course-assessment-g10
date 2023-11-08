@@ -24,7 +24,7 @@ export function QuestionEntry(props : QuestionEntryProps) {
     }
 
     return (
-      <Tr>
+      <Tr key={qn.id}>
         <Td>
           <Link to={`/view/${qn._id}`}>
             <Text>{qn.displayedQuestion}</Text>
@@ -49,7 +49,10 @@ export function QuestionEntry(props : QuestionEntryProps) {
                   icon={<EditIcon />}
                 ></IconButton>
               </Link>
-              <DeleteQnBtn qn={qn} onSubmit={() => onDelete(qn._id)}></DeleteQnBtn>
+              <DeleteQnBtn
+                qn={qn}
+                onSubmit={() => onDelete(qn._id)}
+              ></DeleteQnBtn>
             </ButtonGroup>
           </Td>
         ) : (
