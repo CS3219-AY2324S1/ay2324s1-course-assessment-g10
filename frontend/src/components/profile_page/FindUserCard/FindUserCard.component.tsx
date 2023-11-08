@@ -19,8 +19,10 @@ export default function FindUserCard() {
     try {
       if (newUserQuery.trim() === '') {
         setErrorMessage('Please provide a name');
+        setNewUsers([]);
       } else {
         setErrorMessage('');
+        setNewUsers([]);
         const users = await findUsers(newUserQuery);
         setNewUsers(users);
         if (users.length === 0) {
