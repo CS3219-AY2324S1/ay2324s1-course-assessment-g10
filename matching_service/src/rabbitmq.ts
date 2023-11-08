@@ -75,15 +75,18 @@ const getMatch = async (match: Match) => {
             u2.isMatched = true;
             u1.matchedWith = u2.id;
             u2.matchedWith = u1.id;
+            const room = Buffer.from(`${u1.id}/${u2.id}/${questionId}`).toString('base64');
             s1.emit('matchFound', {
                 partner: u2.id,
                 qn: questionId,
-                host: hostUser,
+                init: true, // decentralized initialization of data
+                room: room
             });
             s2.emit('matchFound', {
                 partner: u1.id,
                 qn: questionId,
-                host: hostUser,
+                init: false,
+                room: room
             });
             await removeMatchFromQ(u1);
             await removeMatchFromQ(u2);
