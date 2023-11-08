@@ -13,15 +13,17 @@ import { getUserProfile } from "../api/user";
 export default function ProfilePage() {
 
   const location = useLocation();
-  const [displayedUser, setDisplayedUser] = useState(useSelector(selectUser));
+  const currUser = useSelector(selectUser);
+  const [displayedUser, setDisplayedUser] = useState(currUser);
 
   useEffect(() => {
     if (location.state?.userid !== undefined) {
       getUserProfile(location.state.userid).then((resUser) => {
         setDisplayedUser(resUser);
       }).catch(
-        
       )
+    } else {
+      setDisplayedUser(currUser);
     }
   }, [location]);
 
@@ -31,9 +33,17 @@ export default function ProfilePage() {
       <Flex align-items={"flex-start"} justifyContent="center" columnGap={8}>
         <Box w="30%" h="100%">
           <Flex flexDir={"column"} rowGap={8}>
-            <ProfileCard user={displayedUser!}/>
+            <ProfileCard 
+              displayedUser={displayedUser!} 
+              isViewingOtherUser={currUser!.id !== displayedUser!.id}
+            />
             <FindUserCard />
-            <ChangePasswordCard />
+
+            {
+              currUser!.id !== displayedUser!.id 
+                ? <></>
+                : <ChangePasswordCard />
+            }
 
 
             <Card variant={"elevated"} colorScheme="red" backgroundColor="pink">
