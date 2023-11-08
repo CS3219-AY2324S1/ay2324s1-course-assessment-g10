@@ -102,4 +102,10 @@ export async function findUsers(query : string) {
 
 }
 
+export async function getUserProfile(id: string) {
+  
+  const response : AxiosResponse = await userServiceClient.get(`/api/users/${id}`);
+
+  return response.data;
+}
 

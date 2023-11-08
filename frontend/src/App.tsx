@@ -59,6 +59,7 @@ const loggedInRoutes = [
   { path: "/view/:_id", Component: ViewQuestion, loader: qnLoader },
   { path: "/collab", Component: ViewQuestion },
   { path: "/profile", Component: ProfilePage },
+  { path: "/profile/:username", Component: ProfilePage },
   { path: "*", element: <Navigate to="/" /> }, //redirect all other routes to /
 ];
 

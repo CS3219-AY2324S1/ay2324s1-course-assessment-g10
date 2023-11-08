@@ -1,7 +1,8 @@
-import { Avatar, Button, Card, CardBody, FormControl, FormLabel, HStack, Heading, Input, Text, VStack } from "@chakra-ui/react";
+import { Avatar, Button, Card, CardBody, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Input, Text, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { findUsers } from "../../../api/user";
 import { User } from "../../../reducers/authSlice";
+import { Link } from "react-router-dom";
 
 
 
@@ -10,13 +11,22 @@ export default function FindUserCard() {
   const [newUserQuery, setNewUserQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [newUsers, setNewUsers] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
 
 
   const onClick = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      const users = await findUsers(newUserQuery);
-      setNewUsers(users);
+      if (newUserQuery.trim() === '') {
+        setErrorMessage('Please provide a name');
+      } else {
+        setErrorMessage('');
+        const users = await findUsers(newUserQuery);
+        setNewUsers(users);
+        if (users.length === 0) {
+          setErrorMessage('No users found');
+        }
+      }
     } catch (error) {
       console.log(`FindUserCard: ${error}`);
     } finally {
@@ -27,28 +37,35 @@ export default function FindUserCard() {
   return (
     <Card variant={"elevated"}>
       <CardBody>
-        <Heading size='md'>Find user</Heading>
+        <Heading size='md'>Find users</Heading>
+      <Flex flexDir={"column"} rowGap={2}>
 
         {newUsers.map((user: User) => {
-          return (<Card variant={"elevated"}>
-            <CardBody>
-              <HStack>
-                <Text> {user.username} </Text>
-                <Avatar name={user.username} />
-              </HStack>
-            </CardBody>
-          </Card>)
-
+          return (
+            <Link to={`/profile/${user.username}`} state={{userid: user.id}}>
+              <Card variant={"filled"}>
+                <CardBody>
+                  <Flex justifyContent={"space-between"}>
+                    <Text> {user.username} </Text>
+                    <Avatar name={user.username} />
+                  </Flex>
+                </CardBody>
+              </Card>
+            </Link>
+          )
         })}
+      </Flex>
 
         <VStack w="100%">
-          <FormControl id='other user'>
+          <FormControl id='other user' isInvalid={errorMessage !== ''}>
             <FormLabel> </FormLabel>
             <Input type='text'
               name="other user"
               value={newUserQuery}
               onChange={(e) => { setNewUserQuery(e.target.value) }}
             />
+            <FormErrorMessage> {errorMessage} </FormErrorMessage>
+
           </FormControl>
           <Button w="100%" onClick={onClick} isLoading={isLoading} loadingText='Searching...'>
             Find user

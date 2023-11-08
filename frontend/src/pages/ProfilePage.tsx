@@ -5,11 +5,25 @@ import { Box, Card, CardHeader, CardBody, CardFooter, Flex, Heading, Text, Butto
 import ProfileCard from "../components/profile_page/ProfileCard/ProfileCard.component";
 import FindUserCard from "../components/profile_page/FindUserCard/FindUserCard.component";
 import ChangePasswordCard from "../components/profile_page/ChangePasswordCard/ChangePasswordCard.component";
+import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getUserProfile } from "../api/user";
 
 
 export default function ProfilePage() {
 
-  const user = useSelector(selectUser);
+  const location = useLocation();
+  const [displayedUser, setDisplayedUser] = useState(useSelector(selectUser));
+
+  useEffect(() => {
+    if (location.state?.userid !== undefined) {
+      getUserProfile(location.state.userid).then((resUser) => {
+        setDisplayedUser(resUser);
+      }).catch(
+        
+      )
+    }
+  }, [location]);
 
   return (
 
@@ -17,14 +31,14 @@ export default function ProfilePage() {
       <Flex align-items={"flex-start"} justifyContent="center" columnGap={8}>
         <Box w="30%" h="100%">
           <Flex flexDir={"column"} rowGap={8}>
-            <ProfileCard user={user!}/>
+            <ProfileCard user={displayedUser!}/>
             <FindUserCard />
             <ChangePasswordCard />
 
 
             <Card variant={"elevated"} colorScheme="red" backgroundColor="pink">
               <CardBody>
-                {user ?
+                {displayedUser ?
                   (<Button w="100%" colorScheme="green">
                     <Heading size='sm'>Promote to admin role</Heading>
                   </Button>
@@ -38,7 +52,7 @@ export default function ProfilePage() {
           </Flex>
         </Box>
         <Box w="55%">
-          <SolvedTable userId={user!.id} />
+          <SolvedTable userId={displayedUser!.id} />
         </Box>
       </Flex >
     </Box >
