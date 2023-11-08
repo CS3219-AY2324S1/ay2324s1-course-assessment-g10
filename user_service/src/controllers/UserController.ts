@@ -1,5 +1,4 @@
 import prisma from "../config/db";
-import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 
 
@@ -18,14 +17,20 @@ export const getUserProfile = async (req: any, res: any) => {
         const user = await prisma.user.findUnique({
             where: {
                 id: userId
+            }, 
+            select: {
+              username: true,
+              role: true,
+              id: true,
             }
         });
-                
-        res.status(200).json({
-            _id: user?.id,
-            loginName: user?.username,
-            role: user?.role
-        });
+        
+        if (user === null) {
+          throw Error('Invalid ID. User not found in database.')
+        }
+
+        res.status(200).json(user);
+
     } catch (error) {
         res.status(400).json({
             error: error,
@@ -121,7 +126,7 @@ export async function findUsersWithName(req: Request, res: Response) {
     const users = await prisma.user.findMany({
       where : {
         username : {
-          contains: query,
+          contains: query.trim(),
           mode: 'insensitive'
         }
       },
