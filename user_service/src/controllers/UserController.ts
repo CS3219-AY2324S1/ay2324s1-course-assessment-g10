@@ -17,11 +17,6 @@ export const getUserProfile = async (req: any, res: any) => {
         const user = await prisma.user.findUnique({
             where: {
                 id: userId
-            }, 
-            select: {
-              username: true,
-              role: true,
-              id: true,
             }
         });
         
@@ -29,7 +24,8 @@ export const getUserProfile = async (req: any, res: any) => {
           throw Error('Invalid ID. User not found in database.')
         }
 
-        res.status(200).json(user);
+        const { hashedPassword, ...payload } = user!;
+        res.status(200).json(payload);
 
     } catch (error) {
         res.status(400).json({
@@ -134,8 +130,10 @@ export async function findUsersWithName(req: Request, res: Response) {
       distinct: 'id',
       select: {
         username: true,
+        profilePic: true,
         role: true,
         id: true,
+        bio: true
       }
     })
 
