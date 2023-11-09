@@ -8,5 +8,10 @@ router.delete('/:id', delUserProfile);
 router.get('/:id/questions', getUserQuestions);
 router.post('/:id/addquestions', addUserQuestion);
 router.post('/findusers', findUsersWithName);
+router.use('/uploads', express.static('public/profile_pictures', {
+    etag: true,
+    lastModified: true,
+    maxAge: '1d'
+}));
 
 export default router;

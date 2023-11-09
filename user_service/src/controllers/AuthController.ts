@@ -2,6 +2,7 @@ import prisma from '../config/db';
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { User } from '@prisma/client';
+import { deleteFile } from '../middleware/storage';
 
 export async function isRegistered(username: string) {
     const user : User | null = await prisma.user.findUnique({
@@ -194,3 +195,70 @@ export const changePassword = async (req: any, res: any) => {
     }
 
 };
+
+/**
+ * @desc     upload profile pic 
+ * @route    POST /uploadProfilePic
+ * @access   the user themself
+ */
+export async function uploadProfilePic(req: any, res:any) {
+    const id : number = req.auth?.id;
+    const imageName = req.file.filename; // The path where multer saved the file
+
+    const transaction = prisma.$transaction( async (tx) => {
+        const oldImageName = await tx.user.findUnique({
+            where: {id: id},
+            select: {profilePic: true}
+        })
+
+        console.log('uploading...new pfp, deleting old one...')
+        await deleteFile(oldImageName?.profilePic ?? null);
+
+        const user = await tx.user.update({
+            where: { id: id },
+            data: { profilePic: imageName },
+        });
+
+        return user;
+    })
+
+
+    try {
+        const user = await transaction;
+
+        const { hashedPassword, ...payload } = user!;
+
+        res.json(payload);
+    } catch (error : any) {
+        res.status(500).send(error.message);
+    }
+}
+
+
+/**
+ * @desc     allow users to update profile and bio
+ * @route    POST /updateProfile
+ * @access   the user themself
+ */
+export async function updateUserProfile(req: any, res: any) {
+    const id : number = req.auth?.id;
+    const {username, bio} = req.body;
+
+    try {
+        const user = await prisma.user.update({
+            where: {
+                id: id,
+            },
+            data: {
+                username: username,
+                bio: bio,
+            }
+        })
+        
+        const { hashedPassword, ...payload } = user!;
+        res.status(200).json(payload);
+    } catch (error :any) {
+        res.status(400).send(error.message);
+    }
+  
+}
