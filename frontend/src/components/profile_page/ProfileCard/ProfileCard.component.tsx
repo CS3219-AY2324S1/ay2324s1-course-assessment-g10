@@ -4,6 +4,7 @@ import { User, setUser } from "../../../reducers/authSlice";
 import { updateUserProfile, uploadProfilePic } from "../../../api/auth";
 import { useDispatch } from "react-redux";
 import { getProfilePicUrl } from "../../../api/user";
+import { isAxiosError } from "axios";
 
 export type ProfileCardProp = {
   displayedUser: User
@@ -52,16 +53,18 @@ export default function ProfileCard(props: ProfileCardProp) {
 
     try {
       if (username === displayedUser!.username && bio === displayedUser!.bio) {
-
+        //do nothing if no change
+      } else if (username.trim().length === 0) {
+        throw Error('Username cannot be empty!');
       } else {
-        const res = await updateUserProfile(username, bio);
+        const res = await updateUserProfile(username.trim(), bio);
         const updatedUser = res.data;
         dispatch(setUser(updatedUser));
       }
-    } catch (error) {
+    } catch (error : any) {
       toast({
         title: 'Unable to update profile',
-        description: 'Username is already taken!',
+        description: isAxiosError(error) ? 'Username is already taken!' : error.message,
         status: 'error'
       })
       setUsername(displayedUser!.username);
