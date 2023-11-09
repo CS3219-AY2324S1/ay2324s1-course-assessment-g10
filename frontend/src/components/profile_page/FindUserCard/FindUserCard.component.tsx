@@ -1,8 +1,9 @@
 import { Avatar, Button, Card, CardBody, Flex, FormControl, FormErrorMessage, FormLabel, HStack, Heading, Input, Text, VStack } from "@chakra-ui/react";
 import { useState } from "react";
-import { findUsers } from "../../../api/user";
-import { User } from "../../../reducers/authSlice";
+import { findUsers, getProfilePicUrl } from "../../../api/user";
+import { User, selectUser } from "../../../reducers/authSlice";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 
 
@@ -12,6 +13,7 @@ export default function FindUserCard() {
   const [isLoading, setIsLoading] = useState(false);
   const [newUsers, setNewUsers] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const currUser = useSelector(selectUser);
 
 
   const onClick = async () => {
@@ -42,14 +44,16 @@ export default function FindUserCard() {
         <Heading size='md'>Find users</Heading>
       <Flex flexDir={"column"} rowGap={2}>
 
-        {newUsers.map((user: User) => {
+        {newUsers.filter(
+          (user : any) => user.id !== currUser!.id
+        ).map((user: User) => {
           return (
             <Link to={`/profile/${user.username}`} state={{userid: user.id}}>
               <Card variant={"filled"}>
                 <CardBody>
                   <Flex justifyContent={"space-between"}>
                     <Text> {user.username} </Text>
-                    <Avatar name={user.username} />
+                    <Avatar name={user.username} src={getProfilePicUrl(user.profilePic)} />
                   </Flex>
                 </CardBody>
               </Card>
