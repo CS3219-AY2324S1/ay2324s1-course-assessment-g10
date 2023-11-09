@@ -1,8 +1,9 @@
-import { Avatar, Box, Button, Card, CardFooter, CardHeader, Flex, FormControl, FormLabel, HStack, Heading, Input, Text, Textarea, VStack, useToast } from "@chakra-ui/react";
-import { useState } from "react";
+import { Avatar, Button, Card, CardFooter, CardHeader, Flex, FormControl, FormLabel, Heading, Input, Text, Textarea, Tooltip, VStack, useToast } from "@chakra-ui/react";
+import { useRef, useState } from "react";
 import { User, setUser } from "../../../reducers/authSlice";
-import { updateUserProfile } from "../../../api/auth";
+import { updateUserProfile, uploadProfilePic } from "../../../api/auth";
 import { useDispatch } from "react-redux";
+import { getProfilePicUrl } from "../../../api/user";
 
 export type ProfileCardProp = {
   displayedUser: User
@@ -18,6 +19,34 @@ export default function ProfileCard(props: ProfileCardProp) {
   const [bio, setBio] = useState(displayedUser!.bio);
   const dispatch = useDispatch();
   const toast = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const uploadedFile = event.target.files && event.target.files[0];
+    if (uploadedFile) {
+      const formData = new FormData();
+      formData.append('profilePic', uploadedFile);
+
+      try {
+        const response = await uploadProfilePic(formData);
+        const user = response.data;
+        dispatch(setUser(user));
+      } catch (error: any) {
+        toast({
+          title: 'Fail to upload picture',
+          description: error.message,
+          status: 'error'
+        })
+      }
+    }
+  };
+
 
   const onSave = async () => {
 
@@ -52,12 +81,22 @@ export default function ProfileCard(props: ProfileCardProp) {
             <Text maxWidth={"100%"} noOfLines={3}>{displayedUser!.bio} </Text>
           </VStack>
 
-          <Avatar size="xl" name={displayedUser.username}></Avatar>
+          {isViewingOtherUser
+            ? <Avatar size="xl" name={displayedUser.username} src={getProfilePicUrl(displayedUser.profilePic)}></Avatar>
+            : <>
+                <Input type="file" ref={fileInputRef} hidden onChange={handleFileChange}/>
+                <Tooltip label={"Change your avatar"}>
+                  <Avatar as='button' size="xl" name={displayedUser.username} src={getProfilePicUrl(displayedUser.profilePic)} onClick={handleAvatarClick}></Avatar>
+                </Tooltip>
+              </>
+          }
+
+
         </Flex>
       </CardHeader>
 
       {
-        isViewingOtherUser 
+        isViewingOtherUser
           ? <></>
           :
           <CardFooter pt={0}>
@@ -86,10 +125,10 @@ export default function ProfileCard(props: ProfileCardProp) {
                       name="bio"
                       isInvalid={bio !== null && bio!.length == 128}
                       value={bio === null ? '' : bio}
-                      onChange={(e) => { 
+                      onChange={(e) => {
                         let inputValue = e.target.value
-                        if (inputValue.length <= 128){
-                          setBio(e.target.value) 
+                        if (inputValue.length <= 128) {
+                          setBio(e.target.value)
                         }
                       }}
                     />

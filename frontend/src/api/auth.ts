@@ -82,3 +82,9 @@ export async function updateUserProfile(username : string, bio: string | null) {
 
     return response;
 }
+
+export async function uploadProfilePic(formData : FormData) {
+    const response = await userServiceClient.post('/uploadProfilePic', formData)
+
+    return response;
+}

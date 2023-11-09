@@ -109,3 +109,10 @@ export async function getUserProfile(id: string) {
   return response.data;
 }
 
+export function getProfilePicUrl(profilePicFileName : string | null) {
+  if (null) {
+    return undefined;
+  }
+
+  return userServiceClient.getUri({url: `/api/users/uploads/${profilePicFileName}`});
+}
