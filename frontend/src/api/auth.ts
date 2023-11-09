@@ -88,3 +88,13 @@ export async function uploadProfilePic(formData : FormData) {
 
     return response;
 }
+
+export async function updateUserRole(id : number, role: 'ADMIN' | 'USER') {
+
+    const response = await userServiceClient.put('/updateRole', {
+        id: id,
+        role: role,
+    })
+
+    return response;
+}

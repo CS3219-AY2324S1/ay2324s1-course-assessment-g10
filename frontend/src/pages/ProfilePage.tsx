@@ -8,12 +8,14 @@ import ChangePasswordCard from "../components/profile_page/ChangePasswordCard/Ch
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getUserProfile } from "../api/user";
+import PromoteAdminCard from "../components/profile_page/PromoteAdminCard/PromoteAdminCard.component";
 
 
 export default function ProfilePage() {
 
   const location = useLocation();
   const currUser = useSelector(selectUser);
+  const isAdmin = useSelector(selectIsAdmin);
   const [displayedUser, setDisplayedUser] = useState(currUser);
 
   useEffect(() => {
@@ -45,20 +47,12 @@ export default function ProfilePage() {
                 : <ChangePasswordCard />
             }
 
+            {
+              isAdmin 
+                ? <PromoteAdminCard displayedUser={displayedUser!} setDisplayedUser={setDisplayedUser}/> 
+                : <></>
+            }
 
-            <Card variant={"elevated"} colorScheme="red" backgroundColor="pink">
-              <CardBody>
-                {displayedUser ?
-                  (<Button w="100%" colorScheme="green">
-                    <Heading size='sm'>Promote to admin role</Heading>
-                  </Button>
-                  )
-                  :
-                  (<Button w="100%" colorScheme="red">
-                    <Heading size='sm'>Demote to user role</Heading>
-                  </Button>)}
-              </CardBody>
-            </Card>
           </Flex>
         </Box>
         <Box w="55%">

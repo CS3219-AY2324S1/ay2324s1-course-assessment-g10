@@ -262,3 +262,33 @@ export async function updateUserProfile(req: any, res: any) {
     }
   
 }
+
+
+/**
+ * @desc     updates a user role
+ * @route    PUT /updateRole
+ * @access   admins only
+ */
+export async function updateRole(req: any, res: any) {
+
+    //TODO: Ideally revoke the updated user's token
+
+    const { id, role } = req.body
+    
+    try {
+        const user = await prisma.user.update({
+            where: {
+                id: id,
+            },
+            data: {
+                role: role
+            }
+        })
+
+        const { hashedPassword, ...payload } = user!;
+        res.status(200).json(payload);
+    } catch (error :any) {
+        res.status(400).send(error.message);
+    }
+
+}
