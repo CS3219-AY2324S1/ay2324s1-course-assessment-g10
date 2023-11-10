@@ -1,4 +1,13 @@
-const questions = [
+interface QuestionData {
+  title: string;
+  description: string;
+  topics: string[];
+  difficulty: number;
+  id?: number;
+}
+
+
+export const questions : QuestionData[] = [
     {
       title: 'Reverse a string',
       description: `
@@ -280,5 +289,3 @@ const questions = [
         difficulty: 9,
       },
   ];
-  
-  module.exports = questions;

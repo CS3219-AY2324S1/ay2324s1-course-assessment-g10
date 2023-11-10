@@ -1,6 +1,6 @@
-const Counter = require('../model/counterModel');
+import Counter from '../model/counterModel';
 
-const getNextSequenceValue = async (sequenceName) => {
+export const getNextSequenceValue = async (sequenceName : string) => {
     try {
         const sequenceDocument = await Counter.findOneAndUpdate(
             { _id: sequenceName },
@@ -13,5 +13,3 @@ const getNextSequenceValue = async (sequenceName) => {
         throw error;  // or handle this in some other appropriate way
     }
 };
-
-module.exports = getNextSequenceValue;
