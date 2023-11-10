@@ -1,5 +1,23 @@
 import Question from '../model/questionModel';
 import { getNextSequenceValue } from './counterController';
+import AdmZip from 'adm-zip';
+import fs from 'fs';
+
+function handleTestCaseUpload(questionId : string, zipFilePath : string) {
+    try {
+        const zip = new AdmZip(zipFilePath);
+        const outDir = `/app/question_test_cases/${questionId}/`;
+        zip.extractAllTo(outDir, true);
+        //TODO: only store .in file if .out file exists
+
+    } catch (error) {
+        console.error('Error processing file:', error);
+        throw error;
+    } finally {
+        fs.unlinkSync(zipFilePath);
+    }
+
+}
 
 //@desc     fetch all questions
 //@route    GET /api/questions
@@ -41,15 +59,19 @@ export const fetchQuestion = async (req : any, res : any) => {
 //@route    POST /api/questions
 //@access   admin only
 export const addQuestion = async (req : any, res : any) => {
-    const { title, description, topics, difficulty } = req.body;
 
-    if (!title || !description || !topics || !difficulty) {
+    const questionData = JSON.parse(req.body.question);
+    const { title, description, topics, difficulty } = questionData;
+
+    if (!title || !description || !topics || !difficulty || !req.file) {
         console.log(req.body)
         return res.status(400).json({ message: 'Please enter all fields' })
     }
 
     try {
         const id = await getNextSequenceValue('questionIndex');
+        handleTestCaseUpload(id, req.file.path);
+
         const question = await Question.create({
             id, title, description, topics, difficulty
         })
@@ -71,13 +93,20 @@ export const addQuestion = async (req : any, res : any) => {
 // @route   PUT /api/addresses/:id
 // @access  admin only
 export const updateQuestion = async (req : any, res : any) => {
-    const { title, description, topics, difficulty } = req.body
+
+    const questionData = JSON.parse(req.body.question);
+
+    const { title, description, topics, difficulty } = questionData
 
     if (!title || !description || !topics || !difficulty) {
         return res.status(400).json({ message: 'Please enter all fields' })
     }
 
     try {
+        if (req.file) {
+            handleTestCaseUpload(req.params.id, req.file.path);
+        }
+
         // function provided by mongoose to find an Question document with a given ID
         // req.params.id is retrieved from /:id in route
         const question = await Question.findById(req.params.id)
