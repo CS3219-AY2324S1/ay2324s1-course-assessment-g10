@@ -2,13 +2,43 @@ import Question from '../model/questionModel';
 import { getNextSequenceValue } from './counterController';
 import AdmZip from 'adm-zip';
 import fs from 'fs';
+import path from 'path';
 
 function handleTestCaseUpload(questionId : string, zipFilePath : string) {
     try {
         const zip = new AdmZip(zipFilePath);
         const outDir = `/app/question_test_cases/${questionId}/`;
         zip.extractAllTo(outDir, true);
-        //TODO: only store .in file if .out file exists
+
+        
+        //only store .in file if .out file exists
+        const files = fs.readdirSync(outDir);
+        const inFiles = files.filter(file => file.endsWith('.in'));
+        const outFiles = files.filter(file => file.endsWith('.out'));
+
+        const invalidInFiles = inFiles.filter(inFile => {
+            const correspondingOutFile = inFile.replace('.in', '.out');
+            return !files.includes(correspondingOutFile);
+        });
+
+        const invalidOutFiles = outFiles.filter(outFile => {
+            const correspondingInFile = outFile.replace('.out', '.in');
+            return !files.includes(correspondingInFile);
+        });
+
+        const randomFiles = files.filter(file => !(file.endsWith('.in') || file.endsWith('.out')));
+
+        invalidInFiles.forEach(file => {
+            fs.unlinkSync(path.join(outDir, file));
+        })
+
+        invalidOutFiles.forEach(file => {
+            fs.unlinkSync(path.join(outDir, file));
+        })
+
+        randomFiles.forEach(file => {
+            fs.unlinkSync(path.join(outDir, file));
+        })
 
     } catch (error) {
         console.error('Error processing file:', error);
