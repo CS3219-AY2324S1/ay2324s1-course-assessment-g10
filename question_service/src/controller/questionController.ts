@@ -1,10 +1,10 @@
 import Question from '../model/questionModel';
 import { getNextSequenceValue } from './counterController';
 import AdmZip from 'adm-zip';
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 
-function handleTestCaseUpload(questionId : string, zipFilePath : string) {
+async function handleTestCaseUpload(questionId : string, zipFilePath : string) {
     try {
         const zip = new AdmZip(zipFilePath);
         const outDir = `/app/question_test_cases/${questionId}/`;
@@ -12,7 +12,7 @@ function handleTestCaseUpload(questionId : string, zipFilePath : string) {
 
 
         //only store .in file if .out file exists
-        const files = fs.readdirSync(outDir);
+        const files = await fs.readdir(outDir);
         const inFiles = files.filter(file => file.endsWith('.in'));
         const outFiles = files.filter(file => file.endsWith('.out'));
 
@@ -28,23 +28,23 @@ function handleTestCaseUpload(questionId : string, zipFilePath : string) {
 
         const randomFiles = files.filter(file => !(file.endsWith('.in') || file.endsWith('.out')));
 
-        invalidInFiles.forEach(file => {
-            fs.rmSync(path.join(outDir, file), { recursive: true, force: true });
-        })
+        await Promise.all(invalidInFiles.map(async file => {
+            await fs.rm(path.join(outDir, file), { recursive: true, force: true });
+        }))
 
-        invalidOutFiles.forEach(file => {
-            fs.rmSync(path.join(outDir, file), { recursive: true, force: true });
-        })
+        await Promise.all(invalidOutFiles.map(async file => {
+            await fs.rm(path.join(outDir, file), { recursive: true, force: true });
+        }))
 
-        randomFiles.forEach(file => {
-            fs.rmSync(path.join(outDir, file), { recursive: true, force: true });
-        })
+        await Promise.all(randomFiles.map(async file => {
+            await fs.rm(path.join(outDir, file), { recursive: true, force: true });
+        }))
 
     } catch (error) {
         console.error('Error processing file:', error);
         throw error;
     } finally {
-        fs.unlinkSync(zipFilePath);
+        await fs.unlink(zipFilePath);
     }
 
 }
@@ -105,7 +105,7 @@ export const addQuestion = async (req : any, res : any) => {
             id, title, description, topics, difficulty
         })
 
-        handleTestCaseUpload(question._id.toString(), req.file.path);
+        await handleTestCaseUpload(question._id.toString(), req.file.path);
 
         res.status(201).json({
             id : question.id,
@@ -135,7 +135,7 @@ export const updateQuestion = async (req : any, res : any) => {
 
     try {
         if (req.file) {
-            handleTestCaseUpload(req.params.id, req.file.path);
+            await handleTestCaseUpload(req.params.id, req.file.path);
         }
 
         // function provided by mongoose to find an Question document with a given ID
@@ -182,6 +182,8 @@ export const deleteQuestion = async (req : any, res : any) => {
         if(question === null) {
             throw Error('Invalid ID. Question not found in database.');
         }
+
+        await fs.rm(`/app/question_test_cases/${question._id}`);
         await question.deleteOne();
         res.status(200).json({ message: 'Question removed' });
     } catch (error) {
