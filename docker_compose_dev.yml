@@ -13,6 +13,7 @@ services:
       - mongo
     volumes:
       - ./question_service:/usr/src/app
+      - questions_test_cases:/app/question_test_cases
   
   user-service:
     container_name: user-service
@@ -139,3 +140,4 @@ services:
 volumes:
   postgres_data:
   mongo-dev-data:
+  questions_test_cases:
