@@ -1,10 +1,12 @@
-const express = require('express')
-const cors = require('cors')
-const dotenv = require('dotenv').config()
-const {connectDB, initCounter } = require('./config/db')
-const populateData = require('./config/populate_qns');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { connectDB, initCounter } from './config/db';
+import { populateData } from './config/populate_qns';
+import questionRouter from './routes/questionRouter'
 
-require('dotenv').config()
+
+dotenv.config();
 
 connectDB().then((v) => {
     initCounter();
@@ -27,7 +29,7 @@ app.use(express.urlencoded({ extended: false }))
 
 // use the address router to handle requests 
 // at http://localhost:8080/api/addresses
-app.use('/api/questions', require('./routes/questionRouter'))
+app.use('/api/questions', questionRouter)
 
 
 const PORT = process.env.PORT || 8080;
@@ -36,11 +38,3 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${ PORT }...`)
 })
-
-
-app.get('/', (req, res) => {
-    res.json({ message: 'Hello World' })
-})
-
-
-module.exports = app
