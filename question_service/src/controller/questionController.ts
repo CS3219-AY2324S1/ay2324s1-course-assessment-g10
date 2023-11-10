@@ -10,7 +10,7 @@ function handleTestCaseUpload(questionId : string, zipFilePath : string) {
         const outDir = `/app/question_test_cases/${questionId}/`;
         zip.extractAllTo(outDir, true);
 
-        
+
         //only store .in file if .out file exists
         const files = fs.readdirSync(outDir);
         const inFiles = files.filter(file => file.endsWith('.in'));
@@ -29,15 +29,15 @@ function handleTestCaseUpload(questionId : string, zipFilePath : string) {
         const randomFiles = files.filter(file => !(file.endsWith('.in') || file.endsWith('.out')));
 
         invalidInFiles.forEach(file => {
-            fs.unlinkSync(path.join(outDir, file));
+            fs.rmSync(path.join(outDir, file), { recursive: true, force: true });
         })
 
         invalidOutFiles.forEach(file => {
-            fs.unlinkSync(path.join(outDir, file));
+            fs.rmSync(path.join(outDir, file), { recursive: true, force: true });
         })
 
         randomFiles.forEach(file => {
-            fs.unlinkSync(path.join(outDir, file));
+            fs.rmSync(path.join(outDir, file), { recursive: true, force: true });
         })
 
     } catch (error) {
@@ -100,11 +100,12 @@ export const addQuestion = async (req : any, res : any) => {
 
     try {
         const id = await getNextSequenceValue('questionIndex');
-        handleTestCaseUpload(id, req.file.path);
-
+        
         const question = await Question.create({
             id, title, description, topics, difficulty
         })
+
+        handleTestCaseUpload(question._id.toString(), req.file.path);
 
         res.status(201).json({
             id : question.id,
