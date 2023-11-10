@@ -24,10 +24,11 @@ import { MarkdownEditor } from "../MarkdownEditor/MarkdownEditor.component";
 import { CloseableTag } from "../CloseableTag/CloseableTag.component";
 import { diffToScheme } from "../../helper/UIHelper";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
+import { MarkdownViewer } from "../MarkdownVIewer/MarkdownViewer";
 
 type QuestionEditorProp = {
   question?: Question;
-  onSubmit?: (question: Question) => Promise<void>;
+  onSubmit?: (question: Question, testCasesFile: File | null) => Promise<void>;
   onCancel?: () => void;
 };
 
@@ -46,6 +47,7 @@ export const QuestionEditor = (prop: QuestionEditorProp) => {
   const [topics, setTopics] = useState(question?.topics ?? []);
   const [type, setType] = useState("");
   const [highlightTopic, setHighlightTopic] = useState("");
+  const [testCasesFile, setTestCasesFile] = useState<File | null>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -70,6 +72,13 @@ export const QuestionEditor = (prop: QuestionEditorProp) => {
     setType("");
   };
 
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    if (event.target.files && event.target.files[0]) {
+      const uploadedFile = event.target.files[0];
+      setTestCasesFile(uploadedFile);
+    }
+  }
+
   /**
    * Checks if a question is valid. A question is valid if title, description and topics are not empty.
    * @returns boolean
@@ -93,6 +102,7 @@ export const QuestionEditor = (prop: QuestionEditorProp) => {
     if (!checkValid()) {
       toast({
         title: "Invalid Question",
+        description: "Please check if all fields of the question are provided",
         status: "error",
         isClosable: true,
       });
@@ -102,7 +112,7 @@ export const QuestionEditor = (prop: QuestionEditorProp) => {
     setIsSubmitting(true);
 
     try {
-      await onSubmit(buildQuestion());
+      await onSubmit(buildQuestion(), testCasesFile);
       console.log("Submit success!");
     } catch (err : any) {
       toast({
@@ -197,10 +207,12 @@ export const QuestionEditor = (prop: QuestionEditorProp) => {
             ))}
           </Wrap>
 
-          <FormLabel paddingTop="4">Input Files</FormLabel>
-          <Input type="file" aria-hidden="true" accept=".zip" />
-          <FormLabel paddingTop="4">Output Files</FormLabel>
-          <Input type="file" aria-hidden="true" accept=".zip" />
+          <FormLabel paddingTop="4">Testcases</FormLabel>
+          <MarkdownViewer markdown="Please submit a zip file containing all your testcases for this question. 
+          The input for the testcases should be suffixed with a `.in`, and the expected outputs with a `.out`
+          For every `xxx.in` file, please include a `xxx.out` file.
+          "/>
+          <Input type="file" aria-hidden="true" accept=".zip" onChange={handleFileChange}/>
         </FormControl>
         <Box width="100%" height="100%" overflow="auto">
           <MarkdownEditor onChange={setDescription} markdown={description} />
