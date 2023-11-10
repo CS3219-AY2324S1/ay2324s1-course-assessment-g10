@@ -5,4 +5,4 @@ const counterSchema = new mongoose.Schema({
     seq: Number
   });
   
-module.exports = mongoose.model('Counter', counterSchema);
+export default mongoose.model('Counter', counterSchema);

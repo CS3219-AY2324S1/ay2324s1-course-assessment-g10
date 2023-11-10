@@ -1,10 +1,58 @@
-const Question = require('../model/questionModel')
-const getNextSequenceValue = require('./counterController')
+import Question from '../model/questionModel';
+import { getNextSequenceValue } from './counterController';
+import AdmZip from 'adm-zip';
+import fs from 'fs';
+import path from 'path';
+
+function handleTestCaseUpload(questionId : string, zipFilePath : string) {
+    try {
+        const zip = new AdmZip(zipFilePath);
+        const outDir = `/app/question_test_cases/${questionId}/`;
+        zip.extractAllTo(outDir, true);
+
+
+        //only store .in file if .out file exists
+        const files = fs.readdirSync(outDir);
+        const inFiles = files.filter(file => file.endsWith('.in'));
+        const outFiles = files.filter(file => file.endsWith('.out'));
+
+        const invalidInFiles = inFiles.filter(inFile => {
+            const correspondingOutFile = inFile.replace('.in', '.out');
+            return !files.includes(correspondingOutFile);
+        });
+
+        const invalidOutFiles = outFiles.filter(outFile => {
+            const correspondingInFile = outFile.replace('.out', '.in');
+            return !files.includes(correspondingInFile);
+        });
+
+        const randomFiles = files.filter(file => !(file.endsWith('.in') || file.endsWith('.out')));
+
+        invalidInFiles.forEach(file => {
+            fs.rmSync(path.join(outDir, file), { recursive: true, force: true });
+        })
+
+        invalidOutFiles.forEach(file => {
+            fs.rmSync(path.join(outDir, file), { recursive: true, force: true });
+        })
+
+        randomFiles.forEach(file => {
+            fs.rmSync(path.join(outDir, file), { recursive: true, force: true });
+        })
+
+    } catch (error) {
+        console.error('Error processing file:', error);
+        throw error;
+    } finally {
+        fs.unlinkSync(zipFilePath);
+    }
+
+}
 
 //@desc     fetch all questions
 //@route    GET /api/questions
 //@access   authenticated users
-const fetchAllQuestions = async (req, res) => {
+export const fetchAllQuestions = async (req : any, res : any) => {
     const questions = await Question.find({})
 
     res.status(200).json(questions)
@@ -14,12 +62,15 @@ const fetchAllQuestions = async (req, res) => {
 //@desc     fetch a question
 //@route    GET /api/questions/:id
 //@access   authenticated users
-const fetchQuestion = async (req, res) => {
+export const fetchQuestion = async (req : any, res : any) => {
     try {
         // function provided by mongoose to find an Question document with a given ID
         // req.params.id is retrieved from /:id in route
         const question = await Question.findById(req.params.id)
 
+        if(question === null) {
+            throw Error('Invalid ID. Question not found in database.');
+        }
         res.status(200).json({
             id : question.id,
             _id: question._id,
@@ -28,6 +79,7 @@ const fetchQuestion = async (req, res) => {
             topics: question.topics,
             difficulty: question.difficulty
         })
+
     } catch (error) {
         res.status(400).json({ message: 'Invalid ID. Question not found in database.' })
     }
@@ -36,19 +88,24 @@ const fetchQuestion = async (req, res) => {
 //@desc     add a question
 //@route    POST /api/questions
 //@access   admin only
-const addQuestion = async (req, res) => {
-    const { title, description, topics, difficulty } = req.body;
+export const addQuestion = async (req : any, res : any) => {
 
-    if (!title || !description || !topics || !difficulty) {
+    const questionData = JSON.parse(req.body.question);
+    const { title, description, topics, difficulty } = questionData;
+
+    if (!title || !description || !topics || !difficulty || !req.file) {
         console.log(req.body)
         return res.status(400).json({ message: 'Please enter all fields' })
     }
 
     try {
         const id = await getNextSequenceValue('questionIndex');
+        
         const question = await Question.create({
             id, title, description, topics, difficulty
         })
+
+        handleTestCaseUpload(question._id.toString(), req.file.path);
 
         res.status(201).json({
             id : question.id,
@@ -58,7 +115,7 @@ const addQuestion = async (req, res) => {
             topics: question.topics,
             difficulty: question.difficulty
         })
-    } catch (error) {
+    } catch (error : any) {
         res.status(400).json({ message: 'Invalid question data', error: error.message })
     }
 }
@@ -66,17 +123,29 @@ const addQuestion = async (req, res) => {
 // @desc    Update a question
 // @route   PUT /api/addresses/:id
 // @access  admin only
-const updateQuestion = async (req, res) => {
-    const { title, description, topics, difficulty } = req.body
+export const updateQuestion = async (req : any, res : any) => {
+
+    const questionData = JSON.parse(req.body.question);
+
+    const { title, description, topics, difficulty } = questionData
 
     if (!title || !description || !topics || !difficulty) {
         return res.status(400).json({ message: 'Please enter all fields' })
     }
 
     try {
+        if (req.file) {
+            handleTestCaseUpload(req.params.id, req.file.path);
+        }
+
         // function provided by mongoose to find an Question document with a given ID
         // req.params.id is retrieved from /:id in route
         const question = await Question.findById(req.params.id)
+
+        if(question === null) {
+            throw Error('Invalid ID. Question not found in database.');
+        }
+
         // update the document
         question.title = title
         question.description = description
@@ -105,17 +174,17 @@ const updateQuestion = async (req, res) => {
 // @desc    Delete a question
 // @route   DELETE /api/addresses/:id
 // @access  admin only
-const deleteQuestion = async (req, res) => {
+export const deleteQuestion = async (req : any, res : any) => {
     try {
         // function provided by mongoose to find an Question document with a given ID
         // req.params.id is retrieved from /:id in route
         const question = await Question.findById(req.params.id);
+        if(question === null) {
+            throw Error('Invalid ID. Question not found in database.');
+        }
         await question.deleteOne();
         res.status(200).json({ message: 'Question removed' });
     } catch (error) {
         res.status(404).json({ message: 'Question not found' })
     }
 }
-
-
-module.exports = { fetchAllQuestions, fetchQuestion, addQuestion, updateQuestion, deleteQuestion }

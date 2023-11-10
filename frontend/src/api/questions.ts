@@ -41,14 +41,18 @@ export async function fetchQuestion(_id: string) {
  * @param question The question to add to the database
  * @returns
  */
-export async function addQuestion(question : Question) {
+export async function addQuestion(question : Question, testCasesFile : File) {
 
-    const response : AxiosResponse = await questionServiceClient.post('/api/questions', {
+    const formData = new FormData();
+    formData.append("testcases", testCasesFile);
+    formData.append("question", JSON.stringify({
         title: question.title,
         description: question.descMd,
         topics: question.topics,
         difficulty: question.difficulty
-    })
+    })) 
+
+    const response : AxiosResponse = await questionServiceClient.post('/api/questions', formData);
 
     const resData = response.data;
     
@@ -80,13 +84,21 @@ export async function delQuestion(_id : string) {
  * @param question The new question info to add to the database
  * @returns
  */
-export async function updateQuestion(_id: string, question: Question) {
-    const response : AxiosResponse = await questionServiceClient.put(`/api/questions/${_id}`, {
+export async function updateQuestion(_id: string, question: Question, testCasesFile : File | null) {
+
+    const formData = new FormData();
+    if (testCasesFile !== null) {
+        formData.append("testcases", testCasesFile);
+    }
+    
+    formData.append("question", JSON.stringify({
         title: question.title,
         description: question.descMd,
         topics: question.topics,
         difficulty: question.difficulty
-    })
+    })) 
+
+    const response : AxiosResponse = await questionServiceClient.put(`/api/questions/${_id}`, formData)
 
     const resData = response.data;
     const resQuestion : Question = new Question(
