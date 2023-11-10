@@ -1,7 +1,7 @@
 import express from "express";
 import axios from "axios";
 import bodyParser from "body-parser";
-import { createBatchSubmission, getQnStdInOut } from "./src/testcases";
+import { createBatchSubmission, getQnStdInOut } from "./testcases";
 
 const app = express();
 const port = process.env.PORT;
