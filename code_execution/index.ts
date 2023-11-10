@@ -1,9 +1,10 @@
-const express = require("express");
-const axios = require("axios");
-const bodyParser = require("body-parser");
+import express from "express";
+import axios from "axios";
+import bodyParser from "body-parser";
+import { createBatchSubmission, getQnStdInOut } from "./src/testcases";
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 
 // Define the Judge0 API endpoint
 const REACT_APP_RAPID_API_URL = 'https://judge0-ce.p.rapidapi.com/submissions';
@@ -18,14 +19,11 @@ app.post("/submit", async (req, res) => {
   try {
 
     // Extracts these 4 variables
-    const { language_id, source_code, stdin, expectedResult } = req.body;
+    const { language_id, source_code, qn__id } = req.body;
 
     // Prepare the data to be sent to Judge0
-    const data = {
-      language_id,
-      source_code: Buffer.from(source_code, "base64").toString("utf-8"),
-      stdin: Buffer.from(stdin, "base64").toString("utf-8"),
-    };
+    const testcases = await getQnStdInOut(qn__id);
+    const data = createBatchSubmission(qn__id, language_id, source_code, testcases);
 
     console.log(data);
     // Send a POST request to Judge0
