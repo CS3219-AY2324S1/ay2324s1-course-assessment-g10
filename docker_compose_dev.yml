@@ -30,6 +30,16 @@ services:
     volumes:
       - ./user_service:/usr/src/app
 
+  code-execution:
+    build: 
+      context: ./code-execution
+    environment:
+      - PORT=8090
+    ports:
+      - "8090:8090"
+    volumes:
+      - questions_test_cases:/app/question_test_cases
+
   matching-service:
     container_name: matching-service
     build:
