@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose';
 
-const questionSchema = mongoose.Schema({
+const questionSchema = new mongoose.Schema({
     id: {
         type: Number
     },
@@ -18,7 +18,7 @@ const questionSchema = mongoose.Schema({
     },
     topics: {
         type: [String],
-        validate: (v) => Array.isArray(v) && v.length > 0
+        validate: (v: String[]) => Array.isArray(v) && v.length > 0
     },
     difficulty: {
         type: Number,
@@ -26,4 +26,4 @@ const questionSchema = mongoose.Schema({
     }
 }, { id: false })
 
-module.exports = mongoose.model('Question', questionSchema)
+export default mongoose.model('Question', questionSchema)
