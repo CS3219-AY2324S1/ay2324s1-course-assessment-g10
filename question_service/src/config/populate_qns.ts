@@ -1,11 +1,12 @@
-const Question = require('../model/questionModel');
-const questions = require('./question_data');
-const getNextSequenceValue = require('../controller/counterController')
+import Question from '../model/questionModel';
+import { questions } from './question_data';
+import { getNextSequenceValue } from '../controller/counterController';
+
 
 /**
  * Populates the database if questions dont exist
  */
-async function populateData() {
+export async function populateData() {
   try {
     for (const question of questions) {
       
@@ -24,9 +25,7 @@ async function populateData() {
 
     console.log('Questions population completed.');
 
-  } catch (error) {
+  } catch (error : any) {
     console.log(`Populating questions ran into error: ${error.message}`);
   }
 }
-
-module.exports = populateData;
