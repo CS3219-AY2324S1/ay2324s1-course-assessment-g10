@@ -1,9 +1,9 @@
 import { AxiosResponse } from "axios";
 import { Question } from "../models/Question.model";
-import { questionServiceClient } from "./server";
+import { apiGatewayClient } from "./gateway";
 
 export async function fetchAllQuestions() {
-    const response = await questionServiceClient.get('/api/questions');
+    const response = await apiGatewayClient.get('/api/questions');
 
     const resData = response.data;
     const questions : Question[] = resData.map((q : any) => new Question(q._id, q.id, q.title, q.description, q.topics, q.difficulty))
@@ -18,7 +18,7 @@ export async function fetchAllQuestions() {
  */
 export async function fetchQuestion(_id: string) {
     try {
-        const response = await questionServiceClient.get(`/api/questions/${_id}`);
+        const response = await apiGatewayClient.get(`/api/questions/${_id}`);
     
         const resData = response.data;
         const resQuestion : Question = new Question(
@@ -43,7 +43,7 @@ export async function fetchQuestion(_id: string) {
  */
 export async function addQuestion(question : Question) {
 
-    const response : AxiosResponse = await questionServiceClient.post('/api/questions', {
+    const response : AxiosResponse = await apiGatewayClient.post('/api/questions', {
         title: question.title,
         description: question.descMd,
         topics: question.topics,
@@ -67,7 +67,7 @@ export async function addQuestion(question : Question) {
  * @param _id The uuid identifying the question resource
  */
 export async function delQuestion(_id : string) {
-    const response = await questionServiceClient.delete(`/api/questions/${_id}`);
+    const response = await apiGatewayClient.delete(`/api/questions/${_id}`);
 
     return response;
 }
@@ -81,7 +81,7 @@ export async function delQuestion(_id : string) {
  * @returns
  */
 export async function updateQuestion(_id: string, question: Question) {
-    const response : AxiosResponse = await questionServiceClient.put(`/api/questions/${_id}`, {
+    const response : AxiosResponse = await apiGatewayClient.put(`/api/questions/${_id}`, {
         title: question.title,
         description: question.descMd,
         topics: question.topics,

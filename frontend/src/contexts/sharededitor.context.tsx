@@ -16,6 +16,7 @@ import { useLoaderData } from "react-router-dom";
 import { Buffer } from "buffer";
 import data from "../data/lang_temps.json";
 import { ToastId, useToast } from "@chakra-ui/react";
+import { wsCollabUrl } from "../api/gateway";
 
 export type language = keyof typeof data;
 
@@ -295,7 +296,7 @@ export const SharedEditorProvider = ({
           "base64"
         );
     const provider = new WebrtcProvider(roomvalue, doc, {
-      signaling: ["ws://localhost:8083"],
+      signaling: [wsCollabUrl],
       filterBcConns: true,
     });
     setProvider(provider);

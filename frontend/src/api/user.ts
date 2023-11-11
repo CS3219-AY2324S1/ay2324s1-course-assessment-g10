@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import { SolvedQuestion } from "../models/SolvedQuestion.model"; // Import the SolvedQuestion model
-import { userServiceClient } from "./server";
+import { apiGatewayClient } from "./gateway";
 
 /**
  * Fetch questions completed by the user.
@@ -11,7 +11,7 @@ export async function fetchUserCompletedQuestions(
   userId: String
 ): Promise<SolvedQuestion[]> { 
   try {
-    const response: AxiosResponse = await userServiceClient.get(
+    const response: AxiosResponse = await apiGatewayClient.get(
       `/api/users/${userId}/questions`
     );
 
@@ -53,7 +53,7 @@ export async function addUserQuestion(
   category: string[]
 ): Promise<SolvedQuestion> { 
   try {
-    const response: AxiosResponse = await userServiceClient.post(
+    const response: AxiosResponse = await apiGatewayClient.post(
       `/api/users/${userId}/addquestions`,
       {
         userId,

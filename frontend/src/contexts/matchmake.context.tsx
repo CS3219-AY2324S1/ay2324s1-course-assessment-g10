@@ -10,6 +10,7 @@ import { selectUser } from "../reducers/authSlice";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@chakra-ui/react";
+import { wsMatchMakeURL } from "../api/gateway";
 
 interface RoomDetail {
   partner: string;
@@ -45,7 +46,7 @@ export const MatchmakeProvider = ({
   const toast = useToast();
 
   useEffect(() => {
-    const socket = io("ws://localhost:8082", {
+    const socket = io(wsMatchMakeURL, {
       autoConnect: false,
     });
     setSocket(socket);

@@ -1,4 +1,4 @@
-import { matchServiceHostUrl, questionServiceUrl, userServiceHostUrl } from "./service_addresses";
+import { collabServiceHostUrl, matchServiceHostUrl, questionServiceUrl, userServiceHostUrl } from "./service_addresses";
 
 export const routes_config = [
     {
@@ -24,13 +24,26 @@ export const routes_config = [
                 '/auth': '/' }
         }
     },
+]
+
+export const ws_match_proxy_config = [
     {
-        url: "/matchmake",
+        url: "/",
         proxy: {
             target: matchServiceHostUrl,
             ws: true,
-            pathRewrite: { 
-                '/matchmake': '/' }
+            changeOrigin: true,
+        }
+    }
+]
+
+export const ws_collab_proxy_config = [
+    {
+        url: "/",
+        proxy: {
+            target: collabServiceHostUrl,
+            ws: true,
+            changeOrigin: true,
         }
     }
 ]

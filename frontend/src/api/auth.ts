@@ -1,4 +1,4 @@
-import { apiGatewayClient } from "./server"
+import { apiGatewayClient } from "./gateway"
 
 /**
  * Makes a login request and sets the access_token if successful
