@@ -4,12 +4,13 @@ import { fetchUserCompletedQuestions } from "../../api/user";
 import { fetchAllQuestions } from "../../api/questions";
 import { SolvedQuestion } from "../../models/SolvedQuestion.model";
 import { Question } from "../../models/Question.model";
+import { useProfile } from "../../contexts/profileContext";
 
-interface ProgressBarProps {
-  userId: string;
-}
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ userId }) => {
+const ProgressBar = () => {
+
+  const { solvedQuestions } = useProfile();
+
   const [easyCount, setEasyCount] = useState(0);
   const [mediumCount, setMediumCount] = useState(0);
   const [hardCount, setHardCount] = useState(0);
@@ -33,11 +34,9 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ userId }) => {
         const mediumQuestions = allQuestions.filter((question) => question.difficulty >= 3.5 && question.difficulty < 7).length;
         const hardQuestions = allQuestions.filter((question) => question.difficulty >= 7 && question.difficulty <= 10).length;
 
-        const response: SolvedQuestion[] = await fetchUserCompletedQuestions(userId);
-
-        const userEasyQuestions = response.filter((question) => question.difficulty >= 0 && question.difficulty < 3.5).length;
-        const userMediumQuestions = response.filter((question) => question.difficulty >= 3.5 && question.difficulty < 7).length;
-        const userHardQuestions = response.filter((question) => question.difficulty >= 7 && question.difficulty <= 10).length;
+        const userEasyQuestions = solvedQuestions.filter((question) => question.difficulty >= 0 && question.difficulty < 3.5).length;
+        const userMediumQuestions = solvedQuestions.filter((question) => question.difficulty >= 3.5 && question.difficulty < 7).length;
+        const userHardQuestions = solvedQuestions.filter((question) => question.difficulty >= 7 && question.difficulty <= 10).length;
 
         setTotalEasy(easyQuestions);
         setTotalMedium(mediumQuestions);
@@ -79,7 +78,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ userId }) => {
     }
 
     fetchAndCategorizeQuestions();
-  }, [userId]);
+  }, [solvedQuestions]);
 
   return (
     <Flex direction="column" p={10}>

@@ -6,6 +6,7 @@ import { QuestionEditor } from "../../components/QuestionEditor/QuestionEditor.c
 import { SolvedTable } from "../../components/SolvedTable/SolvedTable.component";
 import { selectUser } from "../../reducers/authSlice";
 import { useSelector } from "react-redux";
+import { ProfileProvider } from "../../contexts/profileContext";
 
 function HomePage() {
   // Use the useSelector hook to access the user from the Redux store
@@ -22,9 +23,10 @@ function HomePage() {
   // At this point, you're sure that user is not null
   return (
     <div>
-      <QuestionEditor />
-      <ProgressBar userId={user.id}/>
-      <SolvedTable userId={user.id} pageSize={4} />
+      <ProfileProvider displayedUser={user}>
+        <ProgressBar />
+        <SolvedTable pageSize={4} />
+      </ProfileProvider>
     </div>
   );
 }
