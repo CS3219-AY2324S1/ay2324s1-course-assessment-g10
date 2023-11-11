@@ -14,6 +14,7 @@ services:
       - postgres
     volumes:
       - ./:/usr/src/app
+      - profile_pictures:/usr/src/app/public/profile_pictures
   
   postgres:
     container_name: postgres-user-service
@@ -29,3 +30,4 @@ services:
       - postgres_data:/var/lib/postgresql/data/
 volumes:
   postgres_data:
+  profile_pictures:
