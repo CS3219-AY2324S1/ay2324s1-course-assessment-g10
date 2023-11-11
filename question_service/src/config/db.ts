@@ -1,13 +1,13 @@
-const mongoose = require('mongoose')
-const Counter = require('../model/counterModel');
+import mongoose from 'mongoose';
+import Counter from '../model/counterModel';
 
 
 // function to start up and connect to MongoDB database
-const connectDB = async () => {
+export const connectDB = async () => {
     try {
         // attempt to connect to MongoDB database via the connection string specified in .env file
         console.log(`connecting with... ${process.env.MONGODB_URI}`)
-        const con = await mongoose.connect(process.env.MONGODB_URI)
+        const con = await mongoose.connect(process.env.MONGODB_URI ?? '')
         console.log(`MongoDB connected: ${con.connection.host} `)
     } catch (error) {
         console.log(error)
@@ -16,7 +16,7 @@ const connectDB = async () => {
     }
 }
 
-const initCounter = async () => {
+export const initCounter = async () => {
     try {
       const questionIndex = await Counter.findById('questionIndex');
       if (!questionIndex) {
@@ -30,7 +30,3 @@ const initCounter = async () => {
       console.log('Error initializing counter:', error);
     }
 };
-
-// export connection function to be used in index.js
-module.exports = { connectDB, initCounter }
-
