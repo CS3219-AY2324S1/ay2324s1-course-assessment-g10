@@ -32,7 +32,7 @@ services:
 
   code-execution:
     build: 
-      context: ./code-execution
+      context: ./code_execution
     environment:
       - PORT=8090
     ports:
@@ -112,6 +112,7 @@ services:
       - "8083:8083"
 
   judge0-server:
+    container_name: judge0-server
     image: judge0/judge0:1.13.0
     ports:
       - "2358:2358"
