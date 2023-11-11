@@ -75,7 +75,7 @@ const QnSubmissionHistory = () => {
           position="sticky"
           top={0}
           bg="gray.200"
-          zIndex={1}
+          zIndex="1"
           boxShadow="base"
         >
           <Tr>
