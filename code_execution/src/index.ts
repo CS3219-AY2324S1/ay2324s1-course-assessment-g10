@@ -22,7 +22,7 @@ app.post("/api/code/submit", async (req, res) => {
 
     // Prepare the data to be sent to Judge0
     const testcases = await getQnStdInOut(qn__id);
-    const submission = createBatchSubmission(qn__id, language_id, source_code, testcases);
+    const submission = await createBatchSubmission(qn__id, language_id, source_code, testcases);
 
     const result = await execute(submission);
 

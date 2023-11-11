@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const JUDGE_API_URL = 'judge0-server:2358/submissions';
+const JUDGE_API_URL = 'http://judge0-server:2358/submissions';
 
-async function submitCode(submission) {
+async function submitCode(submission : any) {
 
-    const response = await axios.post(`${JUDGE_API_URL}/batch`, submission, {
+    const response = await axios.post(`${JUDGE_API_URL}/batch`, { submissions: submission }, {
         headers: {
             "Content-Type": "application/json",
         },
@@ -13,14 +13,14 @@ async function submitCode(submission) {
 
     const resTokens = response.data;
 
-    const tokens = resTokens.map(tokenObj => {
+    const tokens = resTokens.map((tokenObj : { token: string})=> {
         return tokenObj["token"]
     })
 
     return tokens;
 }
 
-function pollStatusTillComplete(tokens: string[], resolve, reject, interval = 1000) {
+function pollStatusTillComplete(tokens: string[], resolve : any, reject : any, interval = 1000) {
     setTimeout(() => {
         const options = {
             params: {
@@ -32,7 +32,7 @@ function pollStatusTillComplete(tokens: string[], resolve, reject, interval = 10
         axios.get(`${JUDGE_API_URL}/batch`, options).then((response) => {
 
             const { submissions } = response.data;
-            const pending = submissions.filter((submission) => submission.status_id === 1 || submission.status_id === 2)
+            const pending = submissions.filter((submission : any) => submission.status_id === 1 || submission.status_id === 2)
 
             if (pending.length > 0) {
                 pollStatusTillComplete(tokens, resolve, reject, interval);
@@ -44,11 +44,14 @@ function pollStatusTillComplete(tokens: string[], resolve, reject, interval = 10
     }, interval);
 }
 
-async function delSubmissions(tokens) {
+async function delSubmissions(tokens : string[]) {
 
     return await Promise.all(
         tokens.map(token => axios.delete(`${JUDGE_API_URL}/${token}`, {
-            params: {fields: "status_id"}
+            params: {fields: "status_id"},
+            headers: {
+                'X-Judge0-User': 'Auth-Judge0-User'
+            }
     })))
 }
 
