@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Flex, Text, CircularProgress, CircularProgressLabel, Progress } from "@chakra-ui/react";
-import { fetchUserCompletedQuestions } from "../../api/user";
+import { Flex, Text, CircularProgress, CircularProgressLabel, Progress, Card, Th, TableContainer, Table } from "@chakra-ui/react";
 import { fetchAllQuestions } from "../../api/questions";
-import { SolvedQuestion } from "../../models/SolvedQuestion.model";
 import { Question } from "../../models/Question.model";
 import { useProfile } from "../../contexts/profileContext";
 
@@ -81,39 +79,59 @@ const ProgressBar = () => {
   }, [solvedQuestions]);
 
   return (
-    <Flex direction="column" p={10}>
-      <Text fontSize="md" m={2}>
-        Solved Problems
-      </Text>
-      <Flex width="100%" direction="row" align="center">
-        <CircularProgress size="180px" value={totalPercentage} color="yellow.400">
-          <CircularProgressLabel fontSize="18px">{totalSolved} solved</CircularProgressLabel>
-        </CircularProgress>
-        <Flex width="100%" direction="column" align="left" textAlign="left" ml={6}>
-          <Flex justify="space between" align="center" mb={2}>
-            <Text fontSize="sm">Easy</Text>
-            <Text fontSize="sm" color="gray.500">
-              {easyCount}/{totalEasy}
-            </Text>
+    <>
+      <TableContainer width="100%">
+        <Table
+          variant="striped"
+          backgroundColor={"white"}
+          size="md"
+          boxShadow="md"
+          transition="box-shadow 0.2s"
+          _hover={{
+            boxShadow: "xl",
+          }}
+          width="100%"
+          sx={{ tableLayout: "fixed" }}
+        >
+
+          <Th colSpan={4}>
+            Solved Problems
+          </Th>
+        </Table>
+      </TableContainer>
+      <Card>
+        <Flex direction="column" p={10}>
+          <Flex width="100%" direction="row" align="center">
+            <CircularProgress size="180px" value={totalPercentage} color="yellow.400">
+              <CircularProgressLabel fontSize="18px">{totalSolved} solved</CircularProgressLabel>
+            </CircularProgress>
+            <Flex width="100%" direction="column" align="left" textAlign="left" ml={6}>
+              <Flex justify="space between" align="center" mb={2}>
+                <Text fontSize="sm">Easy</Text>
+                <Text fontSize="sm" color="gray.500">
+                  {easyCount}/{totalEasy}
+                </Text>
+              </Flex>
+              <Progress value={easyPercentage} colorScheme="green" mb={2} />
+              <Flex justify="space between" align="center" mb={2}>
+                <Text fontSize="sm">Medium</Text>
+                <Text fontSize="sm" color="gray.500">
+                  {mediumCount}/{totalMedium}
+                </Text>
+              </Flex>
+              <Progress value={mediumPercentage} colorScheme="yellow" mb={2} />
+              <Flex justify="space between" align="center" mb={2}>
+                <Text fontSize="sm">Hard</Text>
+                <Text fontSize="sm" color="gray.500">
+                  {hardCount}/{totalHard}
+                </Text>
+              </Flex>
+              <Progress value={hardPercentage} colorScheme="red" mb={2} />
+            </Flex>
           </Flex>
-          <Progress value={easyPercentage} colorScheme="green" mb={2} />
-          <Flex justify="space between" align="center" mb={2}>
-            <Text fontSize="sm">Medium</Text>
-            <Text fontSize="sm" color="gray.500">
-              {mediumCount}/{totalMedium}
-            </Text>
-          </Flex>
-          <Progress value={mediumPercentage} colorScheme="yellow" mb={2} />
-          <Flex justify="space between" align="center" mb={2}>
-            <Text fontSize="sm">Hard</Text>
-            <Text fontSize="sm" color="gray.500">
-              {hardCount}/{totalHard}
-            </Text>
-          </Flex>
-          <Progress value={hardPercentage} colorScheme="red" mb={2} />
         </Flex>
-      </Flex>
-    </Flex>
+      </Card>
+    </>
   );
 };
 

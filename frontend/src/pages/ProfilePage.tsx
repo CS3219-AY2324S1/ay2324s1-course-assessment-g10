@@ -9,6 +9,8 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getUserProfile } from "../api/user";
 import PromoteAdminCard from "../components/profile_page/PromoteAdminCard/PromoteAdminCard.component";
+import { ProfileProvider } from "../contexts/profileContext";
+import ProgressBar from "../components/ProgressBar/ProgressBar.component";
 
 
 export default function ProfilePage() {
@@ -30,35 +32,38 @@ export default function ProfilePage() {
   }, [location, currUser]);
 
   return (
+    <ProfileProvider displayedUser={displayedUser!}>
+      <Box pt="40px" w="100%">
+        <Flex align-items={"flex-start"} justifyContent="center" columnGap={8}>
+          <Box w="30%" h="100%">
+            <Flex flexDir={"column"} rowGap={8}>
+              <ProfileCard
+                displayedUser={displayedUser!}
+                isViewingOtherUser={currUser!.id !== displayedUser!.id}
+              />
+              <FindUserCard />
 
-    <Box pt="40px" w="100%">
-      <Flex align-items={"flex-start"} justifyContent="center" columnGap={8}>
-        <Box w="30%" h="100%">
-          <Flex flexDir={"column"} rowGap={8}>
-            <ProfileCard 
-              displayedUser={displayedUser!} 
-              isViewingOtherUser={currUser!.id !== displayedUser!.id}
-            />
-            <FindUserCard />
+              {
+                currUser!.id !== displayedUser!.id
+                  ? <></>
+                  : <ChangePasswordCard />
+              }
 
-            {
-              currUser!.id !== displayedUser!.id 
-                ? <></>
-                : <ChangePasswordCard />
-            }
+              {
+                isAdmin
+                  ? <PromoteAdminCard displayedUser={displayedUser!} setDisplayedUser={setDisplayedUser} />
+                  : <></>
+              }
 
-            {
-              isAdmin 
-                ? <PromoteAdminCard displayedUser={displayedUser!} setDisplayedUser={setDisplayedUser}/> 
-                : <></>
-            }
+            </Flex>
+          </Box>
+          <Box w="55%">
+            <ProgressBar />
+            <SolvedTable />
+          </Box>
+        </Flex >
+      </Box >
+    </ProfileProvider>
 
-          </Flex>
-        </Box>
-        <Box w="55%">
-          <SolvedTable userId={displayedUser!.id} />
-        </Box>
-      </Flex >
-    </Box >
   )
 }
