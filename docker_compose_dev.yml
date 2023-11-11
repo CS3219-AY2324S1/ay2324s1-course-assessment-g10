@@ -28,6 +28,7 @@ services:
       - postgres
     volumes:
       - ./user_service:/usr/src/app
+      - profile_pictures:/usr/src/app/public/profile_pictures
 
   matching-service:
     container_name: matching-service
@@ -139,3 +140,4 @@ services:
 volumes:
   postgres_data:
   mongo-dev-data:
+  profile_pictures:

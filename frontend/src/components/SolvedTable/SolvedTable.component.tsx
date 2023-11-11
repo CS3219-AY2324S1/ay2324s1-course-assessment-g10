@@ -43,7 +43,7 @@ export const SolvedTable = (props: TableProp) => {
         _hover={{
           boxShadow: "xl",
         }}
-        width="60%"
+        width="100%"
         sx={{ tableLayout: "fixed" }}
       >
         <TableCaption>
