@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
+import ProgressBar from "../../components/ProgressBar/ProgressBar.component";
 import { QuestionEditor } from "../../components/QuestionEditor/QuestionEditor.component";
 import { SolvedTable } from "../../components/SolvedTable/SolvedTable.component";
 import { selectUser } from "../../reducers/authSlice";
@@ -22,6 +23,7 @@ function HomePage() {
   return (
     <div>
       <QuestionEditor />
+      <ProgressBar userId={user.id}/>
       <SolvedTable userId={user.id} pageSize={4} />
     </div>
   );
