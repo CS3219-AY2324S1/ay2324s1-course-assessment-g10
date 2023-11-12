@@ -1,40 +1,72 @@
 version: '3'
 services:
-  frontend:
-    container_name: frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
-    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/frontend:latest
-    environment:
-      - REACT_APP_ENV_TYPE=prod
-    ports:
-      - "80:80"
+  # frontend:
+  #   container_name: frontend
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile.prod
+  #   image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/frontend:latest
+  #   environment:
+  #     - REACT_APP_ENV_TYPE=prod
+  #   ports:
+  #     - "80:80"
   
-  question-service:
-    container_name: question-service
-    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/question-service:latest
+  # question-service:
+  #   container_name: question-service
+  #   image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/question-service:latest
+  #   build: 
+  #     context: ./question_service
+  #     dockerfile: Dockerfile.prod
+  #   environment:
+  #     - MONGODB_URI=mongodb://mongo:27017/question_service
+  #     - PORT=8080
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - mongo
+  #   volumes:
+  #     - ./question_service:/usr/src/app
+
+  user-service:
+    container_name: user-service
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/user-service:latest
     build: 
-      context: ./question_service
+      context: ./user_service
       dockerfile: Dockerfile.prod
     environment:
-      - MONGODB_URI=mongodb://mongo:27017/question_service
-      - PORT=8080
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mongo
-    volumes:
-      - ./question_service:/usr/src/app
+      PORT: 8081
+      SECRET_KEY: ${SECRET_KEY}
 
-  mongo:
-    container_name: mongo
-    image: mongo:6.0
     ports:
-      - "27017:27017"
+      - "8081:8081"
+    depends_on:
+      - postgres
     volumes:
-      - mongo-dev-data:/data/db
+      - ./user_service:/usr/src/app
+      - profile_pictures:/usr/src/app/public/profile_pictures
+
+  # mongo:
+  #   container_name: mongo
+  #   image: mongo:6.0
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongo-dev-data:/data/db
+
+  postgres:    
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PG_PORT: ${PG_PORT}
+    ports:
+      - "${PG_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
 
 volumes:
   postgres_data:
   mongo-dev-data:
+  profile_pictures:
