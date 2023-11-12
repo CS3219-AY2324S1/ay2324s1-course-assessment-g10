@@ -1,0 +1,39 @@
+name: Deployment Workflow
+
+on:
+    workflow_dispatch:
+    workflow_run:
+      workflows: ["Selectively Build and Push to Artifact Registry", Build and Push to Artifact Registry]
+      types:
+        - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' || 
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: "Set up google auth"
+        id: auth
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.SERVICE_ACCOUNT_KEY }}"
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v1"
+
+      - name: "Use gcloud CLI"
+        run: "gcloud info"
+
+      - name: "SSH to VM"
+        id: 'compute-ssh'
+        uses: 'google-github-actions/ssh-compute@v0'
+        with:
+          instance_name: 'peerprep-prod'
+          zone: 'asia-southeast1-b'
+          ssh_private_key: '${{ secrets.SSH_KEY }}'
+          command: 'pwd'
