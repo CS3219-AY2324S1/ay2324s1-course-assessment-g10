@@ -33,7 +33,12 @@ jobs:
               - 'match_worker/**'
             collab_service:
               - 'collab_service/**'
-      - name: Detect Changes in Microservices
+              
+      - name: 'Create env file'
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+      
+      - name: "Set up google auth"
         id: auth
         uses: "google-github-actions/auth@v1"
         with:
