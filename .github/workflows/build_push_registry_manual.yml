@@ -1,0 +1,38 @@
+name: Build and Push to Artifact Registry
+
+on:
+  workflow_dispatch
+
+env:
+  PROJECT_ID: fake-app-323017
+  REGION: northamerica-northeast1
+  GAR_LOCATION: northamerica-northeast1-docker.pkg.dev/fake-app-323017/repo-1/
+
+jobs:
+  build-push-artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+
+      - id: "auth"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.SERVICE_ACCOUNT_KEY }}"
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v1"
+
+      - name: "Use gcloud CLI"
+        run: "gcloud info"
+
+      - name: "Docker auth"
+        run: |-
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build image
+        run: docker build . --file DOCKERFILE_LOCATION --tag ${{ env.GAR_LOCATION }}
+        working-directory: WORKING_DIRECTORY
+
+      - name: Push image
+        run: docker push ${{ env.GAR_LOCATION }}
