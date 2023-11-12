@@ -4,9 +4,9 @@ on:
   workflow_dispatch
 
 env:
-  PROJECT_ID: fake-app-323017
-  REGION: northamerica-northeast1
-  GAR_LOCATION: northamerica-northeast1-docker.pkg.dev/fake-app-323017/repo-1/
+  PROJECT_ID: cs3219-400714
+  REGION: asia-southeast1
+  GAR_LOCATION: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/
 
 jobs:
   build-push-artifact:
@@ -31,8 +31,7 @@ jobs:
           gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
       - name: Build image
-        run: docker build . --file DOCKERFILE_LOCATION --tag ${{ env.GAR_LOCATION }}
-        working-directory: WORKING_DIRECTORY
+        run: docker-compose build
 
       - name: Push image
-        run: docker push ${{ env.GAR_LOCATION }}
+        run: docker-compose push
