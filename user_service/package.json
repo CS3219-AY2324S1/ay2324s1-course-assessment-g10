@@ -7,7 +7,7 @@
     "migrate": "npx prisma db push",
     "start": "npm run migrate && ts-node src/index.ts",
     "build": "tsc",
-    "serve": "node dist/index.js"
+    "serve": "npm run migrate && node dist/index.js"
   },
   "author": "",
   "license": "ISC",
