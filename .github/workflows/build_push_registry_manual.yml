@@ -15,6 +15,10 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v3"
 
+      - name: 'Create env file'
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+      
       - id: "auth"
         uses: "google-github-actions/auth@v1"
         with:
