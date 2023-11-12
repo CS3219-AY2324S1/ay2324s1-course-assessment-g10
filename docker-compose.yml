@@ -1,0 +1,40 @@
+version: '3'
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/frontend:latest
+    environment:
+      - REACT_APP_ENV_TYPE=prod
+    ports:
+      - "80:80"
+  
+  question-service:
+    container_name: question-service
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/question-service:latest
+    build: 
+      context: ./question_service
+      dockerfile: Dockerfile.prod
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/question_service
+      - PORT=8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    volumes:
+      - ./question_service:/usr/src/app
+
+  mongo:
+    container_name: mongo
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-dev-data:/data/db
+
+volumes:
+  postgres_data:
+  mongo-dev-data:
