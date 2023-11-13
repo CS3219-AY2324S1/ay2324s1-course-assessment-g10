@@ -139,7 +139,6 @@ const handleMatchRequest = async (
       let countdown = 29;
       const userDet = detail;
       detail.countdown = setInterval(async () => {
-        console.log(countdown);
         if (countdown === 0) {
           remove(io, socket);
           clearInterval(userDet.countdown);
