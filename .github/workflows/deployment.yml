@@ -23,9 +23,6 @@ jobs:
         with:
           credentials_json: "${{ secrets.SERVICE_ACCOUNT_KEY }}"
 
-      - name: "Set up Cloud SDK"
-        uses: "google-github-actions/setup-gcloud@v1"
-
       - name: "Use gcloud CLI"
         run: "gcloud info"
 
