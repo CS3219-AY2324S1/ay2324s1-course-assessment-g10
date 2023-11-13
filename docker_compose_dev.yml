@@ -35,9 +35,6 @@ services:
       - PORT=8082
     ports:
       - "8082:8082"
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
 
   collab-service:
     container_name: collab-service

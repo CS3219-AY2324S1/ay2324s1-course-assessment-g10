@@ -26,62 +26,6 @@ services:
     depends_on:
       - mongo
 
-  match-worker:
-    container_name: match-worker_1
-    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/match-worker_1:latest
-    environment:
-      - CHANNEL_NAME=diff1
-    build:
-      context: ./match_worker
-      dockerfile: Dockerfile.prod
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      matching-service:
-        condition: service_started
-
-  match-worker2:
-    container_name: match-worker_2
-    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/match-worker_1:latest
-    environment:
-      - CHANNEL_NAME=diff2
-    build:
-      context: ./match_worker
-      dockerfile: Dockerfile.prod
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      matching-service:
-        condition: service_started
-
-  match-worker3:
-    container_name: match-worker_3
-    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/match-worker_1:latest
-    environment:
-      - CHANNEL_NAME=diff3
-    build:
-      context: ./match_worker
-      dockerfile: Dockerfile.prod
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      matching-service:
-        condition: service_started
-
-  match-worker4:
-    container_name: match-worker_4
-    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/match-worker_1:latest
-    environment:
-      - CHANNEL_NAME=diff4
-    build:
-      context: ./match_worker
-      dockerfile: Dockerfile.prod
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-      matching-service:
-        condition: service_started
-
   collab-service:
     container_name: collab-service
     image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/collab-service:latest
@@ -119,9 +63,6 @@ services:
       - PORT=8082
     ports:
       - "8082:8082"
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
 
   mongo:
     container_name: mongo
