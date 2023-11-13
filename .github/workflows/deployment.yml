@@ -33,7 +33,7 @@ jobs:
           instance_name: 'peerprep-prod'
           zone: 'asia-southeast1-b'
           ssh_private_key: '${{ secrets.SSH_KEY }}'
-          command: 'sudo pwd > ~/test.txt'
+          command: 'sudo /usr/src/peerprep/scripts/init.sh'
 
       - id: 'test'
         run: |-
