@@ -1,0 +1,111 @@
+version: '3'
+services:
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/frontend:latest
+    environment:
+      - REACT_APP_ENV_TYPE=prod
+    ports:
+      - "80:80"
+  
+  question-service:
+    container_name: question-service
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/question-service:latest
+    build: 
+      context: ./question_service
+      dockerfile: Dockerfile.prod
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/question_service
+      - PORT=8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    volumes:
+      - questions_test_cases:/app/question_test_cases
+
+  collab-service:
+    container_name: collab-service
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/collab-service:latest
+    environment:
+      PORT: 8083
+    build:
+      context: ./collab_service
+      dockerfile: Dockerfile  #no need for prod file since the server is so basic
+    ports:
+      - "8083:8083"
+
+  user-service:
+    container_name: user-service
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/user-service:latest
+    build: 
+      context: ./user_service
+      dockerfile: Dockerfile.prod
+    environment:
+      PORT: 8081
+      SECRET_KEY: ${SECRET_KEY}
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    volumes:
+      - profile_pictures:/usr/src/app/public/profile_pictures
+
+  matching-service:
+    container_name: matching-service
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/matching-service:latest
+    build:
+      context: ./matching_service
+      dockerfile: Dockerfile.prod
+    environment:
+      - PORT=8082
+    ports:
+      - "8082:8082"
+
+  mongo:
+    container_name: mongo
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-dev-data:/data/db
+
+  postgres:    
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PG_PORT: ${PG_PORT}
+    ports:
+      - "${PG_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  postgres_data:
+  mongo-dev-data:
+  questions_test_cases:
+  profile_pictures:

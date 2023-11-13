@@ -55,3 +55,46 @@ export async function logOut() {
     const response = await userServiceClient.get('/logout');
     return response;
 }
+
+
+/**
+ * Changes the user's password
+ */
+
+export async function changePassword(newPassword: string, currPassword: string) {
+    const response = await userServiceClient.post('/changepassword', {
+        newPassword: newPassword, 
+        currPassword: currPassword
+    })
+
+    return response;
+}
+
+/**
+ * Updates the user's profile
+ */
+export async function updateUserProfile(username : string, bio: string | null) {
+
+    const response = await userServiceClient.post('/updateProfile', {
+        username: username,
+        bio: bio,
+    })
+
+    return response;
+}
+
+export async function uploadProfilePic(formData : FormData) {
+    const response = await userServiceClient.post('/uploadProfilePic', formData)
+
+    return response;
+}
+
+export async function updateUserRole(id : number, role: 'ADMIN' | 'USER') {
+
+    const response = await userServiceClient.put('/updateRole', {
+        id: id,
+        role: role,
+    })
+
+    return response;
+}
