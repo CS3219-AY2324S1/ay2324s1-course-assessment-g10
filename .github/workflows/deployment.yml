@@ -36,7 +36,7 @@ jobs:
           instance_name: 'peerprep-prod'
           zone: 'asia-southeast1-b'
           ssh_private_key: '${{ secrets.SSH_KEY }}'
-          command: 'pwd | ~/test.txt'
+          command: 'sudo pwd > ~/test.txt'
 
       - id: 'test'
         run: |-
