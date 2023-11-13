@@ -13,7 +13,7 @@ jobs:
   build-push-artifact:
     runs-on: ubuntu-latest
     outputs:
-      build_status: ${{ steps.set_output.outputs.build_status }}
+      should_deploy: ${{ steps.deploy.outputs.BUILD_STEP_RAN }}
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
@@ -54,49 +54,51 @@ jobs:
         run: |-
           gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
-      - name: Determine Build Status
-        id: set_output
-        run: | 
-          echo "BUILD_STEP_RAN=false" >> $GITHUB_OUTPUT
-
       - name: 1. Build and Push frontend
+        id: a
         if: steps.changes.outputs.frontend == 'true'
         run: |
           docker-compose build frontend
           docker-compose push frontend
-          echo "BUILD_STEP_RAN=true" >> $GITHUB_OUTPUT
 
       - name: 2. Build and Push question-service
+        id: b
         if: steps.changes.outputs.question_service == 'true'
         run: |
           docker-compose build question-service
           docker-compose push question-service
-          echo "BUILD_STEP_RAN=true" >> $GITHUB_OUTPUT
 
       - name: 3. Build and Push user-service
+        id: c
         if: steps.changes.outputs.user_service == 'true'
         run: |
           docker-compose build user-service
           docker-compose push user-service
-          echo "BUILD_STEP_RAN=true" >> $GITHUB_OUTPUT
 
       - name: 4. Build and Push matching-service
+        id: d
         if: steps.changes.outputs.matching_service == 'true'
         run: |
           docker-compose build matching-service
           docker-compose push matching-service
-          echo "BUILD_STEP_RAN=true" >> $GITHUB_OUTPUT
 
       - name: 5. Build and Push collab-service
+        id: e
         if: steps.changes.outputs.collab_service == 'true'
         run: |
           docker-compose build collab-service
           docker-compose push collab-service
+
+      - name: determine deploy step
+        id: deploy
+        if: ${{ steps.a.conclusion == 'success' || steps.b.conclusion == 'success' || steps.c.conclusion == 'success' || steps.d.conclusion == 'success'  || steps.e.conclusion == 'success' }}
+        run: |
           echo "BUILD_STEP_RAN=true" >> $GITHUB_OUTPUT
+
 
   deploy:
     needs: build-push-artifact
-    if: ${{needs.build-push-artifact.outputs.BUILD_STEP_RAN}} == 'true'
+    if: ${{needs.build-push-artifact.outputs.should_deploy== 'true'}}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
