@@ -3,16 +3,13 @@ name: Deployment Workflow
 on:
     workflow_dispatch:
     workflow_run:
-      workflows: ["Selectively Build and Push to Artifact Registry", "Build and Push to Artifact Registry"]
+      workflows: ["Build and Push to Artifact Registry"]
       types:
         - completed
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'workflow_dispatch' || 
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.outputs.build_status == 'true')
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
