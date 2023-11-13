@@ -372,7 +372,7 @@ export const SharedEditorProvider = ({
       initStates();
     }
 
-    let pastSubmissions: submissionRecord[];
+    let pastSubmissions: submissionRecord[] = [];
 
     (async () => {
       if (qn) {
