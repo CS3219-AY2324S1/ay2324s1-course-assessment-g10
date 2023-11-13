@@ -11,9 +11,7 @@ services:
       - "8080:8080"
     depends_on:
       - mongo
-    volumes:
-      - ./question_service:/usr/src/app
-  
+
   user-service:
     container_name: user-service
     build: 
@@ -27,7 +25,6 @@ services:
     depends_on:
       - postgres
     volumes:
-      - ./user_service:/usr/src/app
       - profile_pictures:/usr/src/app/public/profile_pictures
 
   matching-service:
@@ -41,8 +38,6 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
-    volumes:
-      - ./matching_service:/usr/src/app
 
   match-worker:
     container_name: match-worker_1
