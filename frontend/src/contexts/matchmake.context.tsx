@@ -177,7 +177,7 @@ export const MatchmakeProvider = ({
       socket.off("restoreQueue");
       socket.off("restoreMatch");
       socket.off("disconnect");
-
+      setMatchedRoom(undefined);
       clearToast();
       socket.disconnect();
     };
