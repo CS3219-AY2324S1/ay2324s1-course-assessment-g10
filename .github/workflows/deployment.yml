@@ -33,7 +33,7 @@ jobs:
           instance_name: 'peerprep-prod'
           zone: 'asia-southeast1-b'
           ssh_private_key: '${{ secrets.SSH_KEY }}'
-          command: 'git clone https://github.com/CS3219-AY2324S1/ay2324s1-course-assessment-g10.git'
+          command: 'sudo /usr/src/peerprep/scripts/init.sh'
 
       - id: 'test'
         run: |-
