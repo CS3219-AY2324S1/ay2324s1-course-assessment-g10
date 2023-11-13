@@ -1,7 +1,15 @@
-const QIDS = ["6542bf9aa0343bd9c2e35245","6542bf9aa0343bd9c2e35249","6542bf9aa0343bd9c2e3524d", "6542bf9aa0343bd9c2e35265"]
+import axios from "axios";
 
+const questionServiceClient = axios.create({
+  baseURL: "http://question-service:8080",
+  withCredentials: true,
+});
 
 export const fetchRandQn = async (low: number, high: number) => {
-    await new Promise((resolve) => setTimeout(resolve, 4000));
-    return QIDS[Math.floor(Math.random() * QIDS.length)];
-}
+  const res = await questionServiceClient.post("/api/questions/random", {
+    from: low,
+    to: high,
+  });
+
+  return res.data.id;
+};
