@@ -3,7 +3,7 @@ name: Deployment Workflow
 on:
     workflow_dispatch:
     workflow_run:
-      workflows: ["Selectively Build and Push to Artifact Registry", Build and Push to Artifact Registry]
+      workflows: ["Selectively Build and Push to Artifact Registry", "Build and Push to Artifact Registry"]
       types:
         - completed
 
@@ -33,7 +33,7 @@ jobs:
           instance_name: 'peerprep-prod'
           zone: 'asia-southeast1-b'
           ssh_private_key: '${{ secrets.SSH_KEY }}'
-          command: 'sudo bash -c "echo "${{ secrets.ENV_FILE }}" > /usr/src/peerprep/.env" && sudo /usr/src/peerprep/scripts/init.sh'
+          command: 'echo "${{ secrets.ENV_FILE }}" | sudo tee /usr/src/peerprep/.env && sudo /usr/src/peerprep/scripts/init.sh'
 
       - id: 'test'
         run: |-
