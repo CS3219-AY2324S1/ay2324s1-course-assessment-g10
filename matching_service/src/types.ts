@@ -4,10 +4,17 @@ export interface EngineMatch {
   user: string;
   room: string;
   questionId: string;
+  isMaster: boolean;
 }
 
 export interface Match extends EngineMatch {
   init: boolean;
+}
+
+export interface RoomCloseResponse {
+  reason: string;
+  joinback: boolean;
+  room?: EngineMatch;
 }
 
 export interface MatchRequest {
@@ -28,4 +35,5 @@ export interface socketDetail {
   connectionCount: number;
   match?: EngineMatch;
   countdown?: NodeJS.Timeout;
+  joinbackTimer?: NodeJS.Timeout;
 }

@@ -1,21 +1,104 @@
 import { Server, Socket } from "socket.io";
-import { Match, MatchRequest, UserInterval, socketDetail } from "./types";
+import {
+  Match,
+  MatchRequest,
+  RoomCloseResponse,
+  UserInterval,
+  socketDetail,
+} from "./types";
 import { addInterval, createMatch, findMatch, removeInterval } from "./engine";
 import { sockToUser, socketDetails } from "./shared";
 
-const remove = async (io: Server, socket: Socket) => {
+const removeUser = (
+  io: Server,
+  user: string,
+  allowJoinbackIfInMatch: boolean = false
+) => {
+  const detail = socketDetails[user];
+  if (!detail) return;
+  if (!detail.match || !allowJoinbackIfInMatch) {
+    if (detail.UserDetail) removeInterval(detail.UserDetail);
+    if (detail.countdown) clearInterval(detail.countdown);
+    delete socketDetails[user];
+    console.log("disconnecting all instances of", user);
+    io.in(user).disconnectSockets();
+    return;
+  }
+
+  if (--detail.connectionCount > 0) return; // user is still connected in other sockets
+  // user in match, but disconnected
+  const match = detail.match;
+
+  // promote the other user the master to handle submission event
+  match.isMaster = false;
+  const matchedDetail = socketDetails[match.user];
+  let opponentRoom = matchedDetail?.match;
+  if (opponentRoom && !opponentRoom.isMaster) {
+    opponentRoom.isMaster = true;
+  }
+
+  // match.user is the user that is matched with
+  io.to(match.user).emit("matchEnded", {
+    joinback: true,
+    reason: "Opponent disconnected",
+    match: opponentRoom,
+  } as RoomCloseResponse);
+
+  detail.joinbackTimer = setTimeout(() => {
+    removeUser(io, user);
+    io.to(match.user).emit("matchEnded", {
+      joinback: false,
+      reason: "Opponent did not join back",
+    } as RoomCloseResponse);
+    io.to(match.user).disconnectSockets();
+  }, 10000);
+};
+
+// restore user to queue or match, if restored, return true else false
+const restore = (socket: Socket, user: string) => {
+  console.log("restore match received from", socket.id);
+  const detail = socketDetails[user];
+  if (!detail) return false;
+
+  socket.join(user);
+  sockToUser[socket.id] = user;
+  detail.connectionCount++;
+  if (!detail.match) {
+    socket.emit("restoreQueue");
+    return true;
+  }
+  if (detail.joinbackTimer) clearTimeout(detail.joinbackTimer);
+  detail.joinbackTimer = undefined;
+
+  socket.emit("restoreMatch", {
+    ...detail.match,
+    init: false,
+  } as Match);
+  return true;
+};
+
+const remove = (io: Server, socket: Socket, disconnect: boolean = false) => {
   // no interleaving between sync blocks in Nodejs
   console.log("disconnect/cancelMatch received from", socket.id);
   const user = sockToUser[socket.id];
   delete sockToUser[socket.id];
 
+  if (!user) return; // user already been removed/cleared
+  removeUser(io, user, disconnect);
+};
+
+const quitRoom = (io: Server, socket: Socket) => {
+  console.log("quitRoom received from", socket.id);
+  const user = sockToUser[socket.id];
   if (!user) return;
-  console.log("removing user", user);
-  const detail = socketDetails[user];
-  if (detail?.UserDetail) removeInterval(detail.UserDetail);
-  if (detail?.countdown) clearInterval(detail.countdown);
-  delete socketDetails[user];
-  socket.disconnect();
+  const match = socketDetails[user]?.match;
+  if (!match) return; // this shouldnt happen, but safe guard
+  removeUser(io, user);
+  io.to(match.user).emit("matchEnded", {
+    joinback: false,
+    reason: "Opponent left the room",
+  } as RoomCloseResponse);
+  removeUser(io, match.user);
 };
 
 const handleMatchRequest = async (
@@ -24,65 +107,50 @@ const handleMatchRequest = async (
   req: MatchRequest
 ) => {
   console.log(`Match request received from ${req.username}`);
-  let detail: socketDetail | undefined = undefined;
-  let newRoom = false;
+
+  if (restore(socket, req.username)) return;
+  // no interleaving between sync blocks in Nodejs
+  let detail: socketDetail = {
+    UserDetail: {
+      low: req.from,
+      high: req.to,
+      preferredQn: req.preferredQn,
+      user: req.username,
+    },
+    countdown: undefined,
+    inQueue: false,
+    connectionCount: 1,
+  };
+  socketDetails[req.username] = detail;
+  sockToUser[socket.id] = req.username;
   socket.join(req.username);
 
-  // no interleaving between sync blocks in Nodejs
-  detail = socketDetails[req.username];
-  if (!detail) {
-    newRoom = true;
-    detail = {
-      UserDetail: {
-        low: req.from,
-        high: req.to,
-        preferredQn: req.preferredQn,
-        user: req.username,
-      },
-      countdown: undefined,
-      inQueue: false,
-      connectionCount: 0,
-    };
-    socketDetails[req.username] = detail;
-  }
-  detail.connectionCount++;
-  sockToUser[socket.id] = req.username;
-  if (detail.match) {
-    // if user in match, join back the room
-    socket.emit("restoreMatch", {
-      ...detail.match,
-      init: false,
-    } as Match);
-    return;
-  }
+  let userInterval: UserInterval | undefined = detail.UserDetail;
 
-  if (!newRoom) return socket.emit("retoreQueue");
-
-  // new user in queue
-  let userDetail: UserInterval | undefined = detail.UserDetail;
-
-  while (userDetail) {
-    const potMatch = findMatch(userDetail);
+  while (userInterval) {
+    const potMatch = findMatch(userInterval);
 
     // no interleaving between sync blocks in Nodejs
     if (!potMatch) {
       // no match found, adding to interval tree
-      console.log("Adding user to engine:", userDetail.user);
-      addInterval(userDetail);
+      console.log("Adding user to engine:", userInterval.user);
+      addInterval(userInterval);
       detail.inQueue = true;
       let countdown = 29;
+      const userDet = detail;
       detail.countdown = setInterval(async () => {
+        console.log(countdown);
         if (countdown === 0) {
           remove(io, socket);
-          clearInterval(detail?.countdown);
+          clearInterval(userDet.countdown);
           return;
         }
-        socket.emit("countdown", countdown--);
+        io.to(userDet.UserDetail.user).emit("countdown", countdown--);
       }, 1000);
       return;
     }
 
-    io.to([potMatch.user, userDetail.user]).emit("potentialMatch");
+    io.to([potMatch.user, userInterval.user]).emit("potentialMatch");
 
     let matchedUserDetail = socketDetails[potMatch.user];
     if (!matchedUserDetail) continue; // this shouldnt happen, but safe guard
@@ -91,27 +159,31 @@ const handleMatchRequest = async (
     clearInterval(matchedUserDetail.countdown);
     matchedUserDetail.countdown = undefined;
 
-    const match = await createMatch(potMatch, userDetail.user);
+    const match = await createMatch(potMatch, userInterval.user);
 
-    detail.match = match;
+    detail.match = {
+      ...match,
+      isMaster: true,
+    };
     matchedUserDetail = socketDetails[match.user];
 
     // matched user left/disconnected
     if (!matchedUserDetail) continue;
 
-    if (!socketDetails[userDetail.user]) {
+    if (!socketDetails[userInterval.user]) {
       // this user has let the queue
       // we now need to rematch the matched user
       detail = matchedUserDetail;
-      userDetail = matchedUserDetail.UserDetail;
+      userInterval = matchedUserDetail.UserDetail;
       continue;
     }
     matchedUserDetail.match = {
       ...match,
-      user: userDetail.user,
+      user: userInterval.user,
+      isMaster: false,
     };
 
-    io.to(userDetail.user).emit("matchFound", {
+    io.to(userInterval.user).emit("matchFound", {
       ...detail.match,
       init: true,
     } as Match);
@@ -128,5 +200,7 @@ const handleMatchRequest = async (
 export const handleConnection = (io: Server, socket: Socket) => {
   socket.on("findMatch", (req) => handleMatchRequest(io, socket, req));
   socket.on("cancelMatch", () => remove(io, socket));
-  socket.on("disconnect", () => remove(io, socket));
+  socket.on("quitRoom", () => quitRoom(io, socket));
+  socket.on("restore", (user) => restore(socket, user));
+  socket.on("disconnect", () => remove(io, socket, true));
 };

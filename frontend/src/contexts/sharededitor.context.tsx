@@ -144,7 +144,7 @@ export const SharedEditorProvider = ({
       duration: 5000,
       isClosable: true,
     });
-    if (matchedRoom && !matchedRoom.init) return; // only the initer can submit to server
+    if (matchedRoom && !matchedRoom.isMaster) return; // only the initer can submit to server
 
     if (submission.user === user.id && !isLocal) return; // host has already submitted in some other tab/window
     console.log("submitting answer to server");
@@ -228,8 +228,8 @@ export const SharedEditorProvider = ({
           if (!currSubmission) {
             // if there are no current submission
             submitToServer(newSubmission, ystates, ysubmissions, t.local);
-          } else if (newSubmission.user != user.id && !matchedRoom?.init) {
-            // the initiator submitted a solution before the user's submission was synced
+          } else if (newSubmission.user != user.id && !matchedRoom?.isMaster) {
+            // the master submitted a solution before the user's submission was synced
             if (lastSubmissionToastId.current) {
               toast.close(lastSubmissionToastId.current);
               lastSubmissionToastId.current = undefined;
@@ -305,13 +305,13 @@ export const SharedEditorProvider = ({
       : Buffer.from(`${user.id}/${user.username}/${qn?._id ?? ""}`).toString(
           "base64"
         );
-    const provider = new WebrtcProvider(roomvalue, doc, {
+    const _provider = new WebrtcProvider(roomvalue, doc, {
       signaling: ["ws://localhost:8083"],
       filterBcConns: true,
     });
-    setProvider(provider);
+    setProvider(_provider);
 
-    provider.awareness.setLocalStateField("user", {
+    _provider.awareness.setLocalStateField("user", {
       name: user.username,
       color: userColor.color,
       colorLight: userColor.light,
@@ -359,13 +359,13 @@ export const SharedEditorProvider = ({
       ystates.observe(stateEventObserver);
     };
 
-    if (matchedRoom) {
+    if (matchedRoom && !lastCode.current) {
       // this is to force all users in multiplayer room to a receve ysates change event
       // we will use this to initialize the default values
       ystates.observe(initCodeIfNotExist);
       ystates.set("SYNCEVENT", user.id + random.uint32().toString());
     } else {
-      // this is for single player mode
+      // this is for single player mode or when disconnecct
       ystates.observe(observeDocLoad);
       ycode = new Y.Text();
       ystates.set(CODE_STATE, ycode);
@@ -402,8 +402,9 @@ export const SharedEditorProvider = ({
     });
 
     return () => {
+      console.log("destroying provider");
       lastCode.current = ycode?.toString();
-      provider.destroy();
+      _provider.destroy();
       doc.destroy();
 
       setProvider(undefined);
