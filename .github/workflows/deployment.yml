@@ -33,7 +33,7 @@ jobs:
           instance_name: 'peerprep-prod'
           zone: 'asia-southeast1-b'
           ssh_private_key: '${{ secrets.SSH_KEY }}'
-          command: 'echo "${{ secrets.ENV_FILE }}" | sudo tee /usr/src/peerprep/.env && sudo /usr/src/peerprep/scripts/init.sh'
+          command: 'echo "${{ secrets.ENV_FILE }}" | sudo tee /usr/src/peerprep/.env > /dev/null && sudo /usr/src/peerprep/scripts/init.sh'
 
       - id: 'test'
         run: |-
