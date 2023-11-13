@@ -3,7 +3,7 @@ name: Deployment Workflow
 on:
     workflow_dispatch:
     workflow_run:
-      workflows: ["Selectively Build and Push to Artifact Registry", Build and Push to Artifact Registry]
+      workflows: ["Selectively Build and Push to Artifact Registry", "Build and Push to Artifact Registry"]
       types:
         - completed
 
@@ -23,9 +23,6 @@ jobs:
         with:
           credentials_json: "${{ secrets.SERVICE_ACCOUNT_KEY }}"
 
-      - name: "Set up Cloud SDK"
-        uses: "google-github-actions/setup-gcloud@v1"
-
       - name: "Use gcloud CLI"
         run: "gcloud info"
 
@@ -36,7 +33,7 @@ jobs:
           instance_name: 'peerprep-prod'
           zone: 'asia-southeast1-b'
           ssh_private_key: '${{ secrets.SSH_KEY }}'
-          command: 'pwd | ~/test.txt'
+          command: 'echo "${{ secrets.ENV_FILE }}" | sudo tee /usr/src/peerprep/.env > /dev/null && sudo /usr/src/peerprep/scripts/init.sh'
 
       - id: 'test'
         run: |-
