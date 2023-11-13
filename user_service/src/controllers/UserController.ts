@@ -1,8 +1,5 @@
 import prisma from "../config/db";
-import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
-
-
 
 
 //@desc     fetch a user's profile
@@ -22,12 +19,14 @@ export const getUserProfile = async (req: any, res: any) => {
                 id: userId
             }
         });
-                
-        res.status(200).json({
-            _id: user?.id,
-            loginName: user?.username,
-            role: user?.role
-        });
+        
+        if (user === null) {
+          throw Error('Invalid ID. User not found in database.')
+        }
+
+        const { hashedPassword, ...payload } = user!;
+        res.status(200).json(payload);
+
     } catch (error) {
         res.status(400).json({
             error: error,
@@ -78,7 +77,7 @@ export async function getUserQuestions(req: any, res: any) {
       },
     });
 
-    return res.json(answeredQuestions);
+    return res.status(200).json(answeredQuestions);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Internal Server Error' });
@@ -105,9 +104,46 @@ export async function addUserQuestion(req: Request, res: Response) {
       },
     });
 
-    res.json(createdQuestion);
+    res.status(200).json(createdQuestion);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
+}
+
+
+//@desc     find users that match part of a query
+//@route    POST /api/users/findusers
+//@access   authenticated users
+export async function findUsersWithName(req: Request, res: Response) {
+  try {
+    const { query } = req.body;
+
+    const users = await prisma.user.findMany({
+      where : {
+        username : {
+          contains: query.trim(),
+          mode: 'insensitive'
+        }
+      },
+      take: 5,
+      distinct: 'id',
+      select: {
+        username: true,
+        profilePic: true,
+        role: true,
+        id: true,
+        bio: true
+      }
+    })
+
+    res.status(200).json(users);
+    
+  } catch (error : any) {
+    res.status(400).json({
+      error: error,
+      message: 'An error occured while looking for users!'
+    });
+  }
+
 }

@@ -5,6 +5,8 @@ interface User {
     id: string;
     username: string;
     role: 'ADMIN' | 'USER';
+    bio: string | null;
+    profilePic: string | null;
 };
 
 interface AuthState {
@@ -14,13 +16,17 @@ interface AuthState {
 const dummyUser: User = {
     id: '1',
     username: 'Harro_world',
-    role: 'USER'
+    role: 'USER',
+    bio: null,
+    profilePic: null,
 }
 
 const dummyAdmin: User = {
     id: '21',
     username: 'admin',
-    role: 'ADMIN'
+    role: 'ADMIN',
+    bio: null,
+    profilePic: null,
 }
 
 const initialState: AuthState = {

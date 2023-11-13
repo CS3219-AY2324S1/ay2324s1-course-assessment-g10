@@ -19,6 +19,8 @@ enum Role {
 model User {
   id              Int      @id @default(autoincrement())
   username        String   @db.VarChar(255) @unique
+  profilePic      String?
+  bio             String?  
   hashedPassword  String   
   role            Role     @default(USER)
   answeredQuestions AnsweredQuestion[]
