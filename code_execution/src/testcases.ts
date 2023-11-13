@@ -18,7 +18,7 @@ export async function getQnStdInOut(qn__id: string): Promise<Testcase[]> {
     const inFiles = files.filter(file => file.endsWith('.in'));
 
     const testcases: Testcase[] = inFiles.map(fileName => {
-        const baseName = fileName.split('.').reverse()[1];
+        const baseName = fileName.split(".").reverse()[1] as string;
 
         return { stdin: baseName.concat('.in'), stdout: baseName.concat('.out') }
     })
