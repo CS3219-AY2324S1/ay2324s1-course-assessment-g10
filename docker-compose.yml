@@ -25,6 +25,8 @@ services:
       - "8080:8080"
     depends_on:
       - mongo
+    volumes:
+      - questions_test_cases:/app/question_test_cases
 
   match-worker:
     container_name: match-worker_1
@@ -164,4 +166,5 @@ services:
 volumes:
   postgres_data:
   mongo-dev-data:
+  questions_test_cases:
   profile_pictures:
