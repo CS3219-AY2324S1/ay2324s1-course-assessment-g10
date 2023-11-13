@@ -12,6 +12,8 @@ env:
 jobs:
   build-push-artifact:
     runs-on: ubuntu-latest
+    outputs:
+      build_status: ${{ steps.set_output.outputs.build_status }}
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
@@ -54,38 +56,48 @@ jobs:
         run: |-
           gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
+      - name: Determine Build Status
+        id: set_output
+        run: echo "::set-output name=build_status::false"
+
       - name: 1. Build and Push frontend
         if: steps.changes.outputs.frontend == 'true'
         run: |
           docker-compose build frontend
           docker-compose push frontend
+          echo "::set-output name=build_status::true"
 
       - name: 2. Build and Push question-service
         if: steps.changes.outputs.question_service == 'true'
         run: |
           docker-compose build question-service
           docker-compose push question-service
+          echo "::set-output name=build_status::true"
 
       - name: 3. Build and Push user-service
         if: steps.changes.outputs.user_service == 'true'
         run: |
           docker-compose build user-service
           docker-compose push user-service
+          echo "::set-output name=build_status::true"
 
       - name: 4. Build and Push matching-service
         if: steps.changes.outputs.matching_service == 'true'
         run: |
           docker-compose build matching-service
           docker-compose push matching-service
+          echo "::set-output name=build_status::true"
 
       - name: 5. Build and Push match-worker
         if: steps.changes.outputs.match_worker == 'true'
         run: |
           docker-compose build match-worker
           docker-compose push match-worker
+          echo "::set-output name=build_status::true"
 
       - name: 6. Build and Push collab-service
         if: steps.changes.outputs.collab_service == 'true'
         run: |
           docker-compose build collab-service
           docker-compose push collab-service
+          echo "::set-output name=build_status::true"
