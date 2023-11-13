@@ -122,17 +122,17 @@ export const SharedEditorProvider = ({
   );
 
   // internal variables
-  const [_states, _setStates] = useState<Y.Map<any>>();
   const [_chat, _setChat] = useState<Y.Array<chatRecord>>();
 
   // state variables that are accessed internally to track states
   const lastSubmissionToastId = useRef<ToastId | undefined>();
   const lastLangSelected = useRef<language | undefined>();
   const lastCode = useRef<string | undefined>();
+  const cachedPassedSubmissions = useRef<submissionRecord[]>([]);
+  const _states = useRef<Y.Map<any> | undefined>();
 
   const submitToServer = async (
     submission: submissionRecord,
-    _states: Y.Map<any>,
     _ysubmissions: Y.Array<submissionRecord>,
     isLocal = false
   ) => {
@@ -151,7 +151,7 @@ export const SharedEditorProvider = ({
     setTimeout(() => {
       // this line is solely to simulate a successful compiling on submission
       setCurrSubmission(null);
-      _states.set(SUBMISSION_STATE, null);
+      _states.current?.set(SUBMISSION_STATE, null);
       submission.result = "WA";
       _ysubmissions.push([submission]);
     }, 3000);
@@ -169,7 +169,7 @@ export const SharedEditorProvider = ({
   };
 
   const submitCode = () => {
-    if (!_states || currSubmission || !lang || !ycode) return;
+    if (!_states.current || currSubmission || !lang || !ycode) return;
     const tmp: submissionRecord = {
       time: Date.now(),
       user: user.id,
@@ -178,7 +178,7 @@ export const SharedEditorProvider = ({
       qn_id: qn?._id ?? "-1", // in case we implement a sandbox code editor
       result: "Unknown",
     };
-    _states.set(SUBMISSION_STATE, tmp); // idk why but this triggers the event listener for _state
+    _states.current?.set(SUBMISSION_STATE, tmp); // idk why but this triggers the event listener for _state
   };
 
   const clearCode = () => {
@@ -187,7 +187,7 @@ export const SharedEditorProvider = ({
 
   const changeLang = (newLang: language) => {
     if (newLang == lang) return;
-    _states?.set(CURR_LANG_STATE, newLang);
+    _states.current?.set(CURR_LANG_STATE, newLang);
     replaceCode(LangDataMap[newLang]?.default ?? "");
     lastLangSelected.current = newLang;
     setLang(newLang);
@@ -210,7 +210,7 @@ export const SharedEditorProvider = ({
     _setChat(ychat);
     const ysubmissions = doc.getArray<submissionRecord>(SUBMISSION_HISTORY_KEY);
     const ystates = doc.getMap<any>(STATES_KEY);
-    _setStates(ystates);
+    _states.current = ystates;
 
     let ycode: Y.Text | null = null;
 
@@ -227,7 +227,7 @@ export const SharedEditorProvider = ({
         if (newSubmission) {
           if (!currSubmission) {
             // if there are no current submission
-            submitToServer(newSubmission, ystates, ysubmissions, t.local);
+            submitToServer(newSubmission, ysubmissions, t.local);
           } else if (newSubmission.user != user.id && !matchedRoom?.isMaster) {
             // the master submitted a solution before the user's submission was synced
             if (lastSubmissionToastId.current) {
@@ -372,13 +372,18 @@ export const SharedEditorProvider = ({
       initStates();
     }
 
-    let pastSubmissions: submissionRecord[] = [];
-
     (async () => {
       if (qn) {
         console.log("fetching submissions");
+        if (cachedPassedSubmissions.current.length) {
+          setSubmissions(
+            cachedPassedSubmissions.current.concat(ysubmissions.toArray())
+          );
+          setSubmissionLoading(false);
+          return;
+        }
         await new Promise((r) => setTimeout(r, 6000)); // simulate fetching submission history
-        pastSubmissions = [
+        cachedPassedSubmissions.current = [
           {
             time: Date.now(),
             user: user.username,
@@ -388,13 +393,17 @@ export const SharedEditorProvider = ({
             result: "TLE",
           },
         ];
-        setSubmissions(pastSubmissions.concat(ysubmissions.toArray())); // updates submission array
+        setSubmissions(
+          cachedPassedSubmissions.current.concat(ysubmissions.toArray())
+        ); // updates submission array
         setSubmissionLoading(false);
       }
     })();
 
     ysubmissions.observe(() => {
-      setSubmissions(pastSubmissions.concat(ysubmissions.toArray())); // updates submission array
+      setSubmissions(
+        cachedPassedSubmissions.current.concat(ysubmissions.toArray())
+      ); // updates submission array
     });
 
     ychat.observe(() => {
@@ -404,6 +413,7 @@ export const SharedEditorProvider = ({
     return () => {
       console.log("destroying provider");
       lastCode.current = ycode?.toString();
+      _states.current = undefined;
       _provider.destroy();
       doc.destroy();
 
@@ -440,7 +450,6 @@ export const SharedEditorProvider = ({
     currSubmission,
     chat,
     ycode,
-    _states,
     submissionLoading,
   ]);
 
