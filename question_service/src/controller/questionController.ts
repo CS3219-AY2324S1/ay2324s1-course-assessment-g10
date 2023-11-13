@@ -40,9 +40,14 @@ async function handleTestCaseUpload(questionId : string, zipFilePath : string) {
             await fs.rm(path.join(outDir, file), { recursive: true, force: true });
         }))
 
-    } catch (error) {
-        console.error('Error processing file:', error);
-        throw error;
+        const remainingFiles = await fs.readdir(outDir);
+        if (remainingFiles.length === 0) {
+            throw Error('no files uploaded!');
+        }
+
+    } catch (error : any) {
+        console.error('Error uploading files:', error.message);
+        throw Error(`Error uploading files: ${error.message}`);
     } finally {
         await fs.unlink(zipFilePath);
     }
@@ -80,8 +85,8 @@ export const fetchQuestion = async (req : any, res : any) => {
             difficulty: question.difficulty
         })
 
-    } catch (error) {
-        res.status(400).json({ message: 'Invalid ID. Question not found in database.' })
+    } catch (error: any) {
+        res.status(400).json({ message: `${error.message}` })
     }
 }
 
@@ -116,7 +121,7 @@ export const addQuestion = async (req : any, res : any) => {
             difficulty: question.difficulty
         })
     } catch (error : any) {
-        res.status(400).json({ message: 'Invalid question data', error: error.message })
+        res.status(400).json({ message: `Invalid question data: ${error.message}`})
     }
 }
 
@@ -164,8 +169,8 @@ export const updateQuestion = async (req : any, res : any) => {
             topics: question.topics,
             difficulty: question.difficulty
         })
-    } catch (error) {
-        res.status(400).json({ message: 'Invalid question data.' })
+    } catch (error : any) {
+        res.status(400).json({ message: error.message})
     }
 }
        
@@ -186,7 +191,7 @@ export const deleteQuestion = async (req : any, res : any) => {
         await fs.rm(`/app/question_test_cases/${question._id}`);
         await question.deleteOne();
         res.status(200).json({ message: 'Question removed' });
-    } catch (error) {
-        res.status(404).json({ message: 'Question not found' })
+    } catch (error: any) {
+        res.status(404).json({ message: error.message })
     }
 }
