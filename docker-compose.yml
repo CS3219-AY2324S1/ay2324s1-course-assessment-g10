@@ -27,6 +27,8 @@ services:
       - mongo
     volumes:
       - ./question_service:/usr/src/app
+      - questions_test_cases:/app/question_test_cases
+      
   match-worker:
     container_name: match-worker_1
     image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/match-worker_1:latest
@@ -168,4 +170,5 @@ services:
 volumes:
   postgres_data:
   mongo-dev-data:
+  questions_test_cases:
   profile_pictures:
