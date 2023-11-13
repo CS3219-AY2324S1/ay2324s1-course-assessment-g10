@@ -52,7 +52,7 @@ export const QnDrawer = (prop: qnProp) => {
               </Tag>
               <Divider orientation="vertical" padding="2"></Divider>
               {question.topics.map((qnTag) => (
-                <Tag>{qnTag}</Tag>
+                <Tag key={qnTag}>{qnTag}</Tag>
               ))}
             </HStack>
           </DrawerHeader>

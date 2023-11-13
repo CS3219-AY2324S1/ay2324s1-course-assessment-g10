@@ -3,6 +3,9 @@ import {
   Center,
   HStack,
   IconButton,
+  Skeleton,
+  SkeletonText,
+  Stack,
   Table,
   TableContainer,
   Tbody,
@@ -61,8 +64,22 @@ const SubmissionRow = ({ submission }: { submission: submissionRecord }) => {
   );
 };
 
+const SubmissionRowSkeleton = () => {
+  return (
+    <Stack width="100%">
+      <Skeleton height="20px" speed={0.9} />
+      <Skeleton height="40px" speed={1} />
+      <Skeleton height="40px" speed={1.1} />
+      <Skeleton height="40px" speed={1.2} />
+    </Stack>
+  );
+};
+
 const QnSubmissionHistory = () => {
-  const { currSubmission, submissions } = useSharedEditor();
+  const { currSubmission, submissions, submissionLoading } = useSharedEditor();
+  if (submissionLoading) {
+    return <SubmissionRowSkeleton />;
+  }
 
   if (submissions.length === 0 && !currSubmission) {
     return <Text>No Submissions found!</Text>;

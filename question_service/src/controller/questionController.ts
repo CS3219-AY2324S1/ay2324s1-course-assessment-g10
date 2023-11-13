@@ -90,6 +90,35 @@ export const fetchQuestion = async (req : any, res : any) => {
     }
 }
 
+//@desc     fetch a random question
+//@route    GET /api/questions/:id
+//@access   authenticated users
+export const fetchARandomQuestion = async (req : any, res : any) => {
+    const { from, to } = req.body;
+
+    if (from === undefined || to === undefined) {
+        console.log(req.body);
+        return res.status(400).json({ message: 'Please enter all fields' })
+    }
+
+    try {
+        // function provided by mongoose to find an Question document with a given ID
+        // req.params.id is retrieved from /:id in route
+        const question = await Question.findOne({
+            $where: `this.difficulty >= ${from} && this.difficulty <= ${to}`
+        })
+
+        if(question === null) {
+            throw Error('Question not found in database.');
+        }
+        res.status(200).json({
+            id: question._id,
+        })
+    } catch (error) {
+        res.status(400).json({ message: 'Question not found in database.' })
+    }
+}
+
 //@desc     add a question
 //@route    POST /api/questions
 //@access   admin only
