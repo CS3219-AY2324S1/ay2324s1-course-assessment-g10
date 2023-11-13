@@ -30,9 +30,7 @@ jobs:
             question_service:
               - 'question_service/**'
             matching_service:
-              - 'user_service/**'
-            match_worker:
-              - 'match_worker/**'
+              - 'matching_service/**'
             collab_service:
               - 'collab_service/**'
               
@@ -88,14 +86,7 @@ jobs:
           docker-compose push matching-service
           echo "::set-output name=build_status::true"
 
-      - name: 5. Build and Push match-worker
-        if: steps.changes.outputs.match_worker == 'true'
-        run: |
-          docker-compose build match-worker
-          docker-compose push match-worker
-          echo "::set-output name=build_status::true"
-
-      - name: 6. Build and Push collab-service
+      - name: 5. Build and Push collab-service
         if: steps.changes.outputs.collab_service == 'true'
         run: |
           docker-compose build collab-service
