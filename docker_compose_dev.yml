@@ -11,6 +11,8 @@ services:
       - "8080:8080"
     depends_on:
       - mongo
+    volumes:
+      - questions_test_cases:/app/question_test_cases
 
   user-service:
     container_name: user-service
@@ -84,4 +86,5 @@ services:
 volumes:
   postgres_data:
   mongo-dev-data:
+  questions_test_cases:
   profile_pictures:
