@@ -17,12 +17,19 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import {
+  SubmissionResult,
   submissionRecord,
   useSharedEditor,
 } from "../../contexts/sharededitor.context";
 import { CheckIcon, CloseIcon, CopyIcon } from "@chakra-ui/icons";
 
-const SubmissionRow = ({ submission }: { submission: submissionRecord }) => {
+const SubmissionRow = ({
+  submission,
+  progress,
+}: {
+  submission: submissionRecord;
+  progress?: SubmissionResult;
+}) => {
   const isLoading = submission.result === "Unknown";
   const isCorrect = submission.result === "Accepted";
   const colorScheme = isLoading ? "gray" : isCorrect ? "teal" : "red";
@@ -48,7 +55,10 @@ const SubmissionRow = ({ submission }: { submission: submissionRecord }) => {
         </Center>
       </Td>
       <Td>
-        <Center>{submission.lang}</Center>
+        <Center>
+          {submission.lang}
+          {progress ? ` (${progress.evaluated}/${progress.total})` : ""}
+        </Center>
       </Td>
       <Td>
         <Center>
@@ -76,7 +86,8 @@ const SubmissionRowSkeleton = () => {
 };
 
 const QnSubmissionHistory = () => {
-  const { currSubmission, submissions, submissionLoading } = useSharedEditor();
+  const { currSubmission, submissions, submissionLoading, submissionResult } =
+    useSharedEditor();
   if (submissionLoading) {
     return <SubmissionRowSkeleton />;
   }
@@ -106,7 +117,10 @@ const QnSubmissionHistory = () => {
             <SubmissionRow submission={s} key={i} />
           ))}
           {currSubmission ? (
-            <SubmissionRow submission={currSubmission} />
+            <SubmissionRow
+              submission={currSubmission}
+              progress={submissionResult ? submissionResult : undefined}
+            />
           ) : (
             <></>
           )}

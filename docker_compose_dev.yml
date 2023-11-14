@@ -29,6 +29,17 @@ services:
     volumes:
       - profile_pictures:/usr/src/app/public/profile_pictures
 
+  code-execution:
+    build: 
+      context: ./code_execution
+    environment:
+      - PORT=8090
+      - JUDGE0_API_KEY=${JUDGE0_API_KEY}
+    ports:
+      - "8090:8090"
+    volumes:
+      - questions_test_cases:/app/question_test_cases
+
   matching-service:
     container_name: matching-service
     build:
@@ -46,6 +57,37 @@ services:
       context: ./collab_service
     ports:
       - "8083:8083"
+
+  # judge0-server:
+  #   container_name: judge0-server
+  #   image: judge0/judge0:1.13.0
+  #   ports:
+  #     - "2358:2358"
+  #   privileged: true
+  #   environment:
+  #     REDIS_PASSWORD: ${REDIS_PASSWORD}
+  #     POSTGRES_HOST: postgres
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     POSTGRES_DB: judge0
+  #     POSTGRES_PORT: ${PG_PORT}
+
+  #   env_file:
+  #     - config_env/config-judge0.env
+
+  # judge0-workers:
+  #   image: judge0/judge0:1.13.0
+  #   command: ["./scripts/workers"]
+  #   privileged: true
+  #   environment:
+  #     REDIS_PASSWORD: ${REDIS_PASSWORD}
+  #     POSTGRES_HOST: postgres
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     POSTGRES_DB: judge0
+  #     POSTGRES_PORT: ${PG_PORT}
+  #   env_file:
+  #     - config_env/config-judge0.env
 
   mongo:
     container_name: mongo
@@ -83,6 +125,20 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+
+  # redis:
+  #   container_name: redis
+  #   image: redis:7
+  #   ports:
+  #     - "6379:6379"
+  #   command: [
+  #     "bash", "-c",
+  #     'docker-entrypoint.sh --appendonly yes --requirepass "$$REDIS_PASSWORD"'
+  #   ]
+  #   environment:
+  #     REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+
 volumes:
   postgres_data:
   mongo-dev-data:
