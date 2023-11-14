@@ -11,6 +11,7 @@ import { getUserProfile } from "../api/user";
 import PromoteAdminCard from "../components/profile_page/PromoteAdminCard/PromoteAdminCard.component";
 import { ProfileProvider } from "../contexts/profileContext";
 import ProgressBar from "../components/ProgressBar/ProgressBar.component";
+import DeleteUserCard from "../components/profile_page/DeleteUserCard/DeleteUserCard.component";
 
 
 export default function ProfilePage() {
@@ -47,6 +48,12 @@ export default function ProfilePage() {
                 currUser!.id !== displayedUser!.id
                   ? <></>
                   : <ChangePasswordCard />
+              }
+
+              {
+                currUser!.id !== displayedUser!.id
+                  ? <></>
+                  : <DeleteUserCard />
               }
 
               {
