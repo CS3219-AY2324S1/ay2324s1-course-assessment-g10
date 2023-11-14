@@ -5,7 +5,13 @@ import { routes_config, ws_collab_proxy_config, ws_match_proxy_config } from './
 import { jwtCheck, onCredentialFailure } from './middleware/token_check';
 import { setupLogging } from './middleware/logging';
 import { isLocal } from './proxy/service_addresses';
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import cors from 'cors';
+
+const corsOptions = {
+    origin: ["http://peerprep-g10.com", "https://peerprep-g10.com", "http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+}
+
 
 const httpApp = express();
 const httpProxyPort: number = parseInt(process.env.PORT || "8000");
@@ -15,6 +21,10 @@ const wsMatchMakePort : number = parseInt(process.env.PORT || "7999");
 
 const wsCollabApp = express();
 const wsCollabAppPort : number = parseInt(process.env.PORT || "7998");
+
+httpApp.use(cors(corsOptions));
+wsMatchMakeApp.use(cors(corsOptions));
+wsCollabApp.use(cors(corsOptions));
 
 
 httpApp.use(cookieParser())
