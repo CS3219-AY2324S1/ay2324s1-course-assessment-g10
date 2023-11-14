@@ -11,6 +11,25 @@ services:
       - REACT_APP_ENV_TYPE=prod
     ports:
       - "80:80"
+
+  api-gateway:
+    container_name: api-gateway
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/api-gateway:latest
+    build:
+      context: ./api_gateway
+      dockerfile: Dockerfile.prod
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      ENV_TYPE: docker
+    ports:
+      - "8000:8000"
+      - "7999:7999"
+      - "7998:7998"
+    depends_on:
+      - question-service
+      - user-service
+      - matching-service
+      - collab-service
   
   question-service:
     container_name: question-service
@@ -48,6 +67,7 @@ services:
     environment:
       PORT: 8081
       SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: ${DATABASE_URL}
     ports:
       - "8081:8081"
     depends_on:
