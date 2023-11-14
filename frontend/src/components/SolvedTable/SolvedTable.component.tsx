@@ -11,37 +11,21 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 import { Paginator } from "../Paginator/Paginator.component";
-import { SolvedQuestion } from "../../models/SolvedQuestion.model";
-import { fetchUserCompletedQuestions } from "../../api/user"; // Import your API function
+import { useProfile } from "../../contexts/profileContext";
 
 export type TableProp = {
-  userId: String;
   pageSize?: number;
 };
 
 export const SolvedTable = (props: TableProp) => {
-  const { userId, pageSize = 10 } = props;
+  const { pageSize = 10 } = props;
   const [currentPage, setCurrentPage] = useState(1);
-  const [solvedQuestions, setSolvedQuestions] = useState<SolvedQuestion[]>([]);
+  const { solvedQuestions } = useProfile();
 
   const onPageChange = (page: React.SetStateAction<number>) => {
     setCurrentPage(page);
   };
 
-  useEffect(() => {
-  const loadSolvedQuestions = async () => {
-    if (userId) {
-      try {
-        const data = await fetchUserCompletedQuestions(userId);
-        setSolvedQuestions(data);
-      } catch (error) {
-        console.error("Failed to fetch solved questions:", error);
-      }
-    }
-  };
-
-    loadSolvedQuestions();
-  }, [userId]);
 
   const getQuestionsForPage = () => {
     const startIndex = (currentPage - 1) * pageSize;
@@ -59,7 +43,7 @@ export const SolvedTable = (props: TableProp) => {
         _hover={{
           boxShadow: "xl",
         }}
-        width="60%"
+        width="100%"
         sx={{ tableLayout: "fixed" }}
       >
         <TableCaption>

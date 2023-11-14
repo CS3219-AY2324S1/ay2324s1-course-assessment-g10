@@ -16,8 +16,8 @@ const EditQuestion = () => {
     nav(-1);
   };
 
-  const updateQn = async (qn : Question) => {
-    const updatedQn : Question = await updateQuestion(qn._id, qn);
+  const updateQn = async (qn : Question, testCasesFile : File | null) => {
+    const updatedQn : Question = await updateQuestion(qn._id, qn, testCasesFile);
     dispatch(modifyQuestion(updatedQn));
     nav(-1);
   } 

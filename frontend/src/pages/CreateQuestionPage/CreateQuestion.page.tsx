@@ -30,9 +30,13 @@ const CreateQuestion = () => {
   };
 
   //actual submit function that calls the API
-  const trySubmit = async (qn: Question) => {
+  const trySubmit = async (qn: Question, testCasesFile : File | null) => {
     try {
-      const questionFromResponse : Question = await addQuestion(qn);
+      if (testCasesFile === null) {
+        throw Error('Please upload a testcase file!');
+      }
+
+      const questionFromResponse : Question = await addQuestion(qn, testCasesFile);
 
       dispatch(addQuestions([questionFromResponse]));
       nav(-1);

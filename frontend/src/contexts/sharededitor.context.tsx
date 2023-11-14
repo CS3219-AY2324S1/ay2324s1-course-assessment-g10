@@ -3,6 +3,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import * as Y from "yjs";
@@ -12,7 +13,7 @@ import { Question } from "../models/Question.model";
 import { useSelector } from "react-redux";
 import { User, selectUser } from "../reducers/authSlice";
 import { useMatchmake } from "./matchmake.context";
-import { useLoaderData } from "react-router-dom";
+import { Navigate, useLoaderData } from "react-router-dom";
 import { Buffer } from "buffer";
 import data from "../data/lang_temps.json";
 import { ToastId, useToast } from "@chakra-ui/react";
@@ -75,6 +76,7 @@ interface SharedEditorInterface {
   codeUndo?: Y.UndoManager;
   chat: chatRecord[];
   submissions: submissionRecord[];
+  submissionLoading?: boolean;
   qn?: Question;
   currSubmission: submissionRecord | null;
 
@@ -89,6 +91,7 @@ export const SharedEditorContext = createContext<SharedEditorInterface>({
   chat: [],
   submissions: [],
   currSubmission: null,
+  submissionLoading: true,
 
   replaceCode: () => {},
   sendToChat: () => {},
@@ -113,25 +116,28 @@ export const SharedEditorProvider = ({
   const [ycode, setycode] = useState<Y.Text>();
   const [provider, setProvider] = useState<WebrtcProvider>();
   const [submissions, setSubmissions] = useState<submissionRecord[]>([]);
+  const [submissionLoading, setSubmissionLoading] = useState<boolean>(true);
   const [chat, setChat] = useState<chatRecord[]>([]);
   const [currSubmission, setCurrSubmission] = useState<submissionRecord | null>(
     null
   );
 
   // internal variables
-  const [_states, _setStates] = useState<Y.Map<any>>();
   const [_chat, _setChat] = useState<Y.Array<chatRecord>>();
 
   // state variables that are accessed internally to track states
-  let lastSubmissionToastId: ToastId | undefined = undefined;
+  const lastSubmissionToastId = useRef<ToastId | undefined>();
+  const lastLangSelected = useRef<language | undefined>();
+  const lastCode = useRef<string | undefined>();
+  const cachedPassedSubmissions = useRef<submissionRecord[]>([]);
+  const _states = useRef<Y.Map<any> | undefined>();
 
   const submitToServer = async (
     submission: submissionRecord,
-    _states: Y.Map<any>,
     _ysubmissions: Y.Array<submissionRecord>,
     isLocal = false
   ) => {
-    lastSubmissionToastId = toast({
+    lastSubmissionToastId.current = toast({
       title: `${
         submission.user === user.id ? "You have" : "Your partner has"
       } submitted a solution`,
@@ -139,14 +145,14 @@ export const SharedEditorProvider = ({
       duration: 5000,
       isClosable: true,
     });
-    if (matchedRoom && !matchedRoom.init) return; // only the initer can submit to server
+    if (matchedRoom && !matchedRoom.isMaster) return; // only the initer can submit to server
 
     if (submission.user === user.id && !isLocal) return; // host has already submitted in some other tab/window
     console.log("submitting answer to server");
     setTimeout(() => {
       // this line is solely to simulate a successful compiling on submission
       setCurrSubmission(null);
-      _states.set(SUBMISSION_STATE, null);
+      _states.current?.set(SUBMISSION_STATE, null);
       submission.result = "WA";
       _ysubmissions.push([submission]);
     }, 3000);
@@ -164,7 +170,7 @@ export const SharedEditorProvider = ({
   };
 
   const submitCode = () => {
-    if (!_states || currSubmission || !lang || !ycode) return;
+    if (!_states.current || currSubmission || !lang || !ycode) return;
     const tmp: submissionRecord = {
       time: Date.now(),
       user: user.id,
@@ -173,7 +179,7 @@ export const SharedEditorProvider = ({
       qn_id: qn?._id ?? "-1", // in case we implement a sandbox code editor
       result: "Unknown",
     };
-    _states.set(SUBMISSION_STATE, tmp); // idk why but this triggers the event listener for _state
+    _states.current?.set(SUBMISSION_STATE, tmp); // idk why but this triggers the event listener for _state
   };
 
   const clearCode = () => {
@@ -182,8 +188,9 @@ export const SharedEditorProvider = ({
 
   const changeLang = (newLang: language) => {
     if (newLang == lang) return;
-    _states?.set(CURR_LANG_STATE, newLang);
+    _states.current?.set(CURR_LANG_STATE, newLang);
     replaceCode(LangDataMap[newLang]?.default ?? "");
+    lastLangSelected.current = newLang;
     setLang(newLang);
   };
 
@@ -204,7 +211,7 @@ export const SharedEditorProvider = ({
     _setChat(ychat);
     const ysubmissions = doc.getArray<submissionRecord>(SUBMISSION_HISTORY_KEY);
     const ystates = doc.getMap<any>(STATES_KEY);
-    _setStates(ystates);
+    _states.current = ystates;
 
     let ycode: Y.Text | null = null;
 
@@ -221,12 +228,12 @@ export const SharedEditorProvider = ({
         if (newSubmission) {
           if (!currSubmission) {
             // if there are no current submission
-            submitToServer(newSubmission, ystates, ysubmissions, t.local);
-          } else if (newSubmission.user != user.id && !matchedRoom?.init) {
-            // the initiator submitted a solution before the user's submission was synced
-            if (lastSubmissionToastId) {
-              toast.close(lastSubmissionToastId);
-              lastSubmissionToastId = undefined;
+            submitToServer(newSubmission, ysubmissions, t.local);
+          } else if (newSubmission.user != user.id && !matchedRoom?.isMaster) {
+            // the master submitted a solution before the user's submission was synced
+            if (lastSubmissionToastId.current) {
+              toast.close(lastSubmissionToastId.current);
+              lastSubmissionToastId.current = undefined;
             }
             toast({
               title: "Your partner has already submitted a solution",
@@ -241,6 +248,7 @@ export const SharedEditorProvider = ({
       const newLang = ystates.get(CURR_LANG_STATE) as language;
       if (newLang && newLang != lang) {
         setLang(newLang);
+        lastLangSelected.current = newLang;
       }
 
       if (mapEvent.keysChanged.has(CODE_STATE) && !t.local) {
@@ -273,10 +281,12 @@ export const SharedEditorProvider = ({
       if (!ycode) return;
       initCode(ycode);
       // init lang
-      const randLang = langList[random.uint32() % langList.length];
+      const randLang =
+        lastLangSelected.current ?? langList[random.uint32() % langList.length];
       setLang(randLang);
+      lastLangSelected.current = randLang;
       ystates.set(CURR_LANG_STATE, randLang);
-      ycode.insert(0, LangDataMap[randLang]?.default ?? "");
+      ycode.insert(0, lastCode.current ?? LangDataMap[randLang]?.default ?? "");
     };
 
     const setCodeFromMap = () => {
@@ -287,6 +297,7 @@ export const SharedEditorProvider = ({
       const newlang = ystates.get(CURR_LANG_STATE) as language | undefined;
       if (newlang && newlang != lang) {
         setLang(newlang);
+        lastLangSelected.current = newlang;
       }
     };
 
@@ -295,13 +306,13 @@ export const SharedEditorProvider = ({
       : Buffer.from(`${user.id}/${user.username}/${qn?._id ?? ""}`).toString(
           "base64"
         );
-    const provider = new WebrtcProvider(roomvalue, doc, {
+    const _provider = new WebrtcProvider(roomvalue, doc, {
       signaling: [wsCollabUrl],
       filterBcConns: true,
     });
-    setProvider(provider);
+    setProvider(_provider);
 
-    provider.awareness.setLocalStateField("user", {
+    _provider.awareness.setLocalStateField("user", {
       name: user.username,
       color: userColor.color,
       colorLight: userColor.light,
@@ -349,26 +360,31 @@ export const SharedEditorProvider = ({
       ystates.observe(stateEventObserver);
     };
 
-    if (matchedRoom) {
+    if (matchedRoom && !lastCode.current) {
       // this is to force all users in multiplayer room to a receve ysates change event
       // we will use this to initialize the default values
       ystates.observe(initCodeIfNotExist);
       ystates.set("SYNCEVENT", user.id + random.uint32().toString());
     } else {
-      // this is for single player mode
+      // this is for single player mode or when disconnecct
       ystates.observe(observeDocLoad);
       ycode = new Y.Text();
       ystates.set(CODE_STATE, ycode);
       initStates();
     }
 
-    let pastSubmissions: submissionRecord[];
-
     (async () => {
       if (qn) {
         console.log("fetching submissions");
-        await new Promise((r) => setTimeout(r, 1000)); // simulate fetching submission history
-        pastSubmissions = [
+        if (cachedPassedSubmissions.current.length) {
+          setSubmissions(
+            cachedPassedSubmissions.current.concat(ysubmissions.toArray())
+          );
+          setSubmissionLoading(false);
+          return;
+        }
+        await new Promise((r) => setTimeout(r, 6000)); // simulate fetching submission history
+        cachedPassedSubmissions.current = [
           {
             time: Date.now(),
             user: user.username,
@@ -378,12 +394,17 @@ export const SharedEditorProvider = ({
             result: "TLE",
           },
         ];
-        setSubmissions(pastSubmissions.concat(ysubmissions.toArray())); // updates submission array
+        setSubmissions(
+          cachedPassedSubmissions.current.concat(ysubmissions.toArray())
+        ); // updates submission array
+        setSubmissionLoading(false);
       }
     })();
 
     ysubmissions.observe(() => {
-      setSubmissions(pastSubmissions.concat(ysubmissions.toArray())); // updates submission array
+      setSubmissions(
+        cachedPassedSubmissions.current.concat(ysubmissions.toArray())
+      ); // updates submission array
     });
 
     ychat.observe(() => {
@@ -391,14 +412,17 @@ export const SharedEditorProvider = ({
     });
 
     return () => {
-      provider.destroy();
+      console.log("destroying provider");
+      lastCode.current = ycode?.toString();
+      _states.current = undefined;
+      _provider.destroy();
       doc.destroy();
 
       setProvider(undefined);
       setCodeUndo(undefined);
       setycode(undefined);
     };
-  }, []);
+  }, [matchedRoom, user, qn]);
 
   const memo = useMemo(() => {
     return {
@@ -410,6 +434,7 @@ export const SharedEditorProvider = ({
       submissions,
       qn,
       currSubmission,
+      submissionLoading,
       replaceCode,
       sendToChat,
       submitCode,
@@ -426,8 +451,12 @@ export const SharedEditorProvider = ({
     currSubmission,
     chat,
     ycode,
-    _states,
+    submissionLoading,
   ]);
+
+  if (matchedRoom && matchedRoom.questionId != qn?._id) {
+    return <Navigate to={`/view/${matchedRoom.questionId}`} />;
+  }
 
   return (
     <SharedEditorContext.Provider value={memo}>
