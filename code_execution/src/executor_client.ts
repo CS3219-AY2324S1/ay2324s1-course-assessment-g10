@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createBatchSubmission, getQnStdInOut } from "./testcases";
-import { callbacks } from "./shared";
+import { callbacks, langToId } from "./shared";
 import { judge0Result, judge0submission, submissionResult } from "./types";
 
 const JUDGE_API_URL = "https://judge0-ce.p.rapidapi.com"; //"http://judge0-server:2358/submissions";
@@ -152,7 +152,7 @@ export async function execute(submissions: judge0submission[]) {
 
 export async function runSubmission(
   id: string,
-  language_id: number,
+  lang: string,
   qn__id: string,
   source_code: string,
   userid: string
@@ -164,6 +164,9 @@ export async function runSubmission(
     verdict: "Unknown",
   };
 
+  const language_id = langToId[lang];
+
+  if (!language_id) throw new Error("Invalid language");
   callbacks[id] = resDat;
 
   const testcases = await getQnStdInOut(qn__id);

@@ -38,17 +38,10 @@ type executionResult =
   | "Runtime Error"
   | "Unknown";
 
-type submissionResult = {
+type SubmissionResult = {
   evaluated: number;
   total: number;
-  verdict:
-    | "Accepted"
-    | "TLE"
-    | "MLE"
-    | "WA"
-    | "Compile Error"
-    | "Runtime Error"
-    | "Unknown";
+  verdict: string;
   completed: boolean;
 };
 
@@ -82,6 +75,8 @@ const STATES_KEY = "peerprepstates";
 const SUBMISSION_STATE = "code_being_eval";
 const CURR_LANG_STATE = "peerpreplang";
 const CODE_STATE = "peerprepcode";
+const TOKEN_STATE = "peerpreptoken";
+const SUBMISSION_RESULT_STATE = "peerprepsubmission";
 
 interface SharedEditorInterface {
   lang?: language;
@@ -135,6 +130,8 @@ export const SharedEditorProvider = ({
   const [currSubmission, setCurrSubmission] = useState<submissionRecord | null>(
     null
   );
+  const [submissionResult, setSubmissionResult] =
+    useState<SubmissionResult | null>(null);
 
   // internal variables
   const [_chat, _setChat] = useState<Y.Array<chatRecord>>();
@@ -145,6 +142,7 @@ export const SharedEditorProvider = ({
   const lastCode = useRef<string | undefined>();
   const cachedPassedSubmissions = useRef<submissionRecord[]>([]);
   const _states = useRef<Y.Map<any> | undefined>();
+  const _poll_interal = useRef<NodeJS.Timeout | undefined>();
 
   const submitToServer = async (
     submission: submissionRecord,
@@ -163,16 +161,30 @@ export const SharedEditorProvider = ({
 
     if (submission.user === user.id && !isLocal) return; // host has already submitted in some other tab/window
     console.log("submitting answer to server");
-    executionServiceClient.post("/api/code/submit", {
-      
+    const res = await executionServiceClient.post("/api/code/submit", {
+      lang: submission.lang,
+      source_code: submission.code,
+      qn__id: submission.qn_id,
+      uid: submission.user,
     });
-    setTimeout(() => {
-      // this line is solely to simulate a successful compiling on submission
-      setCurrSubmission(null);
-      _states.current?.set(SUBMISSION_STATE, null);
-      submission.result = "WA";
-      _ysubmissions.push([submission]);
-    }, 3000);
+    const token = res.data.token as string;
+
+    _states.current?.set(TOKEN_STATE, token);
+    _poll_interal.current = setInterval(async () => {
+      const res = await executionServiceClient.get(`/api/code/result/${token}`);
+      const result = res.data as SubmissionResult;
+      _states.current?.set(SUBMISSION_RESULT_STATE, result);
+      if (result.completed) {
+        clearInterval(_poll_interal.current!);
+        _poll_interal.current = undefined;
+        const newSubmission = {
+          ...submission,
+          result: result.verdict as executionResult,
+        };
+        _ysubmissions.push([newSubmission]);
+        setCurrSubmission(newSubmission);
+      }
+    }, 1000);
   };
 
   const sendToChat = (s: string) => {

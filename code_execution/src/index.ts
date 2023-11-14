@@ -1,12 +1,20 @@
-import express from "express";
+import express, { Request } from "express";
 import bodyParser from "body-parser";
 import { runSubmission } from "./executor_client";
 import { callbacks } from "./shared";
+import cors from "cors";
 import { v4 as uuidv4 } from "uuid";
+
+const corsOptions = {
+  origin: 'http://localhost:3000', //TODO: need to add our production url here once we host it. Currently assuming all requests will be made from this url
+  credentials: true,            //access-control-allow-credentials:true
+  optionSuccessStatus: 200
+}
 
 const app = express();
 const port = process.env.PORT || 8090;
 
+app.use(cors<Request>(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -14,10 +22,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post("/api/code/submit", async (req, res) => {
   try {
     // Extracts these 4 variables
-    const { language_id, source_code, qn__id, uid } = req.body;
+    const { lang, source_code, qn__id, uid } = req.body;
     const randid = uuidv4();
 
-    runSubmission(randid, language_id, qn__id, source_code, uid);
+    runSubmission(randid, lang, qn__id, source_code, uid);
     res.json({ token: randid });
   } catch (error) {
     console.error(error);
