@@ -1,15 +1,11 @@
 import express from "express";
-import axios from "axios";
 import bodyParser from "body-parser";
-import { createBatchSubmission, getQnStdInOut } from "./testcases";
-import { execute } from "./executor_client";
+import { runSubmission } from "./executor_client";
 import { callbacks } from "./shared";
+import { v4 as uuidv4 } from "uuid";
 
 const app = express();
-const port = process.env.PORT;
-
-// Define the Judge0 API endpoint
-const JUDGE_API_URL = "judge0-server:2358/submissions";
+const port = process.env.PORT || 8090;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,21 +15,10 @@ app.post("/api/code/submit", async (req, res) => {
   try {
     // Extracts these 4 variables
     const { language_id, source_code, qn__id } = req.body;
+    const randid = uuidv4();
 
-    // Prepare the data to be sent to Judge0
-    const testcases = await getQnStdInOut(qn__id);
-    const submission = await createBatchSubmission(
-      qn__id,
-      language_id,
-      source_code,
-      testcases
-    );
-
-    const result = await execute(submission);
-
-    // Send the Judge0 response back to the client
-    res.json(result);
-    console.log(result);
+    runSubmission(randid, language_id, qn__id, source_code);
+    res.json({ token: randid });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "An error occurred" });
@@ -41,14 +26,14 @@ app.post("/api/code/submit", async (req, res) => {
 });
 
 // requests for result for a particular submission
-app.get("/api/code/result/:uuid", async (req, res) => {
+app.get("/api/code/result/:token", async (req, res) => {
   try {
-    const { uuid } = req.params;
-    if (!uuid) {
-      return res.status(400).json({ error: "uuid not found" });
+    const { token } = req.params;
+    if (!token) {
+      return res.status(400).json({ error: "id not found" });
     }
 
-    const response = callbacks[uuid];
+    const response = callbacks[token];
     if (!response) {
       return res.status(400).json({ error: "id not found" });
     }
@@ -61,19 +46,19 @@ app.get("/api/code/result/:uuid", async (req, res) => {
 });
 
 // delete a particular submission
-app.get("/api/code/result/:uuid", async (req, res) => {
+app.delete("/api/code/result/:token", async (req, res) => {
   try {
-    const { uuid } = req.params;
-    if (!uuid) {
-      return res.status(400).json({ error: "uuid not found" });
+    const { token } = req.params;
+    if (!token) {
+      return res.status(400).json({ error: "id not found" });
     }
 
-    const response = callbacks[uuid];
+    const response = callbacks[token];
     if (!response) {
       return res.status(400).json({ error: "id not found" });
     }
 
-    delete callbacks[uuid];
+    delete callbacks[token];
     res.status(200);
   } catch (error) {
     console.error(error);
