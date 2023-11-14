@@ -18,6 +18,7 @@ import { Buffer } from "buffer";
 import data from "../data/lang_temps.json";
 import { ToastId, useToast } from "@chakra-ui/react";
 import { executionServiceClient } from "../api/server";
+import { getProfilePicUrl } from "../api/user";
 
 export type language = keyof typeof data;
 
@@ -27,6 +28,7 @@ export const LangDataMap = data;
 export type chatRecord = {
   nickname: string;
   msg: string;
+  avatar?: string;
 };
 
 type executionResult =
@@ -142,6 +144,8 @@ export const SharedEditorProvider = ({
   const _submissions = useRef<Y.Array<any> | undefined>();
   const _poll_interval = useRef<NodeJS.Timeout | undefined>();
 
+  const myAvatar = getProfilePicUrl(user.profilePic);
+
   const submitToServer = async (submission: submissionRecord) => {
     // curr submission and currsubmission in state should alr be submitted
     console.log("submitting answer to server");
@@ -181,6 +185,7 @@ export const SharedEditorProvider = ({
       {
         msg: s,
         nickname: user.username,
+        avatar: myAvatar,
       },
     ]);
     setChat(_chat.toArray());
