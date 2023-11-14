@@ -9,8 +9,11 @@ import cors from 'cors';
 
 const corsOptions = {
     origin: ["http://peerprep-g10.com", "https://peerprep-g10.com", "http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    optionsSuccessStatus: 200,
+    credentials: true,    
 }
+
 
 
 const httpApp = express();
