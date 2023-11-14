@@ -67,7 +67,7 @@ services:
       - "8082:8082"
 
   code-execution:
-    name: code-execution
+    container_name: code-execution
     image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/code-execution:latest
     build: 
       context: ./code_execution

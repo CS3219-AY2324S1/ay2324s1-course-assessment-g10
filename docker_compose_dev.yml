@@ -30,7 +30,7 @@ services:
       - profile_pictures:/usr/src/app/public/profile_pictures
 
   code-execution:
-    name: code-execution
+    container_name: code-execution
     build: 
       context: ./code_execution
     environment:
