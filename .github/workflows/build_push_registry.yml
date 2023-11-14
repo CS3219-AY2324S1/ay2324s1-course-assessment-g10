@@ -33,6 +33,9 @@ jobs:
               - 'matching_service/**'
             collab_service:
               - 'collab_service/**'
+            code_execution:
+              - 'code_execution/**'
+            
               
       - name: 'Create env file'
         run: |
@@ -89,9 +92,16 @@ jobs:
           docker-compose build collab-service
           docker-compose push collab-service
 
+      - name: 6. Build and Push code-execution
+        id: f
+        if: steps.changes.outputs.code_execution == 'true'
+        run: |
+          docker-compose build code-execution
+          docker-compose push code-execution
+
       - name: determine deploy step
         id: deploy
-        if: ${{ steps.a.conclusion == 'success' || steps.b.conclusion == 'success' || steps.c.conclusion == 'success' || steps.d.conclusion == 'success'  || steps.e.conclusion == 'success' }}
+        if: ${{ steps.a.conclusion == 'success' || steps.b.conclusion == 'success' || steps.c.conclusion == 'success' || steps.d.conclusion == 'success'  || steps.e.conclusion == 'success' || steps.f.conclusion == 'success' }}
         run: |
           echo "BUILD_STEP_RAN=true" >> $GITHUB_OUTPUT
 
