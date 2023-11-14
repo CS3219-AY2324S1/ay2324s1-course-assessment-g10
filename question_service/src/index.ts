@@ -16,12 +16,6 @@ connectDB().then((v) => {
 
 const app = express()
 
-app.use(cors({
-    origin: 'http://localhost:3000',
-    optionsSuccessStatus: 200,
-    credentials: true,            //access-control-allow-credentials:true
-}))
-
 //allows JSON data in request body to be parsed
 app.use(express.json())
 // allow URL-encoded data in request body to be parsed

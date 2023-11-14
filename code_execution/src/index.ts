@@ -1,20 +1,12 @@
-import express, { Request } from "express";
+import express from "express";
 import bodyParser from "body-parser";
 import { runSubmission } from "./executor_client";
 import { callbacks } from "./shared";
-import cors from "cors";
 import { v4 as uuidv4 } from "uuid";
-
-const corsOptions = {
-  origin: 'http://localhost:3000', //TODO: need to add our production url here once we host it. Currently assuming all requests will be made from this url
-  credentials: true,            //access-control-allow-credentials:true
-  optionSuccessStatus: 200
-}
 
 const app = express();
 const port = process.env.PORT || 8090;
 
-app.use(cors<Request>(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
