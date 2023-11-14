@@ -35,6 +35,8 @@ jobs:
               - 'collab_service/**'
             code_execution:
               - 'code_execution/**'
+            api_gateway:
+              - 'api_gateway/**'
             
               
       - name: 'Create env file'
@@ -98,6 +100,13 @@ jobs:
         run: |
           docker-compose build code-execution
           docker-compose push code-execution
+
+      - name: 7. Build and Push api-gateway
+        id: g
+        if: steps.changes.outputs.api_gateway == 'true'
+        run: |
+          docker-compose build api-gateway
+          docker-compose push api-gateway
 
       - name: determine deploy step
         id: deploy
