@@ -29,6 +29,17 @@ services:
     volumes:
       - profile_pictures:/usr/src/app/public/profile_pictures
 
+  code-execution:
+    build: 
+      context: ./code_execution
+    environment:
+      - PORT=8090
+      - JUDGE0_API_KEY=${JUDGE0_API_KEY}
+    ports:
+      - "8090:8090"
+    volumes:
+      - questions_test_cases:/app/question_test_cases
+
   matching-service:
     container_name: matching-service
     build:

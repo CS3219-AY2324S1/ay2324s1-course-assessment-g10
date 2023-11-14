@@ -102,18 +102,22 @@ export const fetchARandomQuestion = async (req : any, res : any) => {
     }
 
     try {
-        // function provided by mongoose to find an Question document with a given ID
-        // req.params.id is retrieved from /:id in route
-        const question = await Question.findOne({
-            $where: `this.difficulty >= ${from} && this.difficulty <= ${to}`
-        })
+      // function provided by mongoose to find an Question document with a given ID
+      // req.params.id is retrieved from /:id in route
+      const questions = await Question.aggregate([
+        { $match: { difficulty: { $gte: from, $lte: to } } },
+        { $sample: { size: 1 } },
+      ]);
+      /*.find({
+          $where: `this.difficulty >= ${from} && this.difficulty <= ${to}`,
+        });*/
 
-        if(question === null) {
-            throw Error('Question not found in database.');
-        }
-        res.status(200).json({
-            id: question._id,
-        })
+      if (questions.length === 0) {
+        throw Error("Question not found in database.");
+      }
+      res.status(200).json({
+        id: questions[0]._id,
+      });
     } catch (error) {
         res.status(400).json({ message: 'Question not found in database.' })
     }
