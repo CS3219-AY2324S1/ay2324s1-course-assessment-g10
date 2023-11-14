@@ -188,5 +188,6 @@ export async function runSubmission(
     }
   }
 
+  resDat.verdict = resDat.verdict === "Unknown" ? "Accepted" : resDat.verdict;
   resDat.completed = true;
 }

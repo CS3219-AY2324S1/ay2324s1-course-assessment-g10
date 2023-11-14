@@ -16,17 +16,21 @@ type Testcase = {
  */
 export async function getQnStdInOut(qn__id: string): Promise<Testcase[]> {
   const dir = `${filelocation}/${qn__id}/`;
-  const files = await fs.readdir(dir);
+  try {
+    const files = await fs.readdir(dir);
 
-  const inFiles = files.filter((file) => file.endsWith(".in"));
+    const inFiles = files.filter((file) => file.endsWith(".in"));
 
-  const testcases: Testcase[] = inFiles.map((fileName) => {
-    const baseName = fileName.split(".").reverse()[1] as string;
+    const testcases: Testcase[] = inFiles.map((fileName) => {
+      const baseName = fileName.split(".").reverse()[1] as string;
 
-    return { stdin: baseName.concat(".in"), stdout: baseName.concat(".out") };
-  });
+      return { stdin: baseName.concat(".in"), stdout: baseName.concat(".out") };
+    });
 
-  return testcases;
+    return testcases;
+  } catch (error) {
+    return [];
+  }
 }
 
 /**

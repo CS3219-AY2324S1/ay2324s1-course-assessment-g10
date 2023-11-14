@@ -38,7 +38,7 @@ type executionResult =
   | "Runtime Error"
   | "Unknown";
 
-type SubmissionResult = {
+export type SubmissionResult = {
   evaluated: number;
   total: number;
   verdict: string;
@@ -88,6 +88,7 @@ interface SharedEditorInterface {
   submissionLoading?: boolean;
   qn?: Question;
   currSubmission: submissionRecord | null;
+  submissionResult?: SubmissionResult;
 
   replaceCode: (s: string) => void;
   sendToChat: (s: string) => void;
@@ -130,8 +131,7 @@ export const SharedEditorProvider = ({
   const [currSubmission, setCurrSubmission] = useState<submissionRecord | null>(
     null
   );
-  const [submissionResult, setSubmissionResult] =
-    useState<SubmissionResult | null>(null);
+  const [submissionResult, setSubmissionResult] = useState<SubmissionResult>();
 
   // internal variables
   const [_chat, _setChat] = useState<Y.Array<chatRecord>>();
@@ -142,7 +142,7 @@ export const SharedEditorProvider = ({
   const lastCode = useRef<string | undefined>();
   const cachedPassedSubmissions = useRef<submissionRecord[]>([]);
   const _states = useRef<Y.Map<any> | undefined>();
-  const _poll_interal = useRef<NodeJS.Timeout | undefined>();
+  const _poll_interval = useRef<NodeJS.Timeout | undefined>();
 
   const submitToServer = async (
     submission: submissionRecord,
@@ -170,19 +170,23 @@ export const SharedEditorProvider = ({
     const token = res.data.token as string;
 
     _states.current?.set(TOKEN_STATE, token);
-    _poll_interal.current = setInterval(async () => {
+    _poll_interval.current = setInterval(async () => {
       const res = await executionServiceClient.get(`/api/code/result/${token}`);
       const result = res.data as SubmissionResult;
       _states.current?.set(SUBMISSION_RESULT_STATE, result);
       if (result.completed) {
-        clearInterval(_poll_interal.current!);
-        _poll_interal.current = undefined;
+        console.log(result);
+        clearInterval(_poll_interval.current);
+        _poll_interval.current = undefined;
         const newSubmission = {
           ...submission,
           result: result.verdict as executionResult,
         };
         _ysubmissions.push([newSubmission]);
-        setCurrSubmission(newSubmission);
+        setCurrSubmission(null);
+        _states.current?.delete(SUBMISSION_STATE);
+        _states.current?.delete(TOKEN_STATE);
+        _states.current?.delete(SUBMISSION_RESULT_STATE);
       }
     }, 1000);
   };
@@ -279,6 +283,8 @@ export const SharedEditorProvider = ({
         setLang(newLang);
         lastLangSelected.current = newLang;
       }
+
+      setSubmissionResult(ystates.get(SUBMISSION_RESULT_STATE));
 
       if (mapEvent.keysChanged.has(CODE_STATE) && !t.local) {
         ycode = ystates.get(CODE_STATE) as Y.Text;
@@ -464,6 +470,7 @@ export const SharedEditorProvider = ({
       qn,
       currSubmission,
       submissionLoading,
+      submissionResult,
       replaceCode,
       sendToChat,
       submitCode,
@@ -481,6 +488,7 @@ export const SharedEditorProvider = ({
     chat,
     ycode,
     submissionLoading,
+    submissionResult,
   ]);
 
   if (matchedRoom && matchedRoom.questionId != qn?._id) {
