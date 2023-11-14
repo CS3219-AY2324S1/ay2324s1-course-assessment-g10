@@ -30,6 +30,7 @@ services:
       - profile_pictures:/usr/src/app/public/profile_pictures
 
   code-execution:
+    name: code-execution
     build: 
       context: ./code_execution
     environment:
@@ -58,35 +59,35 @@ services:
     ports:
       - "8083:8083"
 
-  judge0-server:
-    image: judge0/judge0:1.13.0
-    ports:
-      - "2358:2358"
-    privileged: true
-    environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-      POSTGRES_HOST: postgres
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: judge0
-      POSTGRES_PORT: ${PG_PORT}
+  # judge0-server:
+  #   image: judge0/judge0:1.13.0
+  #   ports:
+  #     - "2358:2358"
+  #   privileged: true
+  #   environment:
+  #     REDIS_PASSWORD: ${REDIS_PASSWORD}
+  #     POSTGRES_HOST: postgres
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     POSTGRES_DB: judge0
+  #     POSTGRES_PORT: ${PG_PORT}
 
-    env_file:
-      - config_env/config-judge0.env
+  #   env_file:
+  #     - config_env/config-judge0.env
 
-  judge0-workers:
-    image: judge0/judge0:1.13.0
-    command: ["./scripts/workers"]
-    privileged: true
-    environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-      POSTGRES_HOST: postgres
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: judge0
-      POSTGRES_PORT: ${PG_PORT}
-    env_file:
-      - config_env/config-judge0.env
+  # judge0-workers:
+  #   image: judge0/judge0:1.13.0
+  #   command: ["./scripts/workers"]
+  #   privileged: true
+  #   environment:
+  #     REDIS_PASSWORD: ${REDIS_PASSWORD}
+  #     POSTGRES_HOST: postgres
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     POSTGRES_DB: judge0
+  #     POSTGRES_PORT: ${PG_PORT}
+  #   env_file:
+  #     - config_env/config-judge0.env
 
   mongo:
     container_name: mongo
