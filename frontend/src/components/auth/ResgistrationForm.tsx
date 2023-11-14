@@ -14,6 +14,7 @@ import { setUser } from '../../reducers/authSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { register } from '../../api/auth';
+import { AxiosError } from 'axios';
 
 export default function RegistrationForm() {
   const [username, setUsername] = useState('');
@@ -23,23 +24,42 @@ export default function RegistrationForm() {
   const toast = useToast();
 
 
+  const ensureStrongPassword = (password: string) => {
+    if (password.length < 8) {
+      throw Error('Password must be 8 characters or more!')
+    }
+  }
+
   //TODO: require integration with backend API
-  const onSubmit = (e: any) => {
+  const onSubmit = async (e: any) => {
     e.preventDefault();
-    register(username, password).then(response => {
+    try {
+      ensureStrongPassword(password.trim());
+      const response = await register(username.trim(), password.trim());
       const user = response.data.user;
 
       dispatch(setUser(user));
       navigate('/');
-    }).catch((err) => {
+    } catch (err: any) {
       console.log(err);
-      toast({
-        title: 'Failed to Login',
-        description: 'Incorrect username or password',
-        status: 'error',
-        isClosable: true,
-      });
-    })
+      if (err instanceof AxiosError) {
+        toast({
+          title: 'Failed to Register!',
+          description: 'User is taken!',
+          status: 'error',
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: 'Failed to Register!',
+          description: err.message,
+          status: 'error',
+          isClosable: true,
+        });
+
+      }
+
+    }
   }
 
   return (
