@@ -1,4 +1,4 @@
-import { ChatIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { ChatIcon, ChevronDownIcon, RepeatClockIcon } from "@chakra-ui/icons";
 import {
   Button,
   ButtonGroup,
@@ -9,8 +9,11 @@ import {
   MenuItem,
   MenuList,
   Text,
+  Icon,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useMatchmake } from "../../contexts/matchmake.context";
+import { AiOutlineDisconnect as DisconnectIcon } from "react-icons/ai";
 
 const diffRange = [
   [0, 2.9],
@@ -20,25 +23,35 @@ const diffRange = [
   [0, 9.9],
 ];
 
-const CollaborateBtn = () => {
-  return (
-    <ButtonGroup>
-      <IconButton
-        aria-label="open_chat"
-        colorScheme="teal"
-        variant="outline"
-        icon={<ChatIcon />}
-      />
-    </ButtonGroup>
-  );
-};
-
 const MatchMakeBtn = () => {
-  const { findMatch, isMatching, matchedRoom, timeLeft, cancelMatch } =
-    useMatchmake();
+  const {
+    findMatch,
+    isMatching,
+    matchedRoom,
+    timeLeft,
+    cancelMatch,
+    restoreRoom,
+    quitRoom,
+  } = useMatchmake();
 
   return matchedRoom ? (
-    <CollaborateBtn />
+    <ButtonGroup isAttached variant="outline">
+      <Tooltip label="Leave match" aria-label="collaborate">
+        <IconButton
+          aria-label="disconnect"
+          colorScheme="red"
+          onClick={quitRoom}
+          icon={<Icon as={DisconnectIcon} />}
+        />
+      </Tooltip>
+      <Tooltip label="Open Chat" aria-label="collaborate">
+        <IconButton
+          aria-label="open_chat"
+          colorScheme="teal"
+          icon={<ChatIcon />}
+        />
+      </Tooltip>
+    </ButtonGroup>
   ) : (
     <Menu>
       {timeLeft ? (
@@ -46,13 +59,18 @@ const MatchMakeBtn = () => {
           Cancel
         </Button>
       ) : (
-        <MenuButton
-          as={Button}
-          rightIcon={<ChevronDownIcon />}
-          isLoading={isMatching}
-        >
-          Collaborate
-        </MenuButton>
+        <ButtonGroup isAttached colorScheme="teal" size="md">
+          <MenuButton as={Button} isLoading={isMatching}>
+            Collaborate
+          </MenuButton>
+          <IconButton
+            aria-label="reconnect"
+            icon={<RepeatClockIcon />}
+            variant="outline"
+            onClick={restoreRoom}
+            isLoading={isMatching}
+          />
+        </ButtonGroup>
       )}
 
       <MenuList>

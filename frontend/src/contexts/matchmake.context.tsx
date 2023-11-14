@@ -30,6 +30,8 @@ interface MatchmakeContextInterface {
   findMatch: (diffStart: number, diffEnd: number) => void;
   cancelMatch: () => void;
   quitRoom: () => void;
+  disconnectRoom: () => void;
+  restoreRoom: () => void;
   isMatching: boolean;
   timeLeft?: number;
   matchedRoom?: Match;
@@ -39,6 +41,8 @@ const MatchmakeContext = createContext<MatchmakeContextInterface>({
   findMatch: () => {},
   cancelMatch: () => {},
   quitRoom: () => {},
+  disconnectRoom: () => {},
+  restoreRoom: () => {},
   isMatching: false,
 });
 
@@ -179,6 +183,8 @@ export const MatchmakeProvider = ({
       socket.off("restoreMatch");
       socket.off("disconnect");
       setMatchedRoom(undefined);
+      setTimeLeft(undefined);
+      setIsMatching(false);
       clearToast();
       socket.disconnect();
     };
@@ -212,6 +218,20 @@ export const MatchmakeProvider = ({
     if (!socket || !user) return;
     if (!socket.connected) return;
     socket.emit("quitRoom");
+    navigate("/");
+  };
+
+  const disconnectRoom = () => {
+    if (!socket || !user) return;
+    if (!socket.connected) return;
+    socket.disconnect();
+  };
+
+  const restoreRoom = () => {
+    if (!socket || !user) return;
+    if (!socket.connected) socket.connect();
+    console.log("attempt to reconnect");
+    socket.emit("restore", user.username);
   };
 
   const memo = useMemo(() => {
@@ -220,6 +240,8 @@ export const MatchmakeProvider = ({
       findMatch,
       cancelMatch,
       quitRoom,
+      disconnectRoom,
+      restoreRoom,
       isMatching,
       matchedRoom,
       timeLeft,
