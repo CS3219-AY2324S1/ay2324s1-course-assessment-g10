@@ -1,4 +1,4 @@
-import { redirect, LoaderFunction, useLoaderData } from "react-router-dom";
+import { redirect, LoaderFunction } from "react-router-dom";
 import {
   HStack,
   VStack,
@@ -12,6 +12,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Skeleton,
 } from "@chakra-ui/react";
 import { Question } from "../../models/Question.model";
 import { QnDrawer } from "../../components/QnDrawer/QnDrawer.component";
@@ -20,7 +21,6 @@ import "./ViewQuestion.page.css";
 import store from "../../reducers/store";
 import { loadQuestions } from "../../data/sampleqn";
 import { fetchQuestion } from "../../api/questions";
-import { useMatchmake } from "../../contexts/matchmake.context";
 import CollabEditor from "../../components/CollabEditor/CollabEditor.component";
 import { useContext } from "react";
 import {
@@ -54,22 +54,38 @@ export const qnLoader: LoaderFunction<Question> = async ({ params }) => {
   return qn ?? redirect("/");
 };
 
+const loadingSkeleton = () => {
+  return (
+    <HStack className="fit-parent" padding={2.5}>
+      <VStack className="fit-parent" gap="1">
+        <Skeleton width="100%" height="5%" speed={0.9}></Skeleton>
+        <Skeleton width="100%" height="95%" speed={1}></Skeleton>
+      </VStack>
+      <VStack h="100%" w="30%">
+        <Skeleton className="fit-parent" speed={1.1}></Skeleton>
+        <Skeleton className="fit-parent" speed={1.2}></Skeleton>
+        <Skeleton height="10%" width="100%" speed={1.3}></Skeleton>
+      </VStack>
+    </HStack>
+  );
+};
+
 const InnerViewQuestion = () => {
   const {
     qn,
-    chat,
     lang,
     replaceCode,
     changeLang,
     currSubmission,
     submitCode,
+    ycode,
   } = useContext(SharedEditorContext);
 
   return (
     <>
       {qn ? <QnDrawer question={qn} size="xl" /> : <></>}
-      {!lang ? (
-        <></>
+      {!(lang && ycode) ? (
+        loadingSkeleton()
       ) : (
         <HStack className="fit-parent" padding={2.5}>
           <VStack className="fit-parent" gap="1">

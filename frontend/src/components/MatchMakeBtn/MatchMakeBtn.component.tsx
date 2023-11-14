@@ -14,6 +14,8 @@ import {
 } from "@chakra-ui/react";
 import { useMatchmake } from "../../contexts/matchmake.context";
 import { AiOutlineDisconnect as DisconnectIcon } from "react-icons/ai";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../reducers/authSlice";
 
 const diffRange = [
   [0, 2.9],
@@ -24,6 +26,7 @@ const diffRange = [
 ];
 
 const MatchMakeBtn = () => {
+  const user = useSelector(selectUser);
   const {
     findMatch,
     isMatching,
@@ -33,6 +36,8 @@ const MatchMakeBtn = () => {
     restoreRoom,
     quitRoom,
   } = useMatchmake();
+
+  if (!user) return <></>;
 
   return matchedRoom ? (
     <ButtonGroup isAttached variant="outline">
