@@ -1,4 +1,4 @@
-import { userServiceClient } from "./server"
+import { apiGatewayClient } from "./gateway"
 
 /**
  * Makes a login request and sets the access_token if successful
@@ -7,7 +7,7 @@ import { userServiceClient } from "./server"
  * @param password 
  */
 export async function login(username: String, password: String) {
-    const response = await userServiceClient.post('/login', {
+    const response = await apiGatewayClient.post('/auth/login', {
         username: username,
         password: password
     })
@@ -23,7 +23,7 @@ export async function login(username: String, password: String) {
  * @param password 
  */
 export async function register(username: String, password: String) {
-    const response = await userServiceClient.post('/register', {
+    const response = await apiGatewayClient.post('/auth/register', {
         username: username,
         password: password
     })
@@ -39,7 +39,7 @@ export async function register(username: String, password: String) {
  * to set the AUTH_SESSION cookie on the frontend to null
  */
 export async function getSessionUser() {
-    const response = await userServiceClient.get('/getSessionUser');
+    const response = await apiGatewayClient.get('/auth/getSessionUser');
     
     try {
         return response.data.user;
@@ -52,7 +52,7 @@ export async function getSessionUser() {
  * Logs the user out and server sets the token to expire
  */
 export async function logOut() {
-    const response = await userServiceClient.get('/logout');
+    const response = await apiGatewayClient.get('/auth/logout');
     return response;
 }
 
@@ -62,7 +62,7 @@ export async function logOut() {
  */
 
 export async function changePassword(newPassword: string, currPassword: string) {
-    const response = await userServiceClient.post('/changepassword', {
+    const response = await apiGatewayClient.post('/auth/changepassword', {
         newPassword: newPassword, 
         currPassword: currPassword
     })
@@ -75,7 +75,7 @@ export async function changePassword(newPassword: string, currPassword: string) 
  */
 export async function updateUserProfile(username : string, bio: string | null) {
 
-    const response = await userServiceClient.post('/updateProfile', {
+    const response = await apiGatewayClient.post('/auth/updateProfile', {
         username: username,
         bio: bio,
     })
@@ -84,14 +84,14 @@ export async function updateUserProfile(username : string, bio: string | null) {
 }
 
 export async function uploadProfilePic(formData : FormData) {
-    const response = await userServiceClient.post('/uploadProfilePic', formData)
+    const response = await apiGatewayClient.post('/auth/uploadProfilePic', formData)
 
     return response;
 }
 
 export async function updateUserRole(id : number, role: 'ADMIN' | 'USER') {
 
-    const response = await userServiceClient.put('/updateRole', {
+    const response = await apiGatewayClient.put('/auth/updateRole', {
         id: id,
         role: role,
     })
