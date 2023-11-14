@@ -1,4 +1,4 @@
-import { collabServiceHostUrl, matchServiceHostUrl, questionServiceUrl, userServiceHostUrl } from "./service_addresses";
+import { collabServiceHostUrl, executionServiceHostUrl, matchServiceHostUrl, questionServiceUrl, userServiceHostUrl } from "./service_addresses";
 
 export const routes_config = [
     {
@@ -12,6 +12,13 @@ export const routes_config = [
         url: "/api/users",
         proxy: {
             target: userServiceHostUrl,
+            changeOrigin: true
+        }
+    },
+    {
+        url: "/api/code",
+        proxy: {
+            target: executionServiceHostUrl,
             changeOrigin: true
         }
     },
