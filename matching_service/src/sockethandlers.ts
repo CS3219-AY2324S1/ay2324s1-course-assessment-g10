@@ -59,7 +59,7 @@ const removeUser = (
       joinback: false,
       reason: "Opponent did not join back",
     } as RoomCloseResponse);
-    io.to(match.user).disconnectSockets();
+    removeUser(io, match.user);
   }, 10000);
 };
 
