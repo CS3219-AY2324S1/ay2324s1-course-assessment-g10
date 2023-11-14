@@ -62,7 +62,7 @@ export async function logOut() {
  */
 
 export async function changePassword(newPassword: string, currPassword: string) {
-    const response = await userServiceClient.post('/changepassword', {
+    const response = await apiGatewayClient.post('/auth/changepassword', {
         newPassword: newPassword, 
         currPassword: currPassword
     })
@@ -75,7 +75,7 @@ export async function changePassword(newPassword: string, currPassword: string) 
  */
 export async function updateUserProfile(username : string, bio: string | null) {
 
-    const response = await userServiceClient.post('/updateProfile', {
+    const response = await apiGatewayClient.post('/auth/updateProfile', {
         username: username,
         bio: bio,
     })
@@ -84,14 +84,14 @@ export async function updateUserProfile(username : string, bio: string | null) {
 }
 
 export async function uploadProfilePic(formData : FormData) {
-    const response = await userServiceClient.post('/uploadProfilePic', formData)
+    const response = await apiGatewayClient.post('/auth/uploadProfilePic', formData)
 
     return response;
 }
 
 export async function updateUserRole(id : number, role: 'ADMIN' | 'USER') {
 
-    const response = await userServiceClient.put('/updateRole', {
+    const response = await apiGatewayClient.put('/auth/updateRole', {
         id: id,
         role: role,
     })

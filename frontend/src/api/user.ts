@@ -91,7 +91,7 @@ export async function addUserQuestion(
  */
 export async function findUsers(query : string) {
 
-  const response : AxiosResponse = await userServiceClient.post(
+  const response : AxiosResponse = await apiGatewayClient.post(
     `/api/users/findusers`, {
       query
     }
@@ -104,7 +104,7 @@ export async function findUsers(query : string) {
 
 export async function getUserProfile(id: string) {
   
-  const response : AxiosResponse = await userServiceClient.get(`/api/users/${id}`);
+  const response : AxiosResponse = await apiGatewayClient.get(`/api/users/${id}`);
 
   return response.data;
 }
@@ -114,5 +114,5 @@ export function getProfilePicUrl(profilePicFileName : string | null) {
     return undefined;
   }
 
-  return userServiceClient.getUri({url: `/api/users/uploads/${profilePicFileName}`});
+  return apiGatewayClient.getUri({url: `/api/users/uploads/${profilePicFileName}`});
 }
