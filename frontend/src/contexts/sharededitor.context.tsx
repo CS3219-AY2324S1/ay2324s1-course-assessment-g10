@@ -17,6 +17,7 @@ import { Navigate, useLoaderData } from "react-router-dom";
 import { Buffer } from "buffer";
 import data from "../data/lang_temps.json";
 import { ToastId, useToast } from "@chakra-ui/react";
+import { executionServiceClient } from "../api/server";
 
 export type language = keyof typeof data;
 
@@ -36,6 +37,20 @@ type executionResult =
   | "Compile Error"
   | "Runtime Error"
   | "Unknown";
+
+type submissionResult = {
+  evaluated: number;
+  total: number;
+  verdict:
+    | "Accepted"
+    | "TLE"
+    | "MLE"
+    | "WA"
+    | "Compile Error"
+    | "Runtime Error"
+    | "Unknown";
+  completed: boolean;
+};
 
 export type submissionRecord = {
   time: number;
@@ -148,6 +163,9 @@ export const SharedEditorProvider = ({
 
     if (submission.user === user.id && !isLocal) return; // host has already submitted in some other tab/window
     console.log("submitting answer to server");
+    executionServiceClient.post("/api/code/submit", {
+      
+    });
     setTimeout(() => {
       // this line is solely to simulate a successful compiling on submission
       setCurrSubmission(null);
