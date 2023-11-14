@@ -9,6 +9,7 @@ import React, {
 import { selectUser } from "../reducers/authSlice";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { wsMatchMakeURL } from "../api/gateway";
 import { ToastId, useToast, UseToastOptions } from "@chakra-ui/react";
 
 export interface Match {
@@ -76,7 +77,7 @@ export const MatchmakeProvider = ({
   };
 
   useEffect(() => {
-    const socket = io("ws://localhost:8082", {
+    const socket = io(wsMatchMakeURL, {
       autoConnect: false,
     });
     setSocket(socket);
