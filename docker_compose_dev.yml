@@ -1,5 +1,22 @@
 version: '3'
 services:
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./api_gateway
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      ENV_TYPE: docker
+    ports:
+      - "8000:8000"
+      - "7999:7999"
+      - "7998:7998"
+    depends_on:
+      - question-service
+      - user-service
+      - matching-service
+      - collab-service
+
   question-service:
     container_name: question-service
     build: 

@@ -17,7 +17,8 @@ import { Navigate, useLoaderData } from "react-router-dom";
 import { Buffer } from "buffer";
 import data from "../data/lang_temps.json";
 import { ToastId, useToast } from "@chakra-ui/react";
-import { executionServiceClient } from "../api/server";
+import { wsCollabUrl } from "../api/gateway";
+import { getExecutionResult, submitCodeForExecution } from "../api/code";
 import { getProfilePicUrl } from "../api/user";
 
 export type language = keyof typeof data;
@@ -149,17 +150,18 @@ export const SharedEditorProvider = ({
   const submitToServer = async (submission: submissionRecord) => {
     // curr submission and currsubmission in state should alr be submitted
     console.log("submitting answer to server");
-    const res = await executionServiceClient.post("/api/code/submit", {
+    const res = await submitCodeForExecution({
       lang: submission.lang,
       source_code: submission.code,
       qn__id: submission.qn_id,
       uid: submission.user,
-    });
+    })
+
     const token = res.data.token as string;
 
     _states.current?.set(TOKEN_STATE, token);
     _poll_interval.current = setInterval(async () => {
-      const res = await executionServiceClient.get(`/api/code/result/${token}`);
+      const res = await getExecutionResult(token);
       const result = res.data as SubmissionResult;
       _states.current?.set(SUBMISSION_RESULT_STATE, result);
       if (result.completed) {
@@ -367,7 +369,7 @@ export const SharedEditorProvider = ({
         );
 
     const _provider = new WebrtcProvider(roomvalue, doc, {
-      signaling: ["ws://localhost:8083"],
+      signaling: [wsCollabUrl],
       filterBcConns: true,
     });
     setProvider(_provider);
