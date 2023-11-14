@@ -77,7 +77,6 @@ services:
       - "8083:8083"
 
   # judge0-server:
-  #   container_name: judge0-server
   #   image: judge0/judge0:1.13.0
   #   ports:
   #     - "2358:2358"
@@ -144,17 +143,17 @@ services:
       retries: 5
       start_period: 30s
 
-  # redis:
-  #   container_name: redis
-  #   image: redis:7
-  #   ports:
-  #     - "6379:6379"
-  #   command: [
-  #     "bash", "-c",
-  #     'docker-entrypoint.sh --appendonly yes --requirepass "$$REDIS_PASSWORD"'
-  #   ]
-  #   environment:
-  #     REDIS_PASSWORD: ${REDIS_PASSWORD}
+  redis:
+    container_name: redis
+    image: redis:7
+    ports:
+      - "6379:6379"
+    command: [
+      "bash", "-c",
+      'docker-entrypoint.sh --appendonly yes --requirepass "$$REDIS_PASSWORD"'
+    ]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
 
 
 volumes:

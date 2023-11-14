@@ -75,6 +75,7 @@ const ChatBox = () => {
             {entry.nickname !== user?.username && (
               <Avatar
                 name={entry.nickname}
+                src={entry.avatar}
                 w="40px"
                 h="40px"
                 alignSelf="flex-start"
@@ -99,6 +100,7 @@ const ChatBox = () => {
             {entry.nickname === user?.username && (
               <Avatar
                 name={entry.nickname}
+                src={entry.avatar}
                 w="40px"
                 h="40px"
                 alignSelf="flex-start"
