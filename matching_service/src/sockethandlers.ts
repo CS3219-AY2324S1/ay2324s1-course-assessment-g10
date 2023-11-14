@@ -19,6 +19,7 @@ const removeUser = (
   if (!detail.match || !allowJoinbackIfInMatch) {
     if (detail.UserDetail) removeInterval(detail.UserDetail);
     if (detail.countdown) clearInterval(detail.countdown);
+    if (detail.joinbackTimer) clearTimeout(detail.joinbackTimer);
     delete socketDetails[user];
     console.log("disconnecting all instances of", user);
     io.in(user).disconnectSockets();
@@ -32,6 +33,14 @@ const removeUser = (
   // promote the other user the master to handle submission event
   match.isMaster = false;
   const matchedDetail = socketDetails[match.user];
+
+  if (matchedDetail?.joinbackTimer) {
+    // the other user disconnected too, so we just remove both
+    removeUser(io, user);
+    removeUser(io, match.user);
+    return;
+  }
+
   let opponentRoom = matchedDetail?.match;
   if (opponentRoom && !opponentRoom.isMaster) {
     opponentRoom.isMaster = true;
@@ -54,9 +63,9 @@ const removeUser = (
   }, 10000);
 };
 
-// restore user to queue or match, if restored, return true else false
+// restore user to queue or match
 const restore = (socket: Socket, user: string) => {
-  console.log("restore match received from", socket.id);
+  console.log("restore match received from", socket.id, "for", user);
   const detail = socketDetails[user];
   if (!detail) return false;
 
@@ -182,14 +191,21 @@ const handleMatchRequest = async (
       isMaster: false,
     };
 
-    io.to(userInterval.user).emit("matchFound", {
-      ...detail.match,
-      init: true,
-    } as Match);
+    io.to(userInterval.user)
+      .except(socket.id)
+      .emit("matchFound", {
+        ...matchedUserDetail.match,
+        init: false,
+      } as Match);
 
     io.to(match.user).emit("matchFound", {
-      ...matchedUserDetail.match,
+      ...detail.match,
       init: false,
+    } as Match);
+
+    socket.emit("matchFound", {
+      ...detail.match,
+      init: true,
     } as Match);
 
     return;
