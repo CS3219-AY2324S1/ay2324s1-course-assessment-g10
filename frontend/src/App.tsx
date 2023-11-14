@@ -28,6 +28,7 @@ import { useToast } from "@chakra-ui/toast";
 import CreateQuestion from "./pages/CreateQuestionPage/CreateQuestion.page";
 import EditQuestion from "./pages/EditQuestionPage/EditQuestion.page";
 import { MatchmakeProvider } from "./contexts/matchmake.context";
+import ProfilePage from "./pages/ProfilePage";
 
 const NavbarWrapper = () => (
   <div>
@@ -57,6 +58,8 @@ const loggedInRoutes = [
   { path: "/bank", Component: BankPage },
   { path: "/view/:_id", Component: ViewQuestion, loader: qnLoader },
   { path: "/collab", Component: ViewQuestion },
+  { path: "/profile", Component: ProfilePage },
+  { path: "/profile/:username", Component: ProfilePage },
   { path: "*", element: <Navigate to="/" /> }, //redirect all other routes to /
 ];
 
@@ -111,14 +114,12 @@ function App() {
 
   console.log(isAuthenticated);
 
+  const finalRoutes = loggedInRoutes.concat(isAuthenticated && isAdmin ? adminOnlyRoutes : [])
+
   const router = createBrowserRouter([
     {
       Component: NavbarWrapper,
-      children: isAuthenticated && isAdmin ? adminOnlyRoutes : [],
-    },
-    {
-      Component: NavbarWrapper,
-      children: isAuthenticated ? loggedInRoutes : publicRoutes,
+      children: isAuthenticated ? finalRoutes : publicRoutes,
     },
     { path: "*", Component: PageNotFound },
   ]);

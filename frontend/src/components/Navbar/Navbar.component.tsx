@@ -50,7 +50,9 @@ export const Navbar = () => {
           {isAuthenticated ? (
             <>
               <LogoutButton />
-              <Button colorScheme="blue">View Account</Button>
+              <Link to="/profile">
+                <Button colorScheme="blue">View Account</Button>
+              </Link>
             </>
           ) : (
             <>

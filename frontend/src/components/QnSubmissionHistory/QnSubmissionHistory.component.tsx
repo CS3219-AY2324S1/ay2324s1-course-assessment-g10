@@ -3,6 +3,9 @@ import {
   Center,
   HStack,
   IconButton,
+  Skeleton,
+  SkeletonText,
+  Stack,
   Table,
   TableContainer,
   Tbody,
@@ -14,12 +17,19 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import {
+  SubmissionResult,
   submissionRecord,
   useSharedEditor,
 } from "../../contexts/sharededitor.context";
 import { CheckIcon, CloseIcon, CopyIcon } from "@chakra-ui/icons";
 
-const SubmissionRow = ({ submission }: { submission: submissionRecord }) => {
+const SubmissionRow = ({
+  submission,
+  progress,
+}: {
+  submission: submissionRecord;
+  progress?: SubmissionResult;
+}) => {
   const isLoading = submission.result === "Unknown";
   const isCorrect = submission.result === "Accepted";
   const colorScheme = isLoading ? "gray" : isCorrect ? "teal" : "red";
@@ -45,7 +55,10 @@ const SubmissionRow = ({ submission }: { submission: submissionRecord }) => {
         </Center>
       </Td>
       <Td>
-        <Center>{submission.lang}</Center>
+        <Center>
+          {submission.lang}
+          {progress ? ` (${progress.evaluated}/${progress.total})` : ""}
+        </Center>
       </Td>
       <Td>
         <Center>
@@ -61,8 +74,23 @@ const SubmissionRow = ({ submission }: { submission: submissionRecord }) => {
   );
 };
 
+const SubmissionRowSkeleton = () => {
+  return (
+    <Stack width="100%">
+      <Skeleton height="20px" speed={0.9} />
+      <Skeleton height="40px" speed={1} />
+      <Skeleton height="40px" speed={1.1} />
+      <Skeleton height="40px" speed={1.2} />
+    </Stack>
+  );
+};
+
 const QnSubmissionHistory = () => {
-  const { currSubmission, submissions } = useSharedEditor();
+  const { currSubmission, submissions, submissionLoading, submissionResult } =
+    useSharedEditor();
+  if (submissionLoading) {
+    return <SubmissionRowSkeleton />;
+  }
 
   if (submissions.length === 0 && !currSubmission) {
     return <Text>No Submissions found!</Text>;
@@ -89,7 +117,10 @@ const QnSubmissionHistory = () => {
             <SubmissionRow submission={s} key={i} />
           ))}
           {currSubmission ? (
-            <SubmissionRow submission={currSubmission} />
+            <SubmissionRow
+              submission={currSubmission}
+              progress={submissionResult ? submissionResult : undefined}
+            />
           ) : (
             <></>
           )}
