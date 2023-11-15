@@ -66,7 +66,6 @@ export default function DeleteUserCard() {
               >
               </Input>
 
-
             </AlertDialogBody>
 
             <AlertDialogFooter>

@@ -123,8 +123,8 @@ export function getProfilePicUrl(profilePicFileName : string | null) {
 
 
 
-export async function deleteUser(id: string) {
-  const response = await userServiceClient.delete(`/api/users/${id}`)
+export async function deleteUser(id: number) {
+  const response = await apiGatewayClient.delete(`/api/users/${id}`)
 
   return response;
 }
