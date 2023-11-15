@@ -19,10 +19,17 @@ import { AxiosError } from 'axios';
 export default function RegistrationForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [rePassword, setRePassword] = useState('');
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const toast = useToast();
 
+
+  const ensureSamePassword = (password: string, rePassword: string) => {
+    if (password !== rePassword) {
+      throw Error('Make sure you re-type your new password correctly!')
+    }
+  }
 
   const ensureStrongPassword = (password: string) => {
     if (password.length < 8) {
@@ -34,7 +41,9 @@ export default function RegistrationForm() {
   const onSubmit = async (e: any) => {
     e.preventDefault();
     try {
+      ensureSamePassword(password.trim(), rePassword.trim());
       ensureStrongPassword(password.trim());
+      
       const response = await register(username.trim(), password.trim());
       const user = response.data.user;
 
@@ -78,12 +87,22 @@ export default function RegistrationForm() {
 
           <FormControl id='password' isRequired>
             <FormLabel>Password</FormLabel>
-            <Input type='text'
+            <Input type='password'
               name="password"
               value={password}
               onChange={(e) => { setPassword(e.target.value) }}
             />
           </FormControl>
+
+          <FormControl id='repassword' isRequired>
+            <FormLabel>Re-type Password</FormLabel>
+            <Input type='password'
+              name="repassword"
+              value={rePassword}
+              onChange={(e) => { setRePassword(e.target.value) }}
+            />
+          </FormControl>
+
 
           <HStack>
 

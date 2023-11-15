@@ -57,7 +57,7 @@ export default function LoginForm() {
 
           <FormControl id='password' isRequired>
             <FormLabel>Password</FormLabel>
-            <Input type='text'
+            <Input type='password'
               name="password"
               value={password}
               onChange={(e) => { setPassword(e.target.value) }}
