@@ -13,6 +13,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
+EXPOSE 8090
 
 # Command to run the application
 CMD ["npm", "run", "serve"]

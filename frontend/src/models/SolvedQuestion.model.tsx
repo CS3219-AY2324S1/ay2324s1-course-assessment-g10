@@ -2,7 +2,10 @@ import { Question, QnFilter } from "./Question.model";
 
 export class SolvedQuestion extends Question {
   solved: boolean;
-  solvedDate: Date | undefined; 
+  verdict: string;
+  sourceCode: string;
+  language: string;
+  solvedDate: Date | undefined;
 
   constructor(
     _id: string,
@@ -11,12 +14,17 @@ export class SolvedQuestion extends Question {
     descMd: string,
     categories: string[],
     difficulty: number,
-    solved: boolean = false,
-    solvedDate?: Date 
+    verdict: string,
+    sourceCode: string,
+    language: string,
+    solvedDate?: Date
   ) {
     super(_id, id, title, descMd, categories, difficulty);
-    this.solved = solved;
+    this.solved = verdict === "Accepted";
+    this.verdict = verdict;
     this.solvedDate = solvedDate;
+    this.sourceCode = sourceCode;
+    this.language = language;
   }
 }
 

@@ -19,7 +19,7 @@ import data from "../data/lang_temps.json";
 import { ToastId, useToast } from "@chakra-ui/react";
 import { wsCollabUrl } from "../api/gateway";
 import { getExecutionResult, submitCodeForExecution } from "../api/code";
-import { getProfilePicUrl } from "../api/user";
+import { fetchUserCompletedQuestions, getProfilePicUrl } from "../api/user";
 
 export type language = keyof typeof data;
 
@@ -50,7 +50,7 @@ export type SubmissionResult = {
 
 export type submissionRecord = {
   time: number;
-  user: string;
+  userId: number;
   qn_id: string;
   code: string;
   lang: language;
@@ -122,7 +122,7 @@ export const SharedEditorProvider = ({
   const user = useSelector(selectUser) as User; // null check should be done before this
 
   // exposed variables
-  const { matchedRoom, disconnectRoom } = useMatchmake();
+  const { matchedRoom, disconnectRoom, reloadRoom } = useMatchmake();
   const [lang, setLang] = useState<language>();
   const [codeUndo, setCodeUndo] = useState<Y.UndoManager>();
   const [ycode, setycode] = useState<Y.Text>();
@@ -140,10 +140,12 @@ export const SharedEditorProvider = ({
   const lastSubmissionToastId = useRef<ToastId | undefined>();
   const lastLangSelected = useRef<language | undefined>();
   const lastCode = useRef<string | undefined>();
+  const lastChat = useRef<chatRecord[]>([]);
   const cachedPastSubmissions = useRef<submissionRecord[]>([]);
   const _states = useRef<Y.Map<any> | undefined>();
   const _submissions = useRef<Y.Array<any> | undefined>();
   const _poll_interval = useRef<NodeJS.Timeout | undefined>();
+  const _reloadTimeout = useRef<NodeJS.Timeout | undefined>();
 
   const myAvatar = getProfilePicUrl(user.profilePic);
 
@@ -154,8 +156,8 @@ export const SharedEditorProvider = ({
       lang: submission.lang,
       source_code: submission.code,
       qn__id: submission.qn_id,
-      uid: submission.user,
-    })
+      uid: submission.userId,
+    });
 
     const token = res.data.token as string;
 
@@ -198,7 +200,7 @@ export const SharedEditorProvider = ({
     if (!state || currSubmission || !lang || !ycode) return;
     const tmp: submissionRecord = {
       time: Date.now(),
-      user: user.username,
+      userId: user.id,
       code: ycode.toString(),
       lang: lang,
       qn_id: qn?._id ?? "-1", // in case we implement a sandbox code editor
@@ -254,6 +256,8 @@ export const SharedEditorProvider = ({
   useEffect(() => {
     const doc = new Y.Doc();
     const ychat = doc.getArray<chatRecord>(CHAT_KEY);
+    if (!matchedRoom) lastChat.current = [];
+    ychat.push(lastChat.current);
     _setChat(ychat);
     const ysubmissions = doc.getArray<submissionRecord>(SUBMISSION_HISTORY_KEY);
     _submissions.current = ysubmissions;
@@ -272,7 +276,7 @@ export const SharedEditorProvider = ({
           (ystates.get(SUBMISSION_STATE) as submissionRecord) ?? null;
         setCurrSubmission(newSubmission); // if react changes are propageted in the next cycle.
 
-        if (newSubmission && newSubmission.user !== user.username) {
+        if (newSubmission && newSubmission.userId !== user.id) {
           if (!matchedRoom || matchedRoom.isMaster) {
             // if a master receive it
             if (!currSubmission) {
@@ -347,7 +351,6 @@ export const SharedEditorProvider = ({
       lastLangSelected.current = randLang;
       ystates.set(CURR_LANG_STATE, randLang);
       ycode.insert(0, lastCode.current ?? LangDataMap[randLang]?.default ?? "");
-      ystates.set("SYNCEVENT", user.id + random.uint32().toString());
     };
 
     const setCodeFromMap = () => {
@@ -371,6 +374,35 @@ export const SharedEditorProvider = ({
     const _provider = new WebrtcProvider(roomvalue, doc, {
       signaling: [wsCollabUrl],
       filterBcConns: true,
+      peerOpts: {
+        config: {
+          iceServers: [
+            {
+              urls: "stun:stun.relay.metered.ca:80",
+            },
+            {
+              urls: "turn:a.relay.metered.ca:80",
+              username: "c72cc55907845d336e201a5a",
+              credential: "1dpTOETKvFt6g6Ei",
+            },
+            {
+              urls: "turn:a.relay.metered.ca:80?transport=tcp",
+              username: "c72cc55907845d336e201a5a",
+              credential: "1dpTOETKvFt6g6Ei",
+            },
+            {
+              urls: "turn:a.relay.metered.ca:443",
+              username: "c72cc55907845d336e201a5a",
+              credential: "1dpTOETKvFt6g6Ei",
+            },
+            {
+              urls: "turn:a.relay.metered.ca:443?transport=tcp",
+              username: "c72cc55907845d336e201a5a",
+              credential: "1dpTOETKvFt6g6Ei",
+            },
+          ],
+        },
+      },
     });
     setProvider(_provider);
 
@@ -382,8 +414,12 @@ export const SharedEditorProvider = ({
 
     const waitForInit = (e: Y.YMapEvent<any>, t: Y.Transaction) => {
       // the initer have not initialized the code => wait for him to do so
-      if (!ystates.has(CODE_STATE)) return;
+      console.log("waiting for init");
+      if (!ystates.get(CODE_STATE)) return;
       setCodeFromMap();
+      console.log("Success");
+      clearTimeout(_reloadTimeout.current);
+      _reloadTimeout.current = undefined;
       ystates.unobserve(waitForInit); // remove this method from observer
       ystates.observe(stateEventObserver);
     };
@@ -405,6 +441,9 @@ export const SharedEditorProvider = ({
       initStates();
     } else {
       ystates.observe(waitForInit);
+      _reloadTimeout.current = setTimeout(() => {
+        reloadRoom();
+      }, 2000); // reload if not connected after 2s
     }
 
     (async () => {
@@ -417,17 +456,20 @@ export const SharedEditorProvider = ({
           setSubmissionLoading(false);
           return;
         }
-        await new Promise((r) => setTimeout(r, 6000)); // simulate fetching submission history
-        cachedPastSubmissions.current = [
-          {
-            time: Date.now(),
-            user: user.username,
-            code: "lorem ipsum",
-            lang: "c++17",
-            qn_id: "1",
-            result: "TLE",
-          },
-        ];
+        cachedPastSubmissions.current = (
+          await fetchUserCompletedQuestions(user.id)
+        )
+          .filter((_qn) => {
+            return _qn._id === qn._id;
+          })
+          .map((_qn) => {
+            return {
+              code: _qn.sourceCode,
+              lang: _qn.language,
+              qn_id: _qn._id,
+              result: _qn.verdict,
+            } as submissionRecord;
+          });
         setSubmissions(
           cachedPastSubmissions.current.concat(ysubmissions.toArray())
         ); // updates submission array
@@ -446,12 +488,17 @@ export const SharedEditorProvider = ({
     });
 
     return () => {
-      console.log("destroying provider");
       lastCode.current = ycode?.toString();
+      lastChat.current = ychat.toArray();
+      console.log(lastChat.current, matchedRoom);
       _states.current = undefined;
       cachedPastSubmissions.current = cachedPastSubmissions.current.concat(
         ysubmissions.toArray()
       );
+      clearTimeout(_reloadTimeout.current);
+      _reloadTimeout.current = undefined;
+      clearInterval(_poll_interval.current);
+      _poll_interval.current = undefined;
       _provider.destroy();
       doc.destroy();
 

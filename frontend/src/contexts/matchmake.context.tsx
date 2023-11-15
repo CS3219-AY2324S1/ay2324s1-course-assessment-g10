@@ -27,11 +27,12 @@ interface RoomCloseResponse {
 }
 
 interface MatchmakeContextInterface {
-  findMatch: (diffStart: number, diffEnd: number) => void;
+  findMatch: (diffStart: number, diffEnd: number, qn__id?: string) => void;
   cancelMatch: () => void;
   quitRoom: () => void;
   disconnectRoom: () => void;
   restoreRoom: () => void;
+  reloadRoom: () => void;
   isMatching: boolean;
   timeLeft?: number;
   matchedRoom?: Match;
@@ -43,6 +44,7 @@ const MatchmakeContext = createContext<MatchmakeContextInterface>({
   quitRoom: () => {},
   disconnectRoom: () => {},
   restoreRoom: () => {},
+  reloadRoom: () => {},
   isMatching: false,
 });
 
@@ -190,7 +192,7 @@ export const MatchmakeProvider = ({
     };
   }, [navigate, user]);
 
-  const findMatch = (diffStart: number, diffEnd: number) => {
+  const findMatch = (diffStart: number, diffEnd: number, qn__id?: string) => {
     if (!socket || !user) return;
     if (!socket.connected) socket.connect();
 
@@ -203,6 +205,7 @@ export const MatchmakeProvider = ({
     });
     socket.emit("findMatch", {
       username: user.username,
+      preferredQn: qn__id,
       from: diffStart,
       to: diffEnd,
     });
@@ -230,18 +233,25 @@ export const MatchmakeProvider = ({
   const restoreRoom = () => {
     if (!socket || !user) return;
     if (!socket.connected) socket.connect();
-    console.log("attempt to reconnect");
     socket.emit("restore", user.username);
   };
 
+  const reloadRoom = () => {
+    if (!socket || !user || !socket.connected || !matchedRoom) return;
+    console.log("attempting to reload");
+    setMatchedRoom({
+      ...matchedRoom,
+    });
+  };
+
   const memo = useMemo(() => {
-    console.log("matchmake update");
     return {
       findMatch,
       cancelMatch,
       quitRoom,
       disconnectRoom,
       restoreRoom,
+      reloadRoom,
       isMatching,
       matchedRoom,
       timeLeft,

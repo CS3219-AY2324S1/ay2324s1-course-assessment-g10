@@ -51,14 +51,14 @@ export default function ChangePasswordCard() {
             <FormControl id='newPassword'>
               <FormLabel>New Password</FormLabel>
               <Input type='text'
-                name="newPassword"
+                name="password"
                 value={newPassword}
                 onChange={(e) => { setNewPassword(e.target.value) }}
               />
             </FormControl>
             <FormControl id='retypePassword'>
               <FormLabel>Re-type Password</FormLabel>
-              <Input type='text'
+              <Input type='password'
                 name="retypePassword"
                 value={retypePassword}
                 onChange={(e) => { setRetypePassword(e.target.value) }}
@@ -66,7 +66,7 @@ export default function ChangePasswordCard() {
             </FormControl>
             <FormControl id='currPassword'>
               <FormLabel>Current Password</FormLabel>
-              <Input type='text'
+              <Input type='password'
                 name="currPassword"
                 value={currPassword}
                 onChange={(e) => { setCurrPassword(e.target.value) }}

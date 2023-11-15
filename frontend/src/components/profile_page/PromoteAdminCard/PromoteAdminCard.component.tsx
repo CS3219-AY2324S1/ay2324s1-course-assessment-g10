@@ -15,33 +15,33 @@ export default function PromoteAdminCard(props: PromoteAdminCardProp) {
 
   const promoteToAdmin = async () => {
     try {
-      const response = await updateUserRole(parseInt(displayedUser.id), 'ADMIN');
+      const response = await updateUserRole(displayedUser.id, "ADMIN");
       const updatedDisplayedUser = response.data;
-      console.log(`setting new displayed user to: ${updatedDisplayedUser}`)
+      console.log(`setting new displayed user to: ${updatedDisplayedUser}`);
       setDisplayedUser(updatedDisplayedUser);
-    } catch (error : any) {
+    } catch (error: any) {
       toast({
-        title: 'Failed to promote',
+        title: "Failed to promote",
         description: error.message,
-        status: 'error'
-      })
+        status: "error",
+      });
     }
-  }
+  };
 
   const demoteToUser = async () => {
     try {
-      const response = await updateUserRole(parseInt(displayedUser.id), 'USER');
+      const response = await updateUserRole(displayedUser.id, "USER");
       const updatedDisplayedUser = response.data;
-      console.log(`setting new displayed user to: ${updatedDisplayedUser}`)
+      console.log(`setting new displayed user to: ${updatedDisplayedUser}`);
       setDisplayedUser(updatedDisplayedUser);
-    } catch (error : any) {
+    } catch (error: any) {
       toast({
-        title: 'Failed to demote',
+        title: "Failed to demote",
         description: error.message,
-        status: 'error'
-      })
+        status: "error",
+      });
     }
-  }
+  };
 
 
   return (

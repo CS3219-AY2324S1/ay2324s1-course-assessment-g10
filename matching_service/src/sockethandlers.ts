@@ -170,6 +170,7 @@ const handleMatchRequest = async (
     const match = await createMatch(potMatch, userInterval.user);
 
     detail.match = {
+      // update for this socker user
       ...match,
       isMaster: true,
     };
@@ -186,27 +187,30 @@ const handleMatchRequest = async (
       continue;
     }
     matchedUserDetail.match = {
+      // update for matched user from interval tree
       ...match,
       user: userInterval.user,
       isMaster: false,
     };
 
+    // update for this user from this socket
     io.to(userInterval.user)
-      .except(socket.id)
+      // .except(socket.id)
       .emit("matchFound", {
-        ...matchedUserDetail.match,
-        init: false,
+        ...detail.match,
+        init: true,
       } as Match);
 
+    // update for matched partner from this socket
     io.to(match.user).emit("matchFound", {
-      ...detail.match,
+      ...matchedUserDetail.match,
       init: false,
     } as Match);
 
-    socket.emit("matchFound", {
-      ...detail.match,
-      init: true,
-    } as Match);
+    // socket.emit("matchFound", {
+    //   ...detail.match,
+    //   init: true,
+    // } as Match);
 
     return;
   }
