@@ -14,8 +14,8 @@ import {
 } from "@chakra-ui/react";
 import { Question } from "../../models/Question.model";
 import { ArrowRightIcon } from "@chakra-ui/icons";
-import { diffToScheme } from "../../helper/UIHelper";
 import { MarkdownViewer } from "../MarkdownVIewer/MarkdownViewer";
+import { rangeToScheme } from "../../helper/DifficultyFilterHelper";
 
 interface qnProp {
   question: Question;
@@ -47,7 +47,7 @@ export const QnDrawer = (prop: qnProp) => {
           <DrawerHeader>
             {question.displayedQuestion}
             <HStack spacing={2}>
-              <Tag colorScheme={diffToScheme(question.difficulty)}>
+              <Tag colorScheme={rangeToScheme(question.difficulty)}>
                 Difficulty: {question.difficulty}
               </Tag>
               <Divider orientation="vertical" padding="2"></Divider>

@@ -7,6 +7,7 @@ import { SolvedTable } from "../../components/SolvedTable/SolvedTable.component"
 import { selectUser } from "../../reducers/authSlice";
 import { useSelector } from "react-redux";
 import { ProfileProvider } from "../../contexts/profileContext";
+import { Box } from "@chakra-ui/react";
 
 function HomePage() {
   // Use the useSelector hook to access the user from the Redux store
@@ -24,8 +25,10 @@ function HomePage() {
   return (
     <div>
       <ProfileProvider displayedUser={user}>
-        <ProgressBar />
-        <SolvedTable pageSize={4} />
+        <Box padding={3}>
+          <ProgressBar />
+          <SolvedTable pageSize={3} />
+        </Box>
       </ProfileProvider>
     </div>
   );

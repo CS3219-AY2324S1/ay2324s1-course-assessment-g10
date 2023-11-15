@@ -43,7 +43,7 @@ export function QnTable(pp: TableProp) {
         <Center>
           <Table
             variant="striped"
-            backgroundColor={"white"}
+            backgroundColor="white"
             size="md"
             boxShadow="md"
             transition="box-shadow 0.2s"
@@ -67,12 +67,18 @@ export function QnTable(pp: TableProp) {
               <Tr boxShadow="base">
                 <Th>Questions</Th>
                 <Th>Type</Th>
-                <Th w="10%">Difficulty</Th>
+                <Th>
+                  <Center>Difficulty</Center>
+                </Th>
                 <Th> Match </Th>
-                {isAdmin ? <Th>Modify/Delete</Th> : <></>}
+                {isAdmin ? <Th isNumeric>Modify/Delete</Th> : <></>}
               </Tr>
             </Thead>
-            <Tbody>{getCurrentPage(pageNumber).map((qn) => QuestionEntry({qn: qn, isAdmin: isAdmin}))}</Tbody>
+            <Tbody>
+              {getCurrentPage(pageNumber).map((qn) =>
+                QuestionEntry({ qn: qn, isAdmin: isAdmin })
+              )}
+            </Tbody>
           </Table>
         </Center>
       </TableContainer>
