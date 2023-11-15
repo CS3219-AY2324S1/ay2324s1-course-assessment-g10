@@ -8,8 +8,8 @@ import { apiGatewayClient } from "./gateway";
  * @returns An array of completed questions.
  */
 export async function fetchUserCompletedQuestions(
-  userId: String
-): Promise<SolvedQuestion[]> { 
+  userId: number
+): Promise<SolvedQuestion[]> {
   try {
     const response: AxiosResponse = await apiGatewayClient.get(
       `/api/users/${userId}/questions`
@@ -19,14 +19,16 @@ export async function fetchUserCompletedQuestions(
     const completedQuestions: SolvedQuestion[] = resData.map(
       (q: any) =>
         new SolvedQuestion(
-          q._id,
-          q.id,
-          q.title,
-          q.description,
+          q.question__id,
+          q.questionId,
+          q.questionTitle,
+          "", // not impt
           q.topics,
           q.difficulty,
-          false, // Default value for solved
-          undefined // Default value for solvedDate
+          q.verdict,
+          q.sourceCode,
+          q.language,
+          q.answeredAt // Default value for solvedDate
         )
     );
 
@@ -38,50 +40,52 @@ export async function fetchUserCompletedQuestions(
   }
 }
 
-/**
- * Add a new question to the user's completed questions.
- * @param userId - The ID of the user to whom you want to add the question.
- * @param questionId - The ID of the question you want to add.
- * @param complexity - The complexity of the question.
- * @param category - The category of the question.
- * @returns The added question.
- */
-export async function addUserQuestion(
-  userId: number,
-  questionId: string,
-  complexity: number,
-  category: string[]
-): Promise<SolvedQuestion> { 
-  try {
-    const response: AxiosResponse = await apiGatewayClient.post(
-      `/api/users/${userId}/addquestions`,
-      {
-        userId,
-        questionId,
-        complexity,
-        category,
-      }
-    );
+// /**
+//  * Add a new question to the user's completed questions.
+//  * @param userId - The ID of the user to whom you want to add the question.
+//  * @param questionId - The ID of the question you want to add.
+//  * @param complexity - The complexity of the question.
+//  * @param category - The category of the question.
+//  * @returns The added question.
+//  */
+// export async function addUserQuestion(
+//   userId: number,
+//   questionId: string,
+//   complexity: number,
+//   category: string[]
+// ): Promise<SolvedQuestion> {
+//   try {
+//     const response: AxiosResponse = await apiGatewayClient.post(
+//       `/api/users/${userId}/addquestions`,
+//       {
+//         userId,
+//         questionId,
+//         complexity,
+//         category,
+//       }
+//     );
 
-    const resData = response.data;
-    const addedQuestion: SolvedQuestion = new SolvedQuestion(
-      resData._id,
-      resData.id,
-      resData.title,
-      resData.description,
-      resData.topics,
-      resData.difficulty,
-      false, // Default value for solved
-      undefined // Default value for solvedDate
-    );
+//     const resData = response.data;
+//     const addedQuestion: SolvedQuestion = new SolvedQuestion(
+//       resData._id,
+//       resData.id,
+//       resData.title,
+//       resData.description,
+//       resData.topics,
+//       resData.difficulty,
+//       resData.verdict,
+//       resData.sourceCode,
+//       resData.language,
+//       undefined // Default value for solvedDate
+//     );
 
-    return addedQuestion;
-  } catch (error) {
-    // Handle errors appropriately, e.g., log the error or throw it to be handled by the caller.
-    console.error(error);
-    throw error;
-  }
-}
+//     return addedQuestion;
+//   } catch (error) {
+//     // Handle errors appropriately, e.g., log the error or throw it to be handled by the caller.
+//     console.error(error);
+//     throw error;
+//   }
+// }
 
 
 /**

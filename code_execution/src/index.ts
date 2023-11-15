@@ -38,7 +38,7 @@ app.get("/api/code/result/:token", async (req, res) => {
       return res.status(400).json({ error: "id not found" });
     }
 
-    res.json(response);
+    res.status(200).json(response);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "An error occurred" });

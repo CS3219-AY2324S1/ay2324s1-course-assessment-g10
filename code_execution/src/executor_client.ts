@@ -2,8 +2,9 @@ import axios from "axios";
 import { createBatchSubmission, getQnStdInOut } from "./testcases";
 import { callbacks, langToId } from "./shared";
 import { judge0Result, judge0submission, submissionResult } from "./types";
+import { submitSubmission } from "./submission_client";
 
-const JUDGE_API_URL = "https://judge0-ce.p.rapidapi.com"; //"http://judge0-server:2358/submissions";
+const JUDGE_API_URL = "http://peerprep-g10.com:2358"; //"https://judge0-ce.p.rapidapi.com";
 const API_KEY = process.env.JUDGE0_API_KEY;
 
 async function submitIndividual(submission: judge0submission) {
@@ -13,7 +14,6 @@ async function submitIndividual(submission: judge0submission) {
     {
       headers: {
         "Content-Type": "application/json",
-        "X-Rapidapi-Key": API_KEY,
       },
       params: { base64_encoded: "true" },
     }
@@ -29,7 +29,6 @@ async function submitCode(submission: judge0submission[]) {
     {
       headers: {
         "Content-Type": "application/json",
-        "X-Rapidapi-Key": API_KEY,
       },
       params: { base64_encoded: "true" },
     }
@@ -52,9 +51,6 @@ function pollIndividualTillComplete(
 ) {
   setTimeout(() => {
     const options = {
-      headers: {
-        "X-Rapidapi-Key": API_KEY,
-      },
       params: {
         fields: "status",
       },
@@ -114,7 +110,6 @@ async function delSubmissions(tokens: string[]) {
         params: { fields: "status_id" },
         headers: {
           "X-Judge0-User": "Auth-Judge0-User",
-          "X-Rapidapi-Key": API_KEY,
         },
       })
     )
@@ -155,8 +150,9 @@ export async function runSubmission(
   lang: string,
   qn__id: string,
   source_code: string,
-  userid: string
+  userid: number
 ) {
+  const submissionTime = new Date();
   const resDat: submissionResult = {
     completed: false,
     evaluated: 0,
@@ -190,4 +186,6 @@ export async function runSubmission(
 
   resDat.verdict = resDat.verdict === "Unknown" ? "Accepted" : resDat.verdict;
   resDat.completed = true;
+
+  submitSubmission(resDat.verdict, lang, qn__id, userid, source_code, submissionTime); // runs in the bg
 }

@@ -7,7 +7,7 @@ export async function submitCodeForExecution(data_payload: any) {
 }
 
 export async function getExecutionResult(token : string) {
-    const res = await apiGatewayClient.post(`/api/code/result/${token}`);
+    const res = await apiGatewayClient.get(`/api/code/result/${token}`);
 
     return res;
 }

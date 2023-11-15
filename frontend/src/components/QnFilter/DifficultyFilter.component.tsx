@@ -1,21 +1,23 @@
 import React from "react";
 import { Flex, Select } from "@chakra-ui/react";
 import { QnFilter } from "../../models/Question.model";
-import { mapDifficultyToRange, mapRangeToDifficulty} from "../../helper/DifficultyFilterHelper"
+import {
+  diffRanges,
+  difficultyToRange,
+} from "../../helper/DifficultyFilterHelper";
 
 export interface DifficultyFilterProps extends QnFilter {
   setDifficultyFilter: (difficultyFilter: [number, number]) => void;
 }
 
 export const DifficultyFilter = ({
-  difficultyFilter = [0, 10],
   setDifficultyFilter,
 }: DifficultyFilterProps) => {
   const handleDifficultyChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const difficulty = event.target.value;
-    const newDifficultyFilter = mapDifficultyToRange(difficulty);
+    const newDifficultyFilter = difficultyToRange(difficulty);
     setDifficultyFilter(newDifficultyFilter);
   };
 
@@ -24,13 +26,16 @@ export const DifficultyFilter = ({
       <Select
         variant="outline"
         placeholder=""
-        value={mapRangeToDifficulty(difficultyFilter)}
+        defaultValue="All"
         onChange={handleDifficultyChange}
       >
-        <option value="">All</option>
-        <option value="Easy">Easy</option>
-        <option value="Medium">Medium</option>
-        <option value="Hard">Hard</option>
+        {diffRanges.map((dr) => {
+          return (
+            <option key={dr.difficulty} value={dr.difficulty}>
+              {dr.difficulty}
+            </option>
+          );
+        })}
       </Select>
     </Flex>
   );

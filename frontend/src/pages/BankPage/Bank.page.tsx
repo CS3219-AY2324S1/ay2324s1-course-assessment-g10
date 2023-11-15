@@ -44,10 +44,7 @@ const BankPage = () => {
             qnFilter={filter.qnFilter}
             setFilter={(newFilter) => setFilter(newFilter)}
           />
-          <DifficultyFilter
-            difficultyFilter={difficultyFilter}
-            setDifficultyFilter={(newDifficultyFilter) => setDifficultyFilter(newDifficultyFilter)}
-          />
+          <DifficultyFilter setDifficultyFilter={setDifficultyFilter} />
         </HStack>
       </Box>
       <QnTable filteredQn={filteredQns} pageSize={7}></QnTable>
