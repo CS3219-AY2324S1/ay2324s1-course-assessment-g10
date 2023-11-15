@@ -60,7 +60,7 @@ export const SolvedTable = (props: TableProp) => {
           boxShadow: "xl",
         }}
         width="100%"
-        sx={{ tableLayout: "fixed" }}
+        sx={{ tableLayout: "auto" }}
       >
         <TableCaption>
           <Center>
