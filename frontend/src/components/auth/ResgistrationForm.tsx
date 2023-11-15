@@ -14,32 +14,61 @@ import { setUser } from '../../reducers/authSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { register } from '../../api/auth';
+import { AxiosError } from 'axios';
 
 export default function RegistrationForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [rePassword, setRePassword] = useState('');
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const toast = useToast();
 
 
+  const ensureSamePassword = (password: string, rePassword: string) => {
+    if (password !== rePassword) {
+      throw Error('Make sure you re-type your new password correctly!')
+    }
+  }
+
+  const ensureStrongPassword = (password: string) => {
+    if (password.length < 8) {
+      throw Error('Password must be 8 characters or more!')
+    }
+  }
+
   //TODO: require integration with backend API
-  const onSubmit = (e: any) => {
+  const onSubmit = async (e: any) => {
     e.preventDefault();
-    register(username, password).then(response => {
+    try {
+      ensureSamePassword(password.trim(), rePassword.trim());
+      ensureStrongPassword(password.trim());
+      
+      const response = await register(username.trim(), password.trim());
       const user = response.data.user;
 
       dispatch(setUser(user));
       navigate('/');
-    }).catch((err) => {
+    } catch (err: any) {
       console.log(err);
-      toast({
-        title: 'Failed to Login',
-        description: 'Incorrect username or password',
-        status: 'error',
-        isClosable: true,
-      });
-    })
+      if (err instanceof AxiosError) {
+        toast({
+          title: 'Failed to Register!',
+          description: 'User is taken!',
+          status: 'error',
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: 'Failed to Register!',
+          description: err.message,
+          status: 'error',
+          isClosable: true,
+        });
+
+      }
+
+    }
   }
 
   return (
@@ -58,12 +87,22 @@ export default function RegistrationForm() {
 
           <FormControl id='password' isRequired>
             <FormLabel>Password</FormLabel>
-            <Input type='text'
+            <Input type='password'
               name="password"
               value={password}
               onChange={(e) => { setPassword(e.target.value) }}
             />
           </FormControl>
+
+          <FormControl id='repassword' isRequired>
+            <FormLabel>Re-type Password</FormLabel>
+            <Input type='password'
+              name="repassword"
+              value={rePassword}
+              onChange={(e) => { setRePassword(e.target.value) }}
+            />
+          </FormControl>
+
 
           <HStack>
 
