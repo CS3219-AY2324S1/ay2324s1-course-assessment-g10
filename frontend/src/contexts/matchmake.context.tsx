@@ -27,7 +27,7 @@ interface RoomCloseResponse {
 }
 
 interface MatchmakeContextInterface {
-  findMatch: (diffStart: number, diffEnd: number) => void;
+  findMatch: (diffStart: number, diffEnd: number, qn__id?: string) => void;
   cancelMatch: () => void;
   quitRoom: () => void;
   disconnectRoom: () => void;
@@ -192,7 +192,7 @@ export const MatchmakeProvider = ({
     };
   }, [navigate, user]);
 
-  const findMatch = (diffStart: number, diffEnd: number) => {
+  const findMatch = (diffStart: number, diffEnd: number, qn__id?: string) => {
     if (!socket || !user) return;
     if (!socket.connected) socket.connect();
 
@@ -205,6 +205,7 @@ export const MatchmakeProvider = ({
     });
     socket.emit("findMatch", {
       username: user.username,
+      preferredQn: qn__id,
       from: diffStart,
       to: diffEnd,
     });

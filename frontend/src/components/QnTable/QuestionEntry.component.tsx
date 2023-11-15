@@ -1,4 +1,5 @@
 import {
+  Button,
   ButtonGroup,
   Center,
   HStack,
@@ -15,6 +16,7 @@ import { EditIcon } from "@chakra-ui/icons";
 import { useDispatch } from "react-redux";
 import { delQuestion } from "../../api/questions";
 import { deleteQuestion } from "../../reducers/questionsSlice";
+import { useMatchmake } from "../../contexts/matchmake.context";
 import { rangeToScheme } from "../../helper/DifficultyFilterHelper";
 
 interface QuestionEntryProps {
@@ -23,7 +25,18 @@ interface QuestionEntryProps {
 }
 
 export function QuestionEntry(props: QuestionEntryProps) {
+
   const { qn, isAdmin } = props;
+  const {
+    findMatch,
+    isMatching,
+    matchedRoom,
+    timeLeft,
+    cancelMatch,
+    restoreRoom,
+    quitRoom,
+  } = useMatchmake();
+
   const dispatch = useDispatch();
 
   const onDelete = async (_id: string) => {
@@ -38,6 +51,7 @@ export function QuestionEntry(props: QuestionEntryProps) {
           <Text>{qn.displayedQuestion}</Text>
         </Link>
       </Td>
+
       <Td>
         <HStack spacing={1}>
           {qn.topics.map((qntype) => (
@@ -50,14 +64,21 @@ export function QuestionEntry(props: QuestionEntryProps) {
           <Tag colorScheme={rangeToScheme(qn.difficulty)}>{qn.difficulty}</Tag>
         </Center>
       </Td>
+      <Td>
+        <Button colorScheme="teal"
+          size='sm'
+          isLoading={isMatching}
+          onClick={() => findMatch(qn.difficulty, qn.difficulty, qn._id)}>
+          Look for Match
+        </Button>
+      </Td>
       {isAdmin ? (
-        <Td isNumeric>
-          <ButtonGroup gap={0.1}>
+        <Td>
+          <ButtonGroup>
             <Link to={`/edit/${qn._id}`}>
               <IconButton
                 aria-label="Edit question"
                 icon={<EditIcon />}
-                colorScheme="blue"
               ></IconButton>
             </Link>
             <DeleteQnBtn
@@ -71,4 +92,4 @@ export function QuestionEntry(props: QuestionEntryProps) {
       )}
     </Tr>
   );
-}
+};
