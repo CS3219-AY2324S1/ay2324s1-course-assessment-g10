@@ -374,6 +374,9 @@ export const SharedEditorProvider = ({
     const _provider = new WebrtcProvider(roomvalue, doc, {
       signaling: [wsCollabUrl],
       filterBcConns: true,
+      peerOpts: {
+        
+      }
     });
     setProvider(_provider);
 

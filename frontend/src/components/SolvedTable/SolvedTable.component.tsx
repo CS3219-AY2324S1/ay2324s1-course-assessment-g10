@@ -20,8 +20,8 @@ import {
 } from "@chakra-ui/react";
 import { Paginator } from "../Paginator/Paginator.component";
 import { useProfile } from "../../contexts/profileContext";
-import { diffToScheme } from "../../helper/UIHelper";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
+import { rangeToScheme } from "../../helper/DifficultyFilterHelper";
 
 export type TableProp = {
   pageSize?: number;
@@ -91,8 +91,8 @@ export const SolvedTable = (props: TableProp) => {
           </Tr>
         </Thead>
         <Tbody>
-          {getQuestionsForPage().map((question) => (
-            <Tr key={question._id}>
+          {getQuestionsForPage().map((question, i) => (
+            <Tr key={i}>
               <Td>{question.title}</Td>
               <Td>
                 <HStack spacing={1}>
@@ -103,7 +103,7 @@ export const SolvedTable = (props: TableProp) => {
               </Td>
               <Td>
                 <Center>
-                  <Tag colorScheme={diffToScheme(question.difficulty)}>
+                  <Tag colorScheme={rangeToScheme(question.difficulty)}>
                     {question.difficulty}
                   </Tag>
                 </Center>

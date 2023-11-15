@@ -22,7 +22,8 @@ export const submitSubmission = async (
   language: string,
   qid: string,
   userId: number,
-  sourceCode: string
+  sourceCode: string,
+  time: Date
 ) => {
   const question = await fetchQn(qid);
   const submission = {
@@ -35,6 +36,7 @@ export const submitSubmission = async (
     verdict: verdict,
     sourceCode: sourceCode,
     language: language,
+    answeredAt: time.toISOString(),
   };
   await axios.post(
     `http://user-service:8081/api/users/${userId}/addquestions`,

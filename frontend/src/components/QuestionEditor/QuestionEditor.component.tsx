@@ -22,9 +22,9 @@ import {
 } from "@chakra-ui/react";
 import { MarkdownEditor } from "../MarkdownEditor/MarkdownEditor.component";
 import { CloseableTag } from "../CloseableTag/CloseableTag.component";
-import { diffToScheme } from "../../helper/UIHelper";
 import { CheckIcon, CloseIcon } from "@chakra-ui/icons";
 import { MarkdownViewer } from "../MarkdownVIewer/MarkdownViewer";
+import { rangeToScheme } from "../../helper/DifficultyFilterHelper";
 
 type QuestionEditorProp = {
   question?: Question;
@@ -37,7 +37,7 @@ export const QuestionEditor = (prop: QuestionEditorProp) => {
     question,
     onSubmit = async (x) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      throw Error('no action defined for Question Editor onSubmit')
+      throw Error("no action defined for Question Editor onSubmit");
     },
   } = prop;
 
@@ -89,7 +89,7 @@ export const QuestionEditor = (prop: QuestionEditorProp) => {
 
   const buildQuestion = () => {
     return new Question(
-      question?._id ?? '',
+      question?._id ?? "",
       question?.id ?? -1,
       title,
       description,
@@ -114,14 +114,14 @@ export const QuestionEditor = (prop: QuestionEditorProp) => {
     try {
       await onSubmit(buildQuestion(), testCasesFile);
       console.log("Submit success!");
-    } catch (err : any) {
+    } catch (err: any) {
       toast({
         title: "Creation/Modification of question has failed!",
         description: err.message,
         status: "error",
         isClosable: false,
       });
-    } 
+    }
 
     setIsSubmitting(false);
   };
@@ -165,7 +165,7 @@ export const QuestionEditor = (prop: QuestionEditorProp) => {
 
           <FormLabel paddingTop="4">
             Difficulty:
-            <Tag marginLeft="2" colorScheme={diffToScheme(difficulty)}>
+            <Tag marginLeft="2" colorScheme={rangeToScheme(difficulty)}>
               {difficulty}
             </Tag>
           </FormLabel>
@@ -208,11 +208,18 @@ export const QuestionEditor = (prop: QuestionEditorProp) => {
           </Wrap>
 
           <FormLabel paddingTop="4">Testcases</FormLabel>
-          <MarkdownViewer markdown="Please submit a zip file containing all your testcases for this question. 
+          <MarkdownViewer
+            markdown="Please submit a zip file containing all your testcases for this question. 
           The input for the testcases should be suffixed with a `.in`, and the expected outputs with a `.out`
           For every `xxx.in` file, please include a `xxx.out` file.
-          "/>
-          <Input type="file" aria-hidden="true" accept=".zip" onChange={handleFileChange}/>
+          "
+          />
+          <Input
+            type="file"
+            aria-hidden="true"
+            accept=".zip"
+            onChange={handleFileChange}
+          />
         </FormControl>
         <Box width="100%" height="100%" overflow="auto">
           <MarkdownEditor onChange={setDescription} markdown={description} />

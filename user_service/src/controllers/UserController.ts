@@ -101,6 +101,7 @@ export async function addUserQuestion(req: Request, res: Response) {
       verdict,
       sourceCode,
       language,
+      answeredAt,
     } = req.body;
 
     const createdQuestion = await prisma.answeredQuestion.create({
@@ -113,6 +114,7 @@ export async function addUserQuestion(req: Request, res: Response) {
         verdict,
         sourceCode,
         language,
+        answeredAt,
         topics: { set: topics },
       },
     });

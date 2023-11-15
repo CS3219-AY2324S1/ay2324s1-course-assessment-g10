@@ -12,10 +12,10 @@ import { Question } from "../../models/Question.model";
 import { Link } from "react-router-dom";
 import { DeleteQnBtn } from "../DeleteQnBtn/DeleteQnBtn.component";
 import { EditIcon } from "@chakra-ui/icons";
-import { diffToScheme } from "../../helper/UIHelper";
 import { useDispatch } from "react-redux";
 import { delQuestion } from "../../api/questions";
 import { deleteQuestion } from "../../reducers/questionsSlice";
+import { rangeToScheme } from "../../helper/DifficultyFilterHelper";
 
 interface QuestionEntryProps {
   qn: Question;
@@ -47,7 +47,7 @@ export function QuestionEntry(props: QuestionEntryProps) {
       </Td>
       <Td>
         <Center>
-          <Tag colorScheme={diffToScheme(qn.difficulty)}>{qn.difficulty}</Tag>
+          <Tag colorScheme={rangeToScheme(qn.difficulty)}>{qn.difficulty}</Tag>
         </Center>
       </Td>
       {isAdmin ? (

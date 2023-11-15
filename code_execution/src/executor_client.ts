@@ -152,6 +152,7 @@ export async function runSubmission(
   source_code: string,
   userid: number
 ) {
+  const submissionTime = new Date();
   const resDat: submissionResult = {
     completed: false,
     evaluated: 0,
@@ -186,5 +187,5 @@ export async function runSubmission(
   resDat.verdict = resDat.verdict === "Unknown" ? "Accepted" : resDat.verdict;
   resDat.completed = true;
 
-  submitSubmission(resDat.verdict, lang, qn__id, userid, source_code); // runs in the bg
+  submitSubmission(resDat.verdict, lang, qn__id, userid, source_code, submissionTime); // runs in the bg
 }
