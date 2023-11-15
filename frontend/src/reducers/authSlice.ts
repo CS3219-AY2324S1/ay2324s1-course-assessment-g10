@@ -30,7 +30,7 @@ const dummyAdmin: User = {
 };
 
 const initialState: AuthState = {
-    user: dummyUser // null
+    user: null
 }
 
 const userSlice = createSlice({
