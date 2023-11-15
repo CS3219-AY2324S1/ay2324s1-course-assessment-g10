@@ -4,8 +4,7 @@ import { callbacks, langToId } from "./shared";
 import { judge0Result, judge0submission, submissionResult } from "./types";
 import { submitSubmission } from "./submission_client";
 
-const JUDGE_API_URL = "http://peerprep-g10.com:2358"; //"https://judge0-ce.p.rapidapi.com";
-const API_KEY = process.env.JUDGE0_API_KEY;
+const JUDGE_API_URL = "http://judge0:2358"; //"https://judge0-ce.p.rapidapi.com";
 
 async function submitIndividual(submission: judge0submission) {
   const response = await axios.post(

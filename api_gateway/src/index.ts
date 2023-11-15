@@ -8,7 +8,7 @@ import { isLocal } from './proxy/service_addresses';
 import cors from 'cors';
 
 const corsOptions = {
-    origin: ["http://peerprep-g10.com", "https://peerprep-g10.com", "http://localhost:3000"],
+    origin: ["http://peerprep-g10.com", "https://peerprep-g10.com", "http://localhost:3000", "http://localhost", "https://localhost"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     optionsSuccessStatus: 200,
     credentials: true,    
