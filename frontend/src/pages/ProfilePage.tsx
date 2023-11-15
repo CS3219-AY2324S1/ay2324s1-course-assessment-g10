@@ -43,27 +43,28 @@ export default function ProfilePage() {
               />
               <FindUserCard />
 
-              {
-                currUser!.id !== displayedUser!.id
-                  ? <></>
-                  : <ChangePasswordCard />
-              }
+              {currUser!.id !== displayedUser!.id ? (
+                <></>
+              ) : (
+                <ChangePasswordCard />
+              )}
 
-              {
-                isAdmin
-                  ? <PromoteAdminCard displayedUser={displayedUser!} setDisplayedUser={setDisplayedUser} />
-                  : <></>
-              }
-
+              {isAdmin ? (
+                <PromoteAdminCard
+                  displayedUser={displayedUser!}
+                  setDisplayedUser={setDisplayedUser}
+                />
+              ) : (
+                <></>
+              )}
             </Flex>
           </Box>
           <Box w="55%">
             <ProgressBar />
-            <SolvedTable />
+            <SolvedTable pageSize={3} />
           </Box>
-        </Flex >
-      </Box >
+        </Flex>
+      </Box>
     </ProfileProvider>
-
-  )
+  );
 }

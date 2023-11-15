@@ -91,16 +91,31 @@ export async function getUserQuestions(req: any, res: any) {
 //@access   authenticated users
 export async function addUserQuestion(req: Request, res: Response) {
   try {
-    const { userId, questionTitle, questionId, difficulty, topics, solved} = req.body;
+    const {
+      question__id,
+      userId,
+      questionTitle,
+      questionId,
+      difficulty,
+      topics,
+      verdict,
+      sourceCode,
+      language,
+      answeredAt,
+    } = req.body;
 
     const createdQuestion = await prisma.answeredQuestion.create({
       data: {
-        userId: userId,          
-        questionTitle: questionTitle,  
-        questionId: questionId,  
-        difficulty: difficulty,
+        question__id,
+        userId,
+        questionTitle,
+        questionId,
+        difficulty,
+        verdict,
+        sourceCode,
+        language,
+        answeredAt,
         topics: { set: topics },
-        solved: solved,          
       },
     });
 
