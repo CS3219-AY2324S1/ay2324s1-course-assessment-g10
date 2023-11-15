@@ -120,3 +120,11 @@ export function getProfilePicUrl(profilePicFileName : string | null) {
 
   return apiGatewayClient.getUri({url: `/api/users/uploads/${profilePicFileName}`});
 }
+
+
+
+export async function deleteUser(id: number) {
+  const response = await apiGatewayClient.delete(`/api/users/${id}`)
+
+  return response;
+}
