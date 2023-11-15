@@ -29,6 +29,7 @@ export function ProfileProvider({ displayedUser, children }: ProfileProviderProp
       if (displayedUser?.id) {
         try {
           const data = await fetchUserCompletedQuestions(displayedUser?.id);
+          data.reverse(); // sort from latest to oldest
           setSolvedQuestions(data);
         } catch (error) {
           console.error("Failed to fetch solved questions:", error);

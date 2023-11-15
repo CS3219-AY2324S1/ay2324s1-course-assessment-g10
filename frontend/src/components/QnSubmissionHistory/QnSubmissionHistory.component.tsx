@@ -113,9 +113,6 @@ const QnSubmissionHistory = () => {
           </Tr>
         </Thead>
         <Tbody>
-          {submissions.map((s, i) => (
-            <SubmissionRow submission={s} key={i} />
-          ))}
           {currSubmission ? (
             <SubmissionRow
               submission={currSubmission}
@@ -124,6 +121,9 @@ const QnSubmissionHistory = () => {
           ) : (
             <></>
           )}
+          {submissions.map((s, i) => (
+            <SubmissionRow submission={s} key={i} />
+          ))}
         </Tbody>
       </Table>
     </Box>

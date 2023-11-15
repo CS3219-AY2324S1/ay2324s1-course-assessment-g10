@@ -19,7 +19,7 @@ import data from "../data/lang_temps.json";
 import { ToastId, useToast } from "@chakra-ui/react";
 import { wsCollabUrl } from "../api/gateway";
 import { getExecutionResult, submitCodeForExecution } from "../api/code";
-import { getProfilePicUrl } from "../api/user";
+import { fetchUserCompletedQuestions, getProfilePicUrl } from "../api/user";
 
 export type language = keyof typeof data;
 
@@ -50,7 +50,7 @@ export type SubmissionResult = {
 
 export type submissionRecord = {
   time: number;
-  user: string;
+  userId: number;
   qn_id: string;
   code: string;
   lang: language;
@@ -156,7 +156,7 @@ export const SharedEditorProvider = ({
       lang: submission.lang,
       source_code: submission.code,
       qn__id: submission.qn_id,
-      uid: submission.user,
+      uid: submission.userId,
     });
 
     const token = res.data.token as string;
@@ -200,7 +200,7 @@ export const SharedEditorProvider = ({
     if (!state || currSubmission || !lang || !ycode) return;
     const tmp: submissionRecord = {
       time: Date.now(),
-      user: user.username,
+      userId: user.id,
       code: ycode.toString(),
       lang: lang,
       qn_id: qn?._id ?? "-1", // in case we implement a sandbox code editor
@@ -276,7 +276,7 @@ export const SharedEditorProvider = ({
           (ystates.get(SUBMISSION_STATE) as submissionRecord) ?? null;
         setCurrSubmission(newSubmission); // if react changes are propageted in the next cycle.
 
-        if (newSubmission && newSubmission.user !== user.username) {
+        if (newSubmission && newSubmission.userId !== user.id) {
           if (!matchedRoom || matchedRoom.isMaster) {
             // if a master receive it
             if (!currSubmission) {
@@ -427,17 +427,16 @@ export const SharedEditorProvider = ({
           setSubmissionLoading(false);
           return;
         }
-        await new Promise((r) => setTimeout(r, 6000)); // simulate fetching submission history
-        cachedPastSubmissions.current = [
-          {
-            time: Date.now(),
-            user: user.username,
-            code: "lorem ipsum",
-            lang: "c++17",
-            qn_id: "1",
-            result: "TLE",
-          },
-        ];
+        cachedPastSubmissions.current = (
+          await fetchUserCompletedQuestions(user.id)
+        ).map((qn) => {
+          return {
+            code: qn.sourceCode,
+            lang: qn.language,
+            qn_id: qn._id,
+            result: qn.verdict,
+          } as submissionRecord;
+        });
         setSubmissions(
           cachedPastSubmissions.current.concat(ysubmissions.toArray())
         ); // updates submission array

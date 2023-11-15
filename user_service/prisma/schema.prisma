@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
@@ -17,25 +17,27 @@ enum Role {
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
-  username        String   @db.VarChar(255) @unique
-  profilePic      String?
-  bio             String?  
-  hashedPassword  String   
-  role            Role     @default(USER)
+  id                Int                @id @default(autoincrement())
+  username          String             @unique @db.VarChar(255)
+  profilePic        String?
+  bio               String?
+  hashedPassword    String
+  role              Role               @default(USER)
   answeredQuestions AnsweredQuestion[]
 }
 
-
 model AnsweredQuestion {
-  id         String        @id @default(uuid())
-  userId     Int
-  user       User     @relation(fields: [userId], references: [id])
+  id            String   @id @default(uuid())
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
   questionTitle String
-  questionId Int
-  difficulty Float
-  topics  String[]
-  solved     Boolean
-  answeredAt DateTime @default(now())
+  questionId    Int
+  difficulty    Float
+  topics        String[]
+  sourceCode    String
+  language      String
+  verdict       String
+  answeredAt    DateTime @default(now())
+
   @@map("AnsweredQuestion")
 }

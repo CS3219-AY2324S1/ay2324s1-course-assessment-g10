@@ -2,32 +2,32 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from './store';
 
 interface User {
-    id: string;
-    username: string;
-    role: 'ADMIN' | 'USER';
-    bio: string | null;
-    profilePic: string | null;
-};
+  id: number;
+  username: string;
+  role: "ADMIN" | "USER";
+  bio: string | null;
+  profilePic: string | null;
+}
 
 interface AuthState {
-    user: User | null;
-};
+  user: User | null;
+}
 
 const dummyUser: User = {
-    id: '1',
-    username: 'Harro_world',
-    role: 'USER',
-    bio: null,
-    profilePic: null,
-}
+  id: 1,
+  username: "Harro_world",
+  role: "USER",
+  bio: null,
+  profilePic: null,
+};
 
 const dummyAdmin: User = {
-    id: '21',
-    username: 'admin',
-    role: 'ADMIN',
-    bio: null,
-    profilePic: null,
-}
+  id: 21,
+  username: "admin",
+  role: "ADMIN",
+  bio: null,
+  profilePic: null,
+};
 
 const initialState: AuthState = {
     user: dummyUser // null
