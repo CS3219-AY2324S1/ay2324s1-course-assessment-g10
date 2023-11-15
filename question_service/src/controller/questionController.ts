@@ -214,17 +214,20 @@ export const updateQuestion = async (req : any, res : any) => {
 // @access  admin only
 export const deleteQuestion = async (req : any, res : any) => {
     try {
-        // function provided by mongoose to find an Question document with a given ID
-        // req.params.id is retrieved from /:id in route
-        const question = await Question.findById(req.params.id);
-        if(question === null) {
-            throw Error('Invalid ID. Question not found in database.');
-        }
+      // function provided by mongoose to find an Question document with a given ID
+      // req.params.id is retrieved from /:id in route
+      const question = await Question.findById(req.params.id);
+      if (question === null) {
+        throw Error("Invalid ID. Question not found in database.");
+      }
 
-        await fs.rm(`/app/question_test_cases/${question._id}`);
-        await question.deleteOne();
-        res.status(200).json({ message: 'Question removed' });
+      const testcases = `/app/question_test_cases/${question._id}/`;
+      if (fs.existsSync(testcases)) {
+        await fs.rm(testcases, { recursive: true });
+      }
+      await question.deleteOne();
+      res.status(200).json({ message: "Question removed" });
     } catch (error: any) {
-        res.status(404).json({ message: error.message })
+      res.status(404).json({ message: error.message });
     }
 }

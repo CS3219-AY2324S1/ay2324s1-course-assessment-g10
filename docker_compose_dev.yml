@@ -52,7 +52,6 @@ services:
       context: ./code_execution
     environment:
       - PORT=8090
-      - JUDGE0_API_KEY=${JUDGE0_API_KEY}
     ports:
       - "8090:8090"
     volumes:
