@@ -1,4 +1,4 @@
-import { ButtonGroup, HStack, IconButton, Tag, Td, Text, Tr } from "@chakra-ui/react";
+import { Button, ButtonGroup, HStack, IconButton, Tag, Td, Text, Tr } from "@chakra-ui/react";
 import { Question } from "../../models/Question.model";
 import { Link } from "react-router-dom";
 import { DeleteQnBtn } from "../DeleteQnBtn/DeleteQnBtn.component";
@@ -7,6 +7,7 @@ import { diffToScheme } from "../../helper/UIHelper";
 import { useDispatch } from "react-redux";
 import { delQuestion } from "../../api/questions";
 import { deleteQuestion } from "../../reducers/questionsSlice";
+import { useMatchmake } from "../../contexts/matchmake.context";
 
 interface QuestionEntryProps {
     qn: Question, 
@@ -16,6 +17,16 @@ interface QuestionEntryProps {
 export function QuestionEntry(props : QuestionEntryProps) {
     
     const {qn, isAdmin} = props;
+    const {
+      findMatch,
+      isMatching,
+      matchedRoom,
+      timeLeft,
+      cancelMatch,
+      restoreRoom,
+      quitRoom,
+    } = useMatchmake();
+
     const dispatch = useDispatch();
 
     const onDelete = async (_id: string) => {
@@ -39,6 +50,13 @@ export function QuestionEntry(props : QuestionEntryProps) {
         </Td>
         <Td>
           <Tag colorScheme={diffToScheme(qn.difficulty)}>{qn.difficulty}</Tag>
+        </Td>
+        <Td>
+            <Button colorScheme="teal" 
+              isLoading={isMatching}
+              onClick={() => findMatch(qn.difficulty, qn.difficulty, qn._id)}>
+              Look for Match
+            </Button>
         </Td>
         {isAdmin ? (
           <Td>

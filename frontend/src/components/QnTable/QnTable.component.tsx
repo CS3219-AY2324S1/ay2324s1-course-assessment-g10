@@ -51,7 +51,7 @@ export function QnTable(pp: TableProp) {
               boxShadow: "xl",
             }}
             width="80%"
-            sx={{ tableLayout: "fixed" }}
+            sx={{ tableLayout: "auto" }}
           >
             <TableCaption>
               <Center>
@@ -67,7 +67,8 @@ export function QnTable(pp: TableProp) {
               <Tr boxShadow="base">
                 <Th>Questions</Th>
                 <Th>Type</Th>
-                <Th>Difficulty</Th>
+                <Th w="10%">Difficulty</Th>
+                <Th> Match </Th>
                 {isAdmin ? <Th>Modify/Delete</Th> : <></>}
               </Tr>
             </Thead>
