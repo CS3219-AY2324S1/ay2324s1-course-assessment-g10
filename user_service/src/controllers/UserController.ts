@@ -92,6 +92,7 @@ export async function getUserQuestions(req: any, res: any) {
 export async function addUserQuestion(req: Request, res: Response) {
   try {
     const {
+      question__id,
       userId,
       questionTitle,
       questionId,
@@ -104,6 +105,7 @@ export async function addUserQuestion(req: Request, res: Response) {
 
     const createdQuestion = await prisma.answeredQuestion.create({
       data: {
+        question__id,
         userId,
         questionTitle,
         questionId,

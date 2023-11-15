@@ -26,6 +26,7 @@ export const submitSubmission = async (
 ) => {
   const question = await fetchQn(qid);
   const submission = {
+    question__id: question._id,
     userId: userId,
     questionTitle: question.title,
     questionId: question.id,

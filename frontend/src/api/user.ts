@@ -19,7 +19,7 @@ export async function fetchUserCompletedQuestions(
     const completedQuestions: SolvedQuestion[] = resData.map(
       (q: any) =>
         new SolvedQuestion(
-          q.id,
+          q.question__id,
           q.questionId,
           q.questionTitle,
           "", // not impt

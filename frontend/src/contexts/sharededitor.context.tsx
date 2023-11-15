@@ -429,14 +429,18 @@ export const SharedEditorProvider = ({
         }
         cachedPastSubmissions.current = (
           await fetchUserCompletedQuestions(user.id)
-        ).map((qn) => {
-          return {
-            code: qn.sourceCode,
-            lang: qn.language,
-            qn_id: qn._id,
-            result: qn.verdict,
-          } as submissionRecord;
-        });
+        )
+          .filter((_qn) => {
+            return _qn._id === qn._id;
+          })
+          .map((_qn) => {
+            return {
+              code: _qn.sourceCode,
+              lang: _qn.language,
+              qn_id: _qn._id,
+              result: _qn.verdict,
+            } as submissionRecord;
+          });
         setSubmissions(
           cachedPastSubmissions.current.concat(ysubmissions.toArray())
         ); // updates submission array
