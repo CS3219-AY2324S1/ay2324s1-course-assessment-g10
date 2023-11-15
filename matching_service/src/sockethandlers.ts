@@ -11,7 +11,7 @@ import { sockToUser, socketDetails } from "./shared";
 
 const removeUser = (
   io: Server,
-  user: string,
+  user: number,
   allowJoinbackIfInMatch: boolean = false
 ) => {
   const detail = socketDetails[user];
@@ -22,7 +22,7 @@ const removeUser = (
     if (detail.joinbackTimer) clearTimeout(detail.joinbackTimer);
     delete socketDetails[user];
     console.log("disconnecting all instances of", user);
-    io.in(user).disconnectSockets();
+    io.in(user.toString()).disconnectSockets();
     return;
   }
 
@@ -32,12 +32,12 @@ const removeUser = (
 
   // promote the other user the master to handle submission event
   match.isMaster = false;
-  const matchedDetail = socketDetails[match.user];
+  const matchedDetail = socketDetails[match.userId];
 
   if (matchedDetail?.joinbackTimer) {
     // the other user disconnected too, so we just remove both
     removeUser(io, user);
-    removeUser(io, match.user);
+    removeUser(io, match.userId);
     return;
   }
 
@@ -47,7 +47,7 @@ const removeUser = (
   }
 
   // match.user is the user that is matched with
-  io.to(match.user).emit("matchEnded", {
+  io.to(match.userId.toString()).emit("matchEnded", {
     joinback: true,
     reason: "Opponent disconnected",
     match: opponentRoom,
@@ -55,21 +55,21 @@ const removeUser = (
 
   detail.joinbackTimer = setTimeout(() => {
     removeUser(io, user);
-    io.to(match.user).emit("matchEnded", {
+    io.to(match.userId.toString()).emit("matchEnded", {
       joinback: false,
       reason: "Opponent did not join back",
     } as RoomCloseResponse);
-    removeUser(io, match.user);
+    removeUser(io, match.userId);
   }, 10000);
 };
 
 // restore user to queue or match
-const restore = (socket: Socket, user: string) => {
+const restore = (socket: Socket, user: number) => {
   console.log("restore match received from", socket.id, "for", user);
   const detail = socketDetails[user];
   if (!detail) return false;
 
-  socket.join(user);
+  socket.join(user.toString());
   sockToUser[socket.id] = user;
   detail.connectionCount++;
   if (!detail.match) {
@@ -103,11 +103,11 @@ const quitRoom = (io: Server, socket: Socket) => {
   const match = socketDetails[user]?.match;
   if (!match) return; // this shouldnt happen, but safe guard
   removeUser(io, user);
-  io.to(match.user).emit("matchEnded", {
+  io.to(match.userId.toString()).emit("matchEnded", {
     joinback: false,
     reason: "Opponent left the room",
   } as RoomCloseResponse);
-  removeUser(io, match.user);
+  removeUser(io, match.userId);
 };
 
 const handleMatchRequest = async (
@@ -115,24 +115,24 @@ const handleMatchRequest = async (
   socket: Socket,
   req: MatchRequest
 ) => {
-  console.log(`Match request received from ${req.username}`);
+  console.log(`Match request received from ${req.uid}`);
 
-  if (restore(socket, req.username)) return;
+  if (restore(socket, req.uid)) return;
   // no interleaving between sync blocks in Nodejs
   let detail: socketDetail = {
     UserDetail: {
       low: req.from,
       high: req.to,
       preferredQn: req.preferredQn,
-      user: req.username,
+      user: req.uid,
     },
     countdown: undefined,
     inQueue: false,
     connectionCount: 1,
   };
-  socketDetails[req.username] = detail;
-  sockToUser[socket.id] = req.username;
-  socket.join(req.username);
+  socketDetails[req.uid] = detail;
+  sockToUser[socket.id] = req.uid;
+  socket.join(req.uid.toString());
 
   let userInterval: UserInterval | undefined = detail.UserDetail;
 
@@ -153,12 +153,17 @@ const handleMatchRequest = async (
           clearInterval(userDet.countdown);
           return;
         }
-        io.to(userDet.UserDetail.user).emit("countdown", countdown--);
+        io.to(userDet.UserDetail.user.toString()).emit(
+          "countdown",
+          countdown--
+        );
       }, 1000);
       return;
     }
 
-    io.to([potMatch.user, userInterval.user]).emit("potentialMatch");
+    io.to([potMatch.user.toString(), userInterval.user.toString()]).emit(
+      "potentialMatch"
+    );
 
     let matchedUserDetail = socketDetails[potMatch.user];
     if (!matchedUserDetail) continue; // this shouldnt happen, but safe guard
@@ -174,7 +179,7 @@ const handleMatchRequest = async (
       ...match,
       isMaster: true,
     };
-    matchedUserDetail = socketDetails[match.user];
+    matchedUserDetail = socketDetails[match.userId];
 
     // matched user left/disconnected
     if (!matchedUserDetail) continue;
@@ -189,12 +194,12 @@ const handleMatchRequest = async (
     matchedUserDetail.match = {
       // update for matched user from interval tree
       ...match,
-      user: userInterval.user,
+      userId: userInterval.user,
       isMaster: false,
     };
 
     // update for this user from this socket
-    io.to(userInterval.user)
+    io.to(userInterval.user.toString())
       // .except(socket.id)
       .emit("matchFound", {
         ...detail.match,
@@ -202,7 +207,7 @@ const handleMatchRequest = async (
       } as Match);
 
     // update for matched partner from this socket
-    io.to(match.user).emit("matchFound", {
+    io.to(match.userId.toString()).emit("matchFound", {
       ...matchedUserDetail.match,
       init: false,
     } as Match);

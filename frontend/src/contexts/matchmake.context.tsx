@@ -13,7 +13,7 @@ import { wsMatchMakeURL } from "../api/gateway";
 import { ToastId, useToast, UseToastOptions } from "@chakra-ui/react";
 
 export interface Match {
-  user: string;
+  userId: number;
   room: string;
   questionId: string;
   isMaster: boolean;
@@ -204,7 +204,7 @@ export const MatchmakeProvider = ({
       duration: null,
     });
     socket.emit("findMatch", {
-      username: user.username,
+      uid: user.id,
       preferredQn: qn__id,
       from: diffStart,
       to: diffEnd,
@@ -233,7 +233,7 @@ export const MatchmakeProvider = ({
   const restoreRoom = () => {
     if (!socket || !user) return;
     if (!socket.connected) socket.connect();
-    socket.emit("restore", user.username);
+    socket.emit("restore", user.id);
   };
 
   const reloadRoom = () => {

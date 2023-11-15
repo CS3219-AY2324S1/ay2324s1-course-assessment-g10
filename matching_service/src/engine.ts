@@ -48,7 +48,7 @@ export const findMatch = (user: UserInterval): UserInterval | null => {
   return null;
 };
 
-export const createMatch = async (potMatch: UserInterval, user: string) => {
+export const createMatch = async (potMatch: UserInterval, uid: number) => {
   // interleaving can occur here
   const qn =
     potMatch.preferredQn ??
@@ -58,7 +58,7 @@ export const createMatch = async (potMatch: UserInterval, user: string) => {
 
   return {
     questionId: qn,
-    room: Buffer.from(`${user}${potMatch.user}/${qn}`).toString("base64"),
-    user: potMatch.user,
+    room: Buffer.from(`${uid}${potMatch.user}/${qn}`).toString("base64"),
+    userId: potMatch.user,
   };
 };

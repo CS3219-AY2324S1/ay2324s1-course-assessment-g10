@@ -1,7 +1,7 @@
 import { Interval } from "node-interval-tree";
 
 export interface EngineMatch {
-  user: string;
+  userId: number;
   room: string;
   questionId: string;
   isMaster: boolean;
@@ -18,14 +18,14 @@ export interface RoomCloseResponse {
 }
 
 export interface MatchRequest {
-  username: string;
+  uid: number;
   preferredQn?: string;
   from: number;
   to: number;
 }
 
 export interface UserInterval extends Interval {
-  user: string;
+  user: number;
   preferredQn?: string;
 }
 

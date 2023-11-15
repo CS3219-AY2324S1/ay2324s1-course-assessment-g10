@@ -14,10 +14,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post("/api/code/submit", async (req, res) => {
   try {
     // Extracts these 4 variables
-    const { lang, source_code, qn__id, uid } = req.body;
+    const { lang, source_code, qn__id, uids } = req.body;
     const randid = uuidv4();
 
-    runSubmission(randid, lang, qn__id, source_code, uid);
+    runSubmission(randid, lang, qn__id, source_code, uids);
     res.json({ token: randid });
   } catch (error) {
     console.error(error);

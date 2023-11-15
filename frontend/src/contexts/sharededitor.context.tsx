@@ -50,7 +50,7 @@ export type SubmissionResult = {
 
 export type submissionRecord = {
   time: number;
-  userId: number;
+  userIds: number[];
   qn_id: string;
   code: string;
   lang: language;
@@ -156,7 +156,7 @@ export const SharedEditorProvider = ({
       lang: submission.lang,
       source_code: submission.code,
       qn__id: submission.qn_id,
-      uid: submission.userId,
+      uids: submission.userIds,
     });
 
     const token = res.data.token as string;
@@ -200,7 +200,7 @@ export const SharedEditorProvider = ({
     if (!state || currSubmission || !lang || !ycode) return;
     const tmp: submissionRecord = {
       time: Date.now(),
-      userId: user.id,
+      userIds: matchedRoom ? [user.id, matchedRoom.userId] : [user.id],
       code: ycode.toString(),
       lang: lang,
       qn_id: qn?._id ?? "-1", // in case we implement a sandbox code editor
@@ -276,7 +276,7 @@ export const SharedEditorProvider = ({
           (ystates.get(SUBMISSION_STATE) as submissionRecord) ?? null;
         setCurrSubmission(newSubmission); // if react changes are propageted in the next cycle.
 
-        if (newSubmission && newSubmission.userId !== user.id) {
+        if (newSubmission && newSubmission.userIds[0] !== user.id) {
           if (!matchedRoom || matchedRoom.isMaster) {
             // if a master receive it
             if (!currSubmission) {
@@ -425,7 +425,6 @@ export const SharedEditorProvider = ({
     };
 
     const observeDocLoad = (e: Y.YMapEvent<any>, t: Y.Transaction) => {
-      if (t.local) return; // wait for our local change to propagaate back to us
       if (ystates.has(CODE_STATE)) {
         setCodeFromMap();
       }

@@ -149,7 +149,7 @@ export async function runSubmission(
   lang: string,
   qn__id: string,
   source_code: string,
-  userid: number
+  userids: number[]
 ) {
   const submissionTime = new Date();
   const resDat: submissionResult = {
@@ -186,5 +186,14 @@ export async function runSubmission(
   resDat.verdict = resDat.verdict === "Unknown" ? "Accepted" : resDat.verdict;
   resDat.completed = true;
 
-  submitSubmission(resDat.verdict, lang, qn__id, userid, source_code, submissionTime); // runs in the bg
+  for (const userid of userids) {
+    submitSubmission(
+      resDat.verdict,
+      lang,
+      qn__id,
+      userid,
+      source_code,
+      submissionTime
+    ); // runs in the bg
+  }
 }
