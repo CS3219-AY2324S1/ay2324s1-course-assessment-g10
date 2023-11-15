@@ -59,7 +59,7 @@ export default function ProfilePage() {
               )}
             </Flex>
           </Box>
-          <Box w="55%">
+          <Box w="65%">
             <ProgressBar />
             <SolvedTable pageSize={3} />
           </Box>
