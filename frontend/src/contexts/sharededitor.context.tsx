@@ -374,6 +374,35 @@ export const SharedEditorProvider = ({
     const _provider = new WebrtcProvider(roomvalue, doc, {
       signaling: [wsCollabUrl],
       filterBcConns: true,
+      peerOpts: {
+        config: {
+          iceServers: [
+            {
+              urls: "stun:stun.relay.metered.ca:80",
+            },
+            {
+              urls: "turn:a.relay.metered.ca:80",
+              username: "c72cc55907845d336e201a5a",
+              credential: "1dpTOETKvFt6g6Ei",
+            },
+            {
+              urls: "turn:a.relay.metered.ca:80?transport=tcp",
+              username: "c72cc55907845d336e201a5a",
+              credential: "1dpTOETKvFt6g6Ei",
+            },
+            {
+              urls: "turn:a.relay.metered.ca:443",
+              username: "c72cc55907845d336e201a5a",
+              credential: "1dpTOETKvFt6g6Ei",
+            },
+            {
+              urls: "turn:a.relay.metered.ca:443?transport=tcp",
+              username: "c72cc55907845d336e201a5a",
+              credential: "1dpTOETKvFt6g6Ei",
+            },
+          ],
+        },
+      },
     });
     setProvider(_provider);
 
