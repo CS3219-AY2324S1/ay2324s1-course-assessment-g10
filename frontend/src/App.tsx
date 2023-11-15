@@ -117,10 +117,16 @@ function App() {
   const finalRoutes = loggedInRoutes.concat(isAuthenticated && isAdmin ? adminOnlyRoutes : [])
 
   const router = createBrowserRouter([
-    {
+    
+    isAuthenticated ? {
       Component: NavbarWrapper,
-      children: isAuthenticated ? finalRoutes : publicRoutes,
-    },
+      children: finalRoutes,
+    } : {
+      children: publicRoutes
+    }
+    
+    
+    ,
     { path: "*", Component: PageNotFound },
   ]);
 
