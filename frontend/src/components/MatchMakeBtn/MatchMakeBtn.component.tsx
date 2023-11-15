@@ -42,13 +42,6 @@ const MatchMakeBtn = () => {
           icon={<Icon as={DisconnectIcon} />}
         />
       </Tooltip>
-      <Tooltip label="Open Chat" aria-label="collaborate">
-        <IconButton
-          aria-label="open_chat"
-          colorScheme="teal"
-          icon={<ChatIcon />}
-        />
-      </Tooltip>
     </ButtonGroup>
   ) : (
     <Menu>
@@ -61,6 +54,7 @@ const MatchMakeBtn = () => {
           <MenuButton as={Button} isLoading={isMatching}>
             Collaborate
           </MenuButton>
+          <Tooltip label="Reconnect" aria-label="collaborate">
           <IconButton
             aria-label="reconnect"
             icon={<RepeatClockIcon />}
@@ -68,6 +62,7 @@ const MatchMakeBtn = () => {
             onClick={restoreRoom}
             isLoading={isMatching}
           />
+          </Tooltip>
         </ButtonGroup>
       )}
 
