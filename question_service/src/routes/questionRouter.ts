@@ -7,14 +7,13 @@ import {
   fetchQuestion,
   fetchARandomQuestion,
 } from "../controller/questionController";
-import { upload } from "../middleware/storage";
 
 const router = express.Router();
 
 router.get("/", fetchAllQuestions);
-router.post("/", upload.single("testcases"), addQuestion);
+router.post("/", addQuestion);
 router.get("/:id", fetchQuestion);
-router.put("/:id", upload.single("testcases"), updateQuestion);
+router.put("/:id", updateQuestion);
 router.delete("/:id", deleteQuestion);
 router.post("/random", fetchARandomQuestion);
 

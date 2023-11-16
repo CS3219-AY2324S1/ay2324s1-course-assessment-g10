@@ -1,58 +1,5 @@
 import Question from '../model/questionModel';
 import { getNextSequenceValue } from './counterController';
-import AdmZip from 'adm-zip';
-import fs from 'fs-extra';
-import path from 'path';
-
-async function handleTestCaseUpload(questionId : string, zipFilePath : string) {
-    try {
-        const zip = new AdmZip(zipFilePath);
-        const outDir = `/app/question_test_cases/${questionId}/`;
-        zip.extractAllTo(outDir, true);
-
-
-        //only store .in file if .out file exists
-        const files = await fs.readdir(outDir);
-        const inFiles = files.filter(file => file.endsWith('.in'));
-        const outFiles = files.filter(file => file.endsWith('.out'));
-
-        const invalidInFiles = inFiles.filter(inFile => {
-            const correspondingOutFile = inFile.replace('.in', '.out');
-            return !files.includes(correspondingOutFile);
-        });
-
-        const invalidOutFiles = outFiles.filter(outFile => {
-            const correspondingInFile = outFile.replace('.out', '.in');
-            return !files.includes(correspondingInFile);
-        });
-
-        const randomFiles = files.filter(file => !(file.endsWith('.in') || file.endsWith('.out')));
-
-        await Promise.all(invalidInFiles.map(async file => {
-            await fs.rm(path.join(outDir, file), { recursive: true, force: true });
-        }))
-
-        await Promise.all(invalidOutFiles.map(async file => {
-            await fs.rm(path.join(outDir, file), { recursive: true, force: true });
-        }))
-
-        await Promise.all(randomFiles.map(async file => {
-            await fs.rm(path.join(outDir, file), { recursive: true, force: true });
-        }))
-
-        const remainingFiles = await fs.readdir(outDir);
-        if (remainingFiles.length === 0) {
-            throw Error('no files uploaded!');
-        }
-
-    } catch (error : any) {
-        console.error('Error uploading files:', error.message);
-        throw Error(`Error uploading files: ${error.message}`);
-    } finally {
-        await fs.unlink(zipFilePath);
-    }
-
-}
 
 //@desc     fetch all questions
 //@route    GET /api/questions
@@ -128,10 +75,10 @@ export const fetchARandomQuestion = async (req : any, res : any) => {
 //@access   admin only
 export const addQuestion = async (req : any, res : any) => {
 
-    const questionData = JSON.parse(req.body.question);
+    const questionData = req.body;
     const { title, description, topics, difficulty } = questionData;
 
-    if (!title || !description || !topics || !difficulty || !req.file) {
+    if (!title || !description || !topics || !difficulty) {
         console.log(req.body)
         return res.status(400).json({ message: 'Please enter all fields' })
     }
@@ -142,8 +89,6 @@ export const addQuestion = async (req : any, res : any) => {
         const question = await Question.create({
             id, title, description, topics, difficulty
         })
-
-        await handleTestCaseUpload(question._id.toString(), req.file.path);
 
         res.status(201).json({
             id : question.id,
@@ -163,7 +108,7 @@ export const addQuestion = async (req : any, res : any) => {
 // @access  admin only
 export const updateQuestion = async (req : any, res : any) => {
 
-    const questionData = JSON.parse(req.body.question);
+    const questionData = req.body;
 
     const { title, description, topics, difficulty } = questionData
 
@@ -172,10 +117,6 @@ export const updateQuestion = async (req : any, res : any) => {
     }
 
     try {
-        if (req.file) {
-            await handleTestCaseUpload(req.params.id, req.file.path);
-        }
-
         // function provided by mongoose to find an Question document with a given ID
         // req.params.id is retrieved from /:id in route
         const question = await Question.findById(req.params.id)
@@ -219,11 +160,6 @@ export const deleteQuestion = async (req : any, res : any) => {
       const question = await Question.findById(req.params.id);
       if (question === null) {
         throw Error("Invalid ID. Question not found in database.");
-      }
-
-      const testcases = `/app/question_test_cases/${question._id}/`;
-      if (fs.existsSync(testcases)) {
-        await fs.rm(testcases, { recursive: true });
       }
       await question.deleteOne();
       res.status(200).json({ message: "Question removed" });

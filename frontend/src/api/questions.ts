@@ -1,9 +1,9 @@
 import { AxiosResponse } from "axios";
 import { Question } from "../models/Question.model";
-import { apiGatewayClient } from "./gateway";
+import { qnServiceClient } from "./gateway";
 
 export async function fetchAllQuestions() {
-    const response = await apiGatewayClient.get('/api/questions');
+    const response = await qnServiceClient.get('/api/questions');
 
     const resData = response.data;
     const questions : Question[] = resData.map((q : any) => new Question(q._id, q.id, q.title, q.description, q.topics, q.difficulty))
@@ -18,7 +18,7 @@ export async function fetchAllQuestions() {
  */
 export async function fetchQuestion(_id: string) {
     try {
-        const response = await apiGatewayClient.get(`/api/questions/${_id}`);
+        const response = await qnServiceClient.get(`/api/questions/${_id}`);
     
         const resData = response.data;
         const resQuestion : Question = new Question(
@@ -41,18 +41,14 @@ export async function fetchQuestion(_id: string) {
  * @param question The question to add to the database
  * @returns
  */
-export async function addQuestion(question : Question, testCasesFile : File) {
+export async function addQuestion(question: Question) {
 
-    const formData = new FormData();
-    formData.append("testcases", testCasesFile);
-    formData.append("question", JSON.stringify({
+    const response: AxiosResponse = await qnServiceClient.post('/api/questions', {
         title: question.title,
         description: question.descMd,
         topics: question.topics,
         difficulty: question.difficulty
-    })) 
-
-    const response : AxiosResponse = await apiGatewayClient.post('/api/questions', formData);
+    });
 
     const resData = response.data;
     
@@ -71,7 +67,7 @@ export async function addQuestion(question : Question, testCasesFile : File) {
  * @param _id The uuid identifying the question resource
  */
 export async function delQuestion(_id : string) {
-    const response = await apiGatewayClient.delete(`/api/questions/${_id}`);
+    const response = await qnServiceClient.delete(`/api/questions/${_id}`);
 
     return response;
 }
@@ -84,21 +80,14 @@ export async function delQuestion(_id : string) {
  * @param question The new question info to add to the database
  * @returns
  */
-export async function updateQuestion(_id: string, question: Question, testCasesFile : File | null) {
+export async function updateQuestion(_id: string, question: Question) {
 
-    const formData = new FormData();
-    if (testCasesFile !== null) {
-        formData.append("testcases", testCasesFile);
-    }
-    
-    formData.append("question", JSON.stringify({
+    const response: AxiosResponse = await qnServiceClient.put(`/api/questions/${_id}`, {
         title: question.title,
         description: question.descMd,
         topics: question.topics,
         difficulty: question.difficulty
-    })) 
-
-    const response : AxiosResponse = await apiGatewayClient.put(`/api/questions/${_id}`, formData)
+    })
 
     const resData = response.data;
     const resQuestion : Question = new Question(
