@@ -13,7 +13,3 @@ Ensure that node version is at v18.18.x
 4. After installing correctly
 5. Webpage should be accessible at http://localhost:3000
 
-
-
-
-

@@ -1,32 +1,5 @@
 version: '3'
 services:
-  question-service:
-    container_name: question-service
-    build: 
-      context: ./question_service
-    environment:
-      - MONGODB_URI=mongodb://mongo:27017/question_service
-      - PORT=8080
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mongo
-
-  user-service:
-    container_name: user-service
-    build: 
-      context: ./user_service
-    environment:
-      PORT: 8081
-      SECRET_KEY: ${SECRET_KEY}
-
-    ports:
-      - "8081:8081"
-    depends_on:
-      - postgres
-    volumes:
-      - profile_pictures:/usr/src/app/public/profile_pictures
-
   mongo:
     container_name: mongo
     image: mongo:6.0
@@ -51,5 +24,3 @@ services:
 volumes:
   postgres_data:
   mongo-dev-data:
-  questions_test_cases:
-  profile_pictures:
