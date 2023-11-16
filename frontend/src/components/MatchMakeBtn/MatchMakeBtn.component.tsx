@@ -1,14 +1,12 @@
-import { ChatIcon, ChevronDownIcon, RepeatClockIcon } from "@chakra-ui/icons";
+import { RepeatClockIcon } from "@chakra-ui/icons";
 import {
   Button,
   ButtonGroup,
-  HStack,
   IconButton,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
-  Text,
   Icon,
   Tooltip,
 } from "@chakra-ui/react";
@@ -55,13 +53,13 @@ const MatchMakeBtn = () => {
             Collaborate
           </MenuButton>
           <Tooltip label="Reconnect" aria-label="collaborate">
-          <IconButton
-            aria-label="reconnect"
-            icon={<RepeatClockIcon />}
-            variant="outline"
-            onClick={restoreRoom}
-            isLoading={isMatching}
-          />
+            <IconButton
+              aria-label="reconnect"
+              icon={<RepeatClockIcon />}
+              variant="outline"
+              onClick={restoreRoom}
+              isLoading={isMatching}
+            />
           </Tooltip>
         </ButtonGroup>
       )}
