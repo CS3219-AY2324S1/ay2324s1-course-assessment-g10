@@ -70,7 +70,6 @@ export function QnTable(pp: TableProp) {
                 <Th>
                   <Center>Difficulty</Center>
                 </Th>
-                <Th> Match </Th>
                 {isAdmin ? <Th isNumeric>Modify/Delete</Th> : <></>}
               </Tr>
             </Thead>
