@@ -23,22 +23,4 @@ model User {
   bio               String?
   hashedPassword    String
   role              Role               @default(USER)
-  answeredQuestions AnsweredQuestion[]
-}
-
-model AnsweredQuestion {
-  id            String   @id @default(uuid())
-  userId        Int
-  user          User     @relation(fields: [userId], references: [id])
-  questionTitle String
-  questionId    Int
-  question__id  String
-  difficulty    Float
-  topics        String[]
-  sourceCode    String
-  language      String
-  verdict       String
-  answeredAt    DateTime @default(now())
-
-  @@map("AnsweredQuestion")
 }

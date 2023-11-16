@@ -30,21 +30,16 @@ const CreateQuestion = () => {
   };
 
   //actual submit function that calls the API
-  const trySubmit = async (qn: Question, testCasesFile : File | null) => {
+  const trySubmit = async (qn: Question) => {
     try {
-      if (testCasesFile === null) {
-        throw Error('Please upload a testcase file!');
-      }
-
-      const questionFromResponse : Question = await addQuestion(qn, testCasesFile);
+      const questionFromResponse: Question = await addQuestion(qn);
 
       dispatch(addQuestions([questionFromResponse]));
       nav(-1);
-      
     } catch (error) {
       throw error;
     }
-  }
+  };
 
   return <QuestionEditor onSubmit={process.env.REACT_APP_ENV_TYPE === 'prod' ? trySubmit : trySubmitDev} onCancel={() => nav(-1)} />;
 };

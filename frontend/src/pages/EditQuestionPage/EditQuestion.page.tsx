@@ -16,11 +16,11 @@ const EditQuestion = () => {
     nav(-1);
   };
 
-  const updateQn = async (qn : Question, testCasesFile : File | null) => {
-    const updatedQn : Question = await updateQuestion(qn._id, qn, testCasesFile);
+  const updateQn = async (qn: Question) => {
+    const updatedQn: Question = await updateQuestion(qn._id, qn);
     dispatch(modifyQuestion(updatedQn));
     nav(-1);
-  } 
+  }; 
 
   return (
     <QuestionEditor
