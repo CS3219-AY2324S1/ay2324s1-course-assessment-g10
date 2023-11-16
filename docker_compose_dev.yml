@@ -27,15 +27,6 @@ services:
     volumes:
       - profile_pictures:/usr/src/app/public/profile_pictures
 
-  matching-service:
-    container_name: matching-service
-    build:
-      context: ./matching_service
-    environment:
-      - PORT=8082
-    ports:
-      - "8082:8082"
-
   mongo:
     container_name: mongo
     image: mongo:6.0

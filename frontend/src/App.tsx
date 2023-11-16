@@ -27,17 +27,14 @@ import { getSessionUser } from "./api/auth";
 import { useToast } from "@chakra-ui/toast";
 import CreateQuestion from "./pages/CreateQuestionPage/CreateQuestion.page";
 import EditQuestion from "./pages/EditQuestionPage/EditQuestion.page";
-import { MatchmakeProvider } from "./contexts/matchmake.context";
 import ProfilePage from "./pages/ProfilePage";
 
 const NavbarWrapper = () => (
   <div>
-    <MatchmakeProvider>
-      <Navbar />
-      <Box width="100%" height="90vh">
-        <Outlet />
-      </Box>
-    </MatchmakeProvider>
+    <Navbar />
+    <Box width="100%" height="90vh">
+      <Outlet />
+    </Box>
   </div>
 );
 

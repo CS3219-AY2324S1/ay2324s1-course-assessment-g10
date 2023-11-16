@@ -1,5 +1,4 @@
 import {
-  Button,
   ButtonGroup,
   Center,
   HStack,
@@ -16,7 +15,6 @@ import { EditIcon } from "@chakra-ui/icons";
 import { useDispatch } from "react-redux";
 import { delQuestion } from "../../api/questions";
 import { deleteQuestion } from "../../reducers/questionsSlice";
-import { useMatchmake } from "../../contexts/matchmake.context";
 import { rangeToScheme } from "../../helper/DifficultyFilterHelper";
 
 interface QuestionEntryProps {
@@ -25,17 +23,7 @@ interface QuestionEntryProps {
 }
 
 export function QuestionEntry(props: QuestionEntryProps) {
-
   const { qn, isAdmin } = props;
-  const {
-    findMatch,
-    isMatching,
-    matchedRoom,
-    timeLeft,
-    cancelMatch,
-    restoreRoom,
-    quitRoom,
-  } = useMatchmake();
 
   const dispatch = useDispatch();
 
@@ -64,14 +52,6 @@ export function QuestionEntry(props: QuestionEntryProps) {
           <Tag colorScheme={rangeToScheme(qn.difficulty)}>{qn.difficulty}</Tag>
         </Center>
       </Td>
-      <Td>
-        <Button colorScheme="teal"
-          size='sm'
-          isLoading={isMatching}
-          onClick={() => findMatch(qn.difficulty, qn.difficulty, qn._id)}>
-          Look for Match
-        </Button>
-      </Td>
       {isAdmin ? (
         <Td>
           <ButtonGroup>
@@ -92,4 +72,4 @@ export function QuestionEntry(props: QuestionEntryProps) {
       )}
     </Tr>
   );
-};
+}

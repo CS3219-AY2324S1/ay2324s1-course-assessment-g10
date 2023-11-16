@@ -9,7 +9,6 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectIsAdmin, selectIsAuthenticated } from "../../reducers/authSlice";
 import LogoutButton from "../auth/LogoutButton";
-import MatchMakeBtn from "../MatchMakeBtn/MatchMakeBtn.component";
 
 export const Navbar = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -46,7 +45,6 @@ export const Navbar = () => {
         </HStack>
 
         <HStack>
-          <MatchMakeBtn />
           {isAuthenticated ? (
             <>
               <LogoutButton />
