@@ -12,7 +12,6 @@ import {
 import { Paginator } from "../Paginator/Paginator.component";
 import { Question } from "../../models/Question.model";
 import { useSelector } from "react-redux";
-import { selectIsAdmin } from "../../reducers/authSlice";
 import { QuestionEntry } from "./QuestionEntry.component";
 
 export type TableProp = {
@@ -24,7 +23,6 @@ export type TableProp = {
 export function QnTable(pp: TableProp) {
   const { filteredQn, pageSize = 10 } = pp;
   const [pageNumber, changePage] = useState(1);
-  const isAdmin = useSelector(selectIsAdmin);
 
   const getCurrentPage = (x: number) => {
     return filteredQn.slice(
@@ -70,12 +68,12 @@ export function QnTable(pp: TableProp) {
                 <Th>
                   <Center>Difficulty</Center>
                 </Th>
-                {isAdmin ? <Th isNumeric>Modify/Delete</Th> : <></>}
+                <Th>Modify/Delete</Th>
               </Tr>
             </Thead>
             <Tbody>
               {getCurrentPage(pageNumber).map((qn) =>
-                QuestionEntry({ qn: qn, isAdmin: isAdmin })
+                QuestionEntry({ qn: qn })
               )}
             </Tbody>
           </Table>

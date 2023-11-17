@@ -19,11 +19,10 @@ import { rangeToScheme } from "../../helper/DifficultyFilterHelper";
 
 interface QuestionEntryProps {
   qn: Question;
-  isAdmin: boolean;
 }
 
 export function QuestionEntry(props: QuestionEntryProps) {
-  const { qn, isAdmin } = props;
+  const { qn } = props;
 
   const dispatch = useDispatch();
 
@@ -52,24 +51,21 @@ export function QuestionEntry(props: QuestionEntryProps) {
           <Tag colorScheme={rangeToScheme(qn.difficulty)}>{qn.difficulty}</Tag>
         </Center>
       </Td>
-      {isAdmin ? (
-        <Td>
-          <ButtonGroup>
-            <Link to={`/edit/${qn._id}`}>
-              <IconButton
-                aria-label="Edit question"
-                icon={<EditIcon />}
-              ></IconButton>
-            </Link>
-            <DeleteQnBtn
-              qn={qn}
-              onSubmit={() => onDelete(qn._id)}
-            ></DeleteQnBtn>
-          </ButtonGroup>
-        </Td>
-      ) : (
-        <></>
-      )}
+
+      <Td>
+        <ButtonGroup>
+          <Link to={`/edit/${qn._id}`}>
+            <IconButton
+              aria-label="Edit question"
+              icon={<EditIcon />}
+            ></IconButton>
+          </Link>
+          <DeleteQnBtn
+            qn={qn}
+            onSubmit={() => onDelete(qn._id)}
+          ></DeleteQnBtn>
+        </ButtonGroup>
+      </Td>
     </Tr>
   );
 }

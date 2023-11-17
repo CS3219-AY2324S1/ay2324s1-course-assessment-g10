@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo } from "react";
 import { Question } from "../models/Question.model";
 import { useSelector } from "react-redux";
-import { User, selectUser } from "../reducers/authSlice";
 import { Navigate, useLoaderData } from "react-router-dom";
 import data from "../data/lang_temps.json";
 
@@ -53,13 +52,12 @@ export const SharedEditorProvider = ({
   children: React.ReactNode;
 }) => {
   const qn = useLoaderData() as Question | undefined;
-  const user = useSelector(selectUser) as User; // null check should be done before this
 
   const memo = useMemo(() => {
     return {
       qn,
     };
-  }, [qn, user]);
+  }, [qn]);
 
   return (
     <SharedEditorContext.Provider value={memo}>

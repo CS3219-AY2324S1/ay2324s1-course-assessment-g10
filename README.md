@@ -1,15 +1,8 @@
-# Assignment 2 Running Instructions
+# Assignment 1 Running Instructions
 
 ## Deliverables
 
-- Show that User Service works with CRUD
-- Integrate Qn Service Frontend and Backend
-
-To run user service and question service, we need their dependencies:
-- User Service is dependent on Postgres
-- Qn Service is dependent on MongoDB
-
-> Docker-compose project is set up for running mongodb and postgreSQL service.
+- Frontend Question Repository with CRUD functionality
 
 ## Setting up .env files
 1. In the root of the repository, set up `.env` files for running the 2 database services
