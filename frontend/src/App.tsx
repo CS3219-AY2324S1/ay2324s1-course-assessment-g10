@@ -70,45 +70,10 @@ let firstLoad = true;
 function App() {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const isAdmin = useSelector(selectIsAdmin);
-  const dispatch = useDispatch();
-  const toast = useToast();
 
   /**
    * Attempt to load the previously logged in user if their cookie still exists
    */
-
-  useEffect(() => {
-    console.log(`first load: ${firstLoad}`);
-    console.log(process.env.REACT_APP_ENV_TYPE);
-    if (process.env.REACT_APP_ENV_TYPE === "prod") {
-      console.log("running in prod");
-    }
-
-    if (firstLoad && process.env.REACT_APP_ENV_TYPE === "prod") {
-      firstLoad = false;
-      getSessionUser()
-        .then((fetchedUser) => {
-          console.log(fetchedUser);
-
-          if (!fetchedUser) {
-            console.log("no user fetched!");
-            dispatch(clearUser()); //clear authSlice user if somehow still exists
-          } else {
-            dispatch(setUser(fetchedUser));
-          }
-        })
-        .catch((err) => {
-          toast({
-            description: "Please login again",
-            status: "warning",
-            isClosable: true,
-          });
-
-          console.error(err.message);
-        });
-    }
-  });
-
   console.log(isAuthenticated);
 
   const finalRoutes = loggedInRoutes.concat(isAuthenticated && isAdmin ? adminOnlyRoutes : [])

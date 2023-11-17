@@ -2,7 +2,7 @@
 
 1. Install relevant node libraries
    - Run `npm i`
-2. Ensure MongoDB service is running on your localhost
+2. Ensure PostgreSQL service is running on your localhost
 3. Start the server
    - Run `npm run start`
 
@@ -14,5 +14,5 @@
    - This will start this backend server as a docker container
    - Since this service depends on a mongodb service, a mongo server is also started in another container
 
-3. The server should be accessible via the endpoint localhost:8081/api/questions/
+3. The server should be accessible via the endpoint localhost:8081
 
