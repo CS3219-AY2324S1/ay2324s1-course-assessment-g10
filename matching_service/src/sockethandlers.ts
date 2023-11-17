@@ -6,7 +6,7 @@ import {
   UserInterval,
   socketDetail,
 } from "./types";
-import { addInterval, createMatch, findMatch, removeInterval } from "./engine";
+import { addInterval, createMatch, findMatch, printQueue, removeInterval } from "./engine";
 import { sockToUser, socketDetails } from "./shared";
 
 const removeUser = (
@@ -94,6 +94,7 @@ const remove = (io: Server, socket: Socket, disconnect: boolean = false) => {
 
   if (!user) return; // user already been removed/cleared
   removeUser(io, user, disconnect);
+  printQueue();
 };
 
 const quitRoom = (io: Server, socket: Socket) => {
@@ -103,6 +104,7 @@ const quitRoom = (io: Server, socket: Socket) => {
   const match = socketDetails[user]?.match;
   if (!match) return; // this shouldnt happen, but safe guard
   removeUser(io, user);
+  printQueue();
   io.to(match.userId.toString()).emit("matchEnded", {
     joinback: false,
     reason: "Opponent left the room",
@@ -144,6 +146,7 @@ const handleMatchRequest = async (
       // no match found, adding to interval tree
       console.log("Adding user to engine:", userInterval.user);
       addInterval(userInterval);
+      printQueue();
       detail.inQueue = true;
       let countdown = 29;
       const userDet = detail;
@@ -164,6 +167,7 @@ const handleMatchRequest = async (
     io.to([potMatch.user.toString(), userInterval.user.toString()]).emit(
       "potentialMatch"
     );
+    printQueue();
 
     let matchedUserDetail = socketDetails[potMatch.user];
     if (!matchedUserDetail) continue; // this shouldnt happen, but safe guard

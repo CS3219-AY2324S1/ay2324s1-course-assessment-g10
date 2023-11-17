@@ -7,6 +7,9 @@ const tree = new IntervalTree<UserInterval>();
 
 export const addInterval = (interval: UserInterval) => tree.insert(interval);
 export const removeInterval = (interval: UserInterval) => tree.remove(interval);
+export const printQueue = () => {
+  console.log("queue status:", tree.search(-Infinity, Infinity));
+}
 export const findOverlaps = (low: number, high: number) =>
   tree.search(low, high);
 const overlapOf = (
