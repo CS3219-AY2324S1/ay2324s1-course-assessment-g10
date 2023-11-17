@@ -3,40 +3,27 @@
 ## Deliverables
 
 - Frontend Question Repository with CRUD functionality
+- Persistence when creating/updating/deleting the question repository
 
 ## Setting up .env files
-1. In the root of the repository, set up `.env` files for running the 2 database services
-   ```.env
-    POSTGRES_USER="user"
-    POSTGRES_PASSWORD="test_pass1234"
-    POSTGRES_DB="user-service"
-    PG_PORT=5432
-   ```
 
-2. In `./user_service`, set up `.env` as such
-    ```
-    DATABASE_URL="postgresql://user:test_pass1234@localhost:5432/user-service?schema=public"
-    SECRET_KEY="hello_world!"
-    ```
-
-3. In `./question_service`, set up `.env` as such
+1. In `./question_service`, set up `.env` as such
 
     ```
     MONGODB_URI=mongodb://localhost:27017/question_service
     ```
 
-4. No `.env` files needed for Frontend
+2. No `.env` files needed for Frontend
 
 ## Running instructions
-0. Set up .env files in 
-1. Start User Service and PostgreSQL 
-2. Start Question Service and MongoDB
-3. Start Frontend
+0. Set up .env files in `./question_service`
+1. Start Question Service and MongoDB
+2. Start Frontend
 
 
 ## Detailed Running Instructions
 
-1. **Start MongoDB and PostgreSQL** service using docker-compose project located at root of the repository: `./docker_compose_dev.yml`
+1. **Start MongoDB** service using docker-compose project located at root of the repository: `./docker_compose_dev.yml`
 
 
     > ```bash
@@ -44,51 +31,7 @@
     > docker compose -f ./docker_compose_dev.yml up --build
     >  ```
 
-2. **Starting User Service**
-   1. Navigate to `./user_service`
-   2. Install all npm libraries
-        ```bash
-        npm i  #installs all relevant node modules
-        npx prisma generate #initializes the prisma client
-        ```
-
-        Sample output after running `npx prisma generate`:
-        ```
-        Environment variables loaded from .env
-        Prisma schema loaded from prisma\schema.prisma
-        
-        ✔ Generated Prisma Client (v5.6.0) to .\node_modules\@prisma\client in 88ms
-        
-        Start using Prisma Client in Node.js (See: https://pris.ly/d/client)
-        ```
-
-    3. Run User Service
-        ```bash
-        npm run start  #starts the server
-        ```
-
-        Sample output:
-        ```
-        > user_service@1.0.0 start
-        > npm run migrate && ts-node src/index.ts
-
-
-        > user_service@1.0.0 migrate
-        > npx prisma db push
-
-        Environment variables loaded from .env
-        Prisma schema loaded from prisma\schema.prisma
-        Datasource "db": PostgreSQL database "user-service", schema "public" at "localhost:5432"
-
-        Your database is now in sync with your Prisma schema. Done in 123ms
-
-        ✔ Generated Prisma Client (v5.6.0) to .\node_modules\@prisma\client in 117ms
-
-        Initial Admin created!
-        User service is running on http://localhost:8081
-        ```
-
-3. **Starting Question Service**
+1. **Starting Question Service**
    1. Navigate to `./question_service`
    2. Install node modules: `npm i`
    3. Start question service `npm run start`
@@ -109,7 +52,7 @@
         Questions population completed.
         ```
 
-4. Start the frontend
+2. Start the frontend
    1. Navigate to `./frontend`
    2. Install node modules: `npm i`
    3. Start: `npm run prod`
@@ -121,11 +64,43 @@
     Error: P1000: Authentication failed against database server at `localhost`, the provided database credentials for `user` are not valid.
     ```
 
-    > -  Make sure you do not have another PostgreSQL/MongoDB service running on `localhost`
-    > - Make sure you set the `.env` files correctly at root and in the `user_service` folders
+    > - Make sure you do not have another PostgreSQL/MongoDB service running on `localhost`
+    > - Make sure you set the `.env` files correctly at root and in the `question_service` folders
 
 2. After I refresh the page, all my changes to the questions repository were not preserved!
    > Make sure you are running the frontend with `npm run prod` and not `npm run start`. The latter only makes changes to the redux state and does not call the qn service backend!
    >
    > You will know you ran `npm run start` if there are 20 questions displayed in the bank page. 
    > `npm run prod` displays 9 because there are only 9 questions populated in the DB
+
+
+3. I am getting network error when deleting questions!
+   
+   > - Make sure you run `npm run prod` instead of `npm run start` for the frontend
+   > - Make sure question service is up and running on `localhost:8080`
+
+4. The question service crashed with the following message:
+
+    ```
+    MongooseServerSelectionError: connect ECONNREFUSED ::1:27017
+        at _handleConnectionErrors 
+        ...
+        at processTimers (node:internal/timers:512:7) {
+    reason: TopologyDescription {
+        type: 'Unknown',
+        servers: Map(1) { 'localhost:27017' => [ServerDescription] },
+        stale: false,
+        compatible: true,
+        heartbeatFrequencyMS: 10000,
+        localThresholdMS: 15,
+        setName: null,
+        maxElectionId: null,
+        maxSetVersion: null,
+        commonWireVersion: 0,
+        logicalSessionTimeoutMinutes: null
+    },
+    code: undefined
+    }
+    Unable to establish connection with MongoDB service... Please check if the service is running
+    ```
+    > - Make sure your MongoDB is running at `localhost:27017`. Easiest way to do this is to run the service as a docker container. We have provided a `./docker_compose_dev.yml` at the root of the repository to help with running the MongoDB service
