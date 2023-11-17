@@ -8,19 +8,5 @@ services:
     volumes:
       - mongo-dev-data:/data/db
 
-  postgres:    
-    container_name: postgres
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      PG_PORT: ${PG_PORT}
-    ports:
-      - "${PG_PORT}:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-
 volumes:
   postgres_data:
-  mongo-dev-data:
