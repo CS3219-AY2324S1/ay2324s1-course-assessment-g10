@@ -35,13 +35,14 @@ To run user service and question service, we need their dependencies:
 4. No `.env` files needed for Frontend
 
 ## Running instructions
-0. Set up .env files in 
+0. Set up .env files in the directories mentioned above
 1. Start User Service and PostgreSQL 
 2. Start Question Service and MongoDB
 3. Start Frontend
 
 
 ## Detailed Running Instructions
+0. Set up .env files in the directories mentioned above
 
 1. **Start MongoDB and PostgreSQL** service using docker-compose project located at root of the repository: `./docker_compose_dev.yml`
 
