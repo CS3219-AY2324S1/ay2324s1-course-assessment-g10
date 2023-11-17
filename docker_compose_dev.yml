@@ -6,6 +6,7 @@ services:
       context: ./question_service
     environment:
       - MONGODB_URI=mongodb://mongo:27017/question_service
+      - SECRET_KEY=${SECRET_KEY}
       - PORT=8080
     ports:
       - "8080:8080"
@@ -19,7 +20,7 @@ services:
     environment:
       PORT: 8081
       SECRET_KEY: ${SECRET_KEY}
-
+      DATABASE_URL: ${DATABASE_URL}
     ports:
       - "8081:8081"
     depends_on:
