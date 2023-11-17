@@ -9,4 +9,4 @@ services:
       - mongo-dev-data:/data/db
 
 volumes:
-  postgres_data:
+  mongo-dev-data:
