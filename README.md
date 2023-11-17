@@ -45,7 +45,6 @@ To run user service and question service, we need their dependencies:
 
 1. **Start MongoDB and PostgreSQL** service using docker-compose project located at root of the repository: `./docker_compose_dev.yml`
 
-
     > ```bash
     > # navigate to root of repository
     > docker compose -f ./docker_compose_dev.yml up --build

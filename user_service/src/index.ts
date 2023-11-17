@@ -5,7 +5,10 @@ import authRouter from './routes/authRoutes'
 import { Request } from "express";
 import cors from "cors";
 import { setupAdminUser } from './config/initialSetup';
+import dotenv from 'dotenv';
 
+
+dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8081;
 const corsOptions = {
