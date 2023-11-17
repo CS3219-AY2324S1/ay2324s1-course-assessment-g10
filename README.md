@@ -29,6 +29,7 @@ To run user service and question service, we need their dependencies:
 
     ```
     MONGODB_URI=mongodb://localhost:27017/question_service
+    SECRET_KEY="hello_world!"
     ```
 
 4. No `.env` files needed for Frontend
