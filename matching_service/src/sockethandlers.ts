@@ -167,6 +167,7 @@ const handleMatchRequest = async (
     io.to([potMatch.user.toString(), userInterval.user.toString()]).emit(
       "potentialMatch"
     );
+    console.log("Potential match found! >>> ", [potMatch.user.toString(), userInterval.user.toString()])
     printQueue();
 
     let matchedUserDetail = socketDetails[potMatch.user];
@@ -202,6 +203,7 @@ const handleMatchRequest = async (
       isMaster: false,
     };
 
+    console.log("Match found!! >>> ", [potMatch.user.toString(), userInterval.user.toString()]);
     // update for this user from this socket
     io.to(userInterval.user.toString())
       // .except(socket.id)
