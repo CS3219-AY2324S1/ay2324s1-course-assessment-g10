@@ -1,0 +1,38 @@
+name: Deployment Workflow
+
+on:
+    workflow_dispatch:
+    workflow_run:
+      workflows: ["Build and Push to Artifact Registry"]
+      types:
+        - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: "Set up google auth"
+        id: auth
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.SERVICE_ACCOUNT_KEY }}"
+
+      - name: "Use gcloud CLI"
+        run: "gcloud info"
+
+      - name: "SSH to VM"
+        id: 'compute-ssh'
+        uses: 'google-github-actions/ssh-compute@v0'
+        with:
+          instance_name: 'peerprep-prod'
+          zone: 'asia-southeast1-b'
+          ssh_private_key: '${{ secrets.SSH_KEY }}'
+          command: 'echo "${{ secrets.ENV_FILE }}" | sudo tee /usr/src/peerprep/.env > /dev/null && sudo chmod 777 /usr/src/peerprep/scripts/init.sh && sudo /usr/src/peerprep/scripts/init.sh'
+
+      - id: 'test'
+        run: |-
+          echo '${{ steps.compute-ssh.outputs.stdout }}'
+          echo '${{ steps.compute-ssh.outputs.stderr }}'

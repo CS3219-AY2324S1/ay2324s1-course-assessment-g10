@@ -1,0 +1,172 @@
+version: '3'
+services:
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        - REACT_APP_BACKEND_HOST=${REACT_APP_BACKEND_HOST}
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/frontend:latest
+    environment:
+      - REACT_APP_ENV_TYPE=prod
+    ports:
+      - "80:80"
+
+  api-gateway:
+    container_name: api-gateway
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/api-gateway:latest
+    build:
+      context: ./api_gateway
+      dockerfile: Dockerfile.prod
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      ENV_TYPE: docker
+    ports:
+      - "8000:8000"
+      - "7999:7999"
+      - "7998:7998"
+    depends_on:
+      - question-service
+      - user-service
+      - matching-service
+      - collab-service
+  
+  question-service:
+    container_name: question-service
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/question-service:latest
+    build: 
+      context: ./question_service
+      dockerfile: Dockerfile.prod
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/question_service
+      - PORT=8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+    volumes:
+      - questions_test_cases:/app/question_test_cases
+
+  collab-service:
+    container_name: collab-service
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/collab-service:latest
+    environment:
+      PORT: 8083
+    build:
+      context: ./collab_service
+      dockerfile: Dockerfile  #no need for prod file since the server is so basic
+    ports:
+      - "8083:8083"
+
+  user-service:
+    container_name: user-service
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/user-service:latest
+    build: 
+      context: ./user_service
+      dockerfile: Dockerfile.prod
+    environment:
+      PORT: 8081
+      SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: ${DATABASE_URL}
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    volumes:
+      - profile_pictures:/usr/src/app/public/profile_pictures
+
+  matching-service:
+    container_name: matching-service
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/matching-service:latest
+    build:
+      context: ./matching_service
+      dockerfile: Dockerfile.prod
+    environment:
+      - PORT=8082
+    ports:
+      - "8082:8082"
+
+  code-execution:
+    container_name: code-execution
+    image: asia-southeast1-docker.pkg.dev/cs3219-400714/peerprep/code-execution:latest
+    build: 
+      context: ./code_execution
+      dockerfile: Dockerfile.prod
+    environment:
+      - PORT=8090
+    ports:
+      - "8090:8090"
+    volumes:
+      - questions_test_cases:/app/question_test_cases
+
+  judge0-server:
+      container_name: judge0
+      image: judge0/judge0:1.13.0
+      ports:
+        - "2358:2358"
+      privileged: true
+      environment:
+        REDIS_PASSWORD: ${REDIS_PASSWORD}
+        POSTGRES_HOST: postgres
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        POSTGRES_DB: judge0
+        POSTGRES_PORT: ${PG_PORT}
+
+      env_file:
+        - config_env/config-judge0.env
+
+  judge0-workers:
+    image: judge0/judge0:1.13.0
+    command: ["./scripts/workers"]
+    privileged: true
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: judge0
+      POSTGRES_PORT: ${PG_PORT}
+    env_file:
+      - config_env/config-judge0.env
+
+  mongo:
+    container_name: mongo
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-dev-data:/data/db
+
+  postgres:    
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PG_PORT: ${PG_PORT}
+    ports:
+      - "${PG_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  redis:
+    container_name: redis
+    image: redis:7
+    ports:
+      - "6379:6379"
+    command: [
+      "bash", "-c",
+      'docker-entrypoint.sh --appendonly yes --requirepass "$$REDIS_PASSWORD"'
+    ]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+volumes:
+  postgres_data:
+  mongo-dev-data:
+  questions_test_cases:
+  profile_pictures:

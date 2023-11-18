@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  id                Int                @id @default(autoincrement())
+  username          String             @unique @db.VarChar(255)
+  profilePic        String?
+  bio               String?
+  hashedPassword    String
+  role              Role               @default(USER)
+  answeredQuestions AnsweredQuestion[]
+}
+
+model AnsweredQuestion {
+  id            String   @id @default(uuid())
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+  questionTitle String
+  questionId    Int
+  question__id  String
+  difficulty    Float
+  topics        String[]
+  sourceCode    String
+  language      String
+  verdict       String
+  answeredAt    DateTime @default(now())
+
+  @@map("AnsweredQuestion")
+}
